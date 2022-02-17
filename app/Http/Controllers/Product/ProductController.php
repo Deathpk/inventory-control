@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Services\Product\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,21 +23,19 @@ class ProductController extends Controller
         // TODO
     }
 
-
     /**
      * @throws \Exception
      */
     public function store(StoreProductRequest $request): JsonResponse
     {
         $this->service->createProduct($request);
-
         return response()->json([
             'success' => true,
             'message' => 'Produto criado com sucesso!'
         ]);
     }
 
-    public function update()
+    public function update(UpdateProductRequest $request): JsonResponse
     {
         //TODO
     }
