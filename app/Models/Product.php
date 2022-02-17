@@ -26,12 +26,18 @@ class Product extends Model
         'limit_for_restock',
         'paid_price',
         'selling_price',
-        'category_id'
+        'category_id',
+        'brand_id'
     ];
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
     }
 
     public static function create(): self
