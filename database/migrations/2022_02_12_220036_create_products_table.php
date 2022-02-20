@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignIdFor(Category::class);
             $table->integer('limit_for_restock');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

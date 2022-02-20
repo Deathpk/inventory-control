@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use JetBrains\PhpStorm\Pure;
 
@@ -31,7 +32,9 @@ class StoreProductRequest extends FormRequest
             'paidPrice' => 'required|int',
             'sellingPrice' => 'required|int',
             'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
-            'categoryName' => Rule::requiredIf(!$this->getCategoryId()) . '|string',
+            'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
+            'brandId' => Rule::requiredIf(!$this->getBrandName()),
+            'brandName' => Rule::requiredIf(!$this->getBrandId()),
             'limitForRestock' => 'required|int'
         ];
     }
@@ -48,9 +51,9 @@ class StoreProductRequest extends FormRequest
             'paidPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
             'sellingPrice.required' => 'O campo valor de venda do produto é obrigatório.',
             'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
-            'categoryId.int' => 'O campo categoria do produto deve conter somente numerais.',
             'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
-            'categoryName.string' => 'O campo nome da categoria deve conter somente caracteres Alfa Numéricos.',
+            'brandId.required' => 'O ID da marca do produto é obrigatório.',
+            'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',
             'limitForRestock.required' => 'O campo quantidade para reposição é obrigatório',
             'limitForRestock.int' => 'O campo quantidade para reposição deve conter somente numerais.'
         ];
@@ -71,6 +74,26 @@ class StoreProductRequest extends FormRequest
         return $this->request->get('categoryId');
     }
 
+    public function getAttributes(): Collection
+    {
+        return collect($this->validated());
+    }
+
+    public function getCategoryName(): ?string
+    {
+        return $this->request->get('categoryName');
+    }
+
+    public function getBrandId(): ?int
+    {
+        return $this->request->get('brandId');
+    }
+
+    public function getBrandName(): ?string
+    {
+        return $this->request->get('brandName');
+    }
+
     public function getPaidPrice(): int
     {
         return $this->request->get('paidPrice');
@@ -79,17 +102,6 @@ class StoreProductRequest extends FormRequest
     public function getSellingPrice(): int
     {
         return $this->request->get('sellingPrice');
-    }
-
-    #[Pure] public function hasCategoryId(): bool
-    {
-        $categoryId = $this->request->get('categoryId');
-        return isset($categoryId);
-    }
-
-    public function getCategoryName(): ?string
-    {
-        return $this->request->get('categoryName');
     }
 
     public function getLimitForRestock(): int

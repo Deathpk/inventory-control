@@ -4,6 +4,7 @@ namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -25,18 +26,35 @@ class UpdateProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'productId' => 'required|int',
-            'attributes' => 'required|array'
+            'name' => 'required|string',
+            'quantity' => 'required|int',
+            'paidPrice' => 'required|int',
+            'sellingPrice' => 'required|int',
+            'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
+            'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
+            'brandId' => Rule::requiredIf(!$this->getBrandName()),
+            'brandName' => Rule::requiredIf(!$this->getBrandId()),
+            'limitForRestock' => 'required|int'
         ];
     }
 
     public function messages()
     {
         return [
-            'productId.required' => 'O id do produto é obrigatório.',
-            'productId.int' => 'O id do produto deve conter somente numerais.',
-            'attributes.required' => 'Antes de salvar , faça ao menos uma alteração no produto.',
-            'attributes.array' => 'O campo atributo deve ser do tipo array.',
+            'name.required' => 'O nome do produto é um campo obrigatório.',
+            'name.string' => 'O nome do produto deve conter somente caracteres Alfa Numéricos.',
+            'quantity.required' => 'A quantidade atual do produto é um campo obrigatório.',
+            'quantity.int' => 'O campo quantidade do prroduto deve conter somente numerais.',
+            'categoryId.required' => 'O campo categoria do produto é obrigatório.',
+            'paidPrice.required' => 'O campo valor de custo do produto é obrigatório.',
+            'paidPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
+            'sellingPrice.required' => 'O campo valor de venda do produto é obrigatório.',
+            'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
+            'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
+            'brandId.required' => 'O ID da marca do produto é obrigatório.',
+            'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',
+            'limitForRestock.required' => 'O campo quantidade para reposição é obrigatório',
+            'limitForRestock.int' => 'O campo quantidade para reposição deve conter somente numerais.'
         ];
     }
 
@@ -47,6 +65,51 @@ class UpdateProductRequest extends FormRequest
 
     public function getAttributes(): Collection
     {
-        return collect($this->request->get('attributes'));
+        return collect($this->validated());
+    }
+
+    public function getName(): string
+    {
+        return $this->request->get('name');
+    }
+
+    public function getQuantity(): int
+    {
+        return $this->request->get('quantity');
+    }
+
+    public function getCategoryId(): ?int
+    {
+        return $this->request->get('categoryId');
+    }
+
+    public function getCategoryName(): ?string
+    {
+        return $this->request->get('categoryName');
+    }
+
+    public function getBrandId(): ?int
+    {
+        return $this->request->get('brandId');
+    }
+
+    public function getBrandName(): ?string
+    {
+        return $this->request->get('brandName');
+    }
+
+    public function getPaidPrice(): int
+    {
+        return $this->request->get('paidPrice');
+    }
+
+    public function getSellingPrice(): int
+    {
+        return $this->request->get('sellingPrice');
+    }
+
+    public function getLimitForRestock(): int
+    {
+        return $this->request->get('limitForRestock');
     }
 }
