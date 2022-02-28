@@ -58,4 +58,9 @@ class Brand extends Model
     {
         return $this->name;
     }
+
+    public static function findByName(string $name): ?Model
+    {
+        return Brand::where('name', $name)->first();
+    }
 }

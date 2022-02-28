@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Product;
 
+use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
+use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -9,23 +11,28 @@ use App\Models\Product;
 use App\Services\Product\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use JetBrains\PhpStorm\Pure;
 
 class ProductController extends Controller
 {
     private ProductService $service;
 
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->service = new ProductService();
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
-        // TODO
+        $productList = $this->service->listProducts();
+        return response()->json([
+            'Product' => $productList
+        ]);
     }
 
+
     /**
-     * @throws \Exception
+     * @throws FailedToCreateOrUpdateProduct
      */
     public function store(StoreProductRequest $request): JsonResponse
     {
@@ -37,7 +44,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws \Exception
+     * @throws FailedToCreateOrUpdateProduct
      */
     public function update(int $productId, UpdateProductRequest $request): JsonResponse
     {
@@ -48,8 +55,9 @@ class ProductController extends Controller
         ]);
     }
 
+
     /**
-     * @throws \Exception
+     * @throws FailedToDeleteProduct
      */
     public function destroy(int $productId): JsonResponse
     {

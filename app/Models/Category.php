@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 /**
  * @property int $id;
@@ -55,5 +57,10 @@ class Category extends Model
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public static function findByName(string $name): ?Model
+    {
+        return Category::where('name', $name)->first();
     }
 }

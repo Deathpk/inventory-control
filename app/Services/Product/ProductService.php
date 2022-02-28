@@ -4,10 +4,11 @@
 namespace App\Services\Product;
 
 
+use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
+use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
-use Illuminate\Session\Store;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +17,7 @@ class ProductService
     private Product $product;
 
     /**
-     * @throws \Exception
+     * @throws FailedToCreateOrUpdateProduct
      */
     public function createOrUpdateProduct(StoreProductRequest|UpdateProductRequest $request, $id = null): void
     {
@@ -32,17 +33,18 @@ class ProductService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
-            //TODO CREATE A CUSTOM EXCEPTION.
+            throw new FailedToCreateOrUpdateProduct($e);
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     private function updateProduct(int $id, UpdateProductRequest $request): void
     {
         $product = Product::find($id);
         if (!$product) {
             throw new \Exception('Produto não encontrado no banco.');
-            //TODO JOGAR EXCEÇAO CUSTOM.
         }
         $this->setProduct($product);
         $attributes = $request->getAttributes();
@@ -60,15 +62,27 @@ class ProductService
         $this->product = $product;
     }
 
+    /**
+     * @throws FailedToDeleteProduct
+     */
     public function deleteProduct(int $id): void
     {
-        $product = Product::find($id);
-        if (!$product) {
-            throw new \Exception('Produto não encontrado no banco.');
-            //TODO JOGAR EXCEÇAO CUSTOM.
+        try {
+            $product = Product::find($id);
+            if (!$product) {
+                throw new \Exception('Produto não encontrado no banco.');
+            }
+
+            $product->delete();
+        } catch (\Throwable $e) {
+            throw new FailedToDeleteProduct($e);
         }
 
-        $product->delete();
+    }
+
+    public function listProducts(): Collection
+    {
+        return Product::with(['brand', 'category'])->get();
     }
 
 }

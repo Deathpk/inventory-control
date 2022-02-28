@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Requests\Product\StoreProductRequest;
-use App\Http\Requests\Product\UpdateProductRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -78,7 +76,6 @@ class Product extends Model
         $brand = null;
 
         if (!$attributes->get('categoryId')) {
-            /** @var Category $category */
             $category = $this->createCategory($attributes->get('categoryName'));
             $category->save();
         }
@@ -86,7 +83,6 @@ class Product extends Model
         $this->setCategory($category?->getId() ?? $attributes->get('categoryId'));
 
         if (!$attributes->get('brandId')) {
-            /** @var Brand $brand */
             $brand = $this->createBrand($attributes->get('brandName'));
             $brand->save();
         }
@@ -99,8 +95,14 @@ class Product extends Model
         $this->category_id = $categoryId;
     }
 
-    private function createCategory(string $categoryName): Model|BelongsTo
+    private function createCategory(string $categoryName): Model|Collection
     {
+        $existingCategory = Category::findByName($categoryName);
+
+        if ($existingCategory) {
+            return $existingCategory;
+        }
+
         return $this->category()->create(['name' => $categoryName]);
     }
 
@@ -109,8 +111,14 @@ class Product extends Model
         $this->brand_id = $brandId;
     }
 
-    private function createBrand(string $brandName): BelongsTo|Model
+    private function createBrand(string $brandName): Model|Collection
     {
+        $existingBrand = Brand::findByName($brandName);
+
+        if ($existingBrand) {
+            return $existingBrand;
+        }
+
         return $this->brand()->create(['name' => $brandName]);
     }
 }
