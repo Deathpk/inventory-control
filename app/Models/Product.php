@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Database\Factories\ProductModelFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -120,5 +122,15 @@ class Product extends Model
         }
 
         return $this->brand()->create(['name' => $brandName]);
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return Factory
+     */
+    protected static function newFactory(): Factory
+    {
+        return ProductModelFactory::new();
     }
 }

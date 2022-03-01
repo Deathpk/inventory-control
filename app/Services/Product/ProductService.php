@@ -16,6 +16,11 @@ class ProductService
 {
     private Product $product;
 
+    public function setProduct(Product $product): void
+    {
+        $this->product = $product;
+    }
+
     /**
      * @throws FailedToCreateOrUpdateProduct
      */
@@ -55,11 +60,6 @@ class ProductService
     {
         $attributes = $request->getAttributes();
         Product::create()->fromRequest($attributes);
-    }
-
-    public function setProduct(Product $product)
-    {
-        $this->product = $product;
     }
 
     /**

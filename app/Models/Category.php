@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
+use Database\Factories\CategoryModelFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,10 +37,9 @@ class Category extends Model
         return new self();
     }
 
-    public function fromRequest(StoreCategoryRequest $request): self
+    public function fromRequest(Collection $attributes): void
     {
-        $this->setCategoryData(name: $request->getName(), description: $request->getDescription());
-        return $this;
+        $this->setCategoryData($attributes->get('name'), $attributes->get('description'));
     }
 
     public function fromProduct(string $newCategoryName): self
@@ -62,5 +63,15 @@ class Category extends Model
     public static function findByName(string $name): ?Model
     {
         return Category::where('name', $name)->first();
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return Factory
+     */
+    protected static function newFactory(): Factory
+    {
+        return CategoryModelFactory::new();
     }
 }

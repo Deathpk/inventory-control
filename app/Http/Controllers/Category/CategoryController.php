@@ -4,27 +4,62 @@ namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Models\Category;
+use App\Services\Category\CategoryService;
+use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
-    public function index()
+    private CategoryService $service;
+
+    public function __construct(CategoryService $service)
     {
-        // TODO
+        $this->service = $service;
     }
 
-    public function store(StoreCategoryRequest $request)
+    public function index(): JsonResponse
     {
-        //TODO
+        $categories = $this->service->listAllCategories();
+        return response()->json([
+            'success' => true,
+            'categories' => $categories
+        ]);
     }
 
-    public function update()
+    /**
+     * @throws \Throwable
+     */
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        //TODO
+        $this->service->createOrUpdateCategory($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Categoria criada com sucesso!'
+        ]);
     }
 
-    public function delete()
+    /**
+     * @throws \Throwable
+     */
+    public function update(Category $category, UpdateCategoryRequest $request): JsonResponse
     {
-        //TODO
+        $this->service->createOrUpdateCategory($request, $category);
+        return response()->json([
+           'success' => true,
+           'message' => 'Categoria atualizada com sucesso!'
+        ]);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function destroy(Category $category): JsonResponse
+    {
+        $this->service->deleteCategory($category);
+        return response()->json([
+            'success' => true,
+            'message' => 'Categoria excluida com sucesso!'
+        ]);
     }
 }

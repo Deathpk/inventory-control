@@ -5,14 +5,14 @@ namespace App\Http\Requests\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
 
-class StoreCategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true; // TODO MONTAR A LOGICA DE AUTH DPS...
     }

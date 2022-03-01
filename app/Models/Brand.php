@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Http\Requests\Brand\StoreBrandRequest;
+use Database\Factories\BrandModelFactory;
+use Database\Factories\ProductModelFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -62,5 +65,15 @@ class Brand extends Model
     public static function findByName(string $name): ?Model
     {
         return Brand::where('name', $name)->first();
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return Factory
+     */
+    protected static function newFactory(): Factory
+    {
+        return BrandModelFactory::new();
     }
 }

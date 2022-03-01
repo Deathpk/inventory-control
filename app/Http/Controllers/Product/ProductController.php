@@ -7,10 +7,8 @@ use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
-use App\Models\Product;
 use App\Services\Product\ProductService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use JetBrains\PhpStorm\Pure;
 
 class ProductController extends Controller
@@ -26,7 +24,8 @@ class ProductController extends Controller
     {
         $productList = $this->service->listProducts();
         return response()->json([
-            'Product' => $productList
+            'success' => true,
+            'products' => $productList
         ]);
     }
 
