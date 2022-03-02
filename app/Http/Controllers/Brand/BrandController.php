@@ -4,27 +4,63 @@ namespace App\Http\Controllers\Brand;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Brand\StoreBrandRequest;
+use App\Http\Requests\Brand\UpdateBrandRequest;
+use App\Services\Brand\BrandService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use JetBrains\PhpStorm\Pure;
 
 class BrandController extends Controller
 {
-    public function index()
+    private BrandService $service;
+
+    #[Pure] public function __construct()
     {
-        //TODO
+        $this->service = new BrandService();
     }
 
-    public function store(StoreBrandRequest $request)
+    public function index(): JsonResponse
     {
-        //TODO
+        $brands = $this->service->listBrands();
+        return response()->json([
+            'success' => true,
+            'brands' => $brands
+        ]);
     }
 
-    public function update(int $id, Request $request)
+    /**
+     * @throws \Throwable
+     */
+    public function store(StoreBrandRequest $request): JsonResponse
     {
-        //TODO
+        $this->service->createOrUpdateBrand($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Marca criada com sucesso!'
+        ]);
     }
 
-    public function delete(int $id)
+    /**
+     * @throws \Throwable
+     */
+    public function update(int $brandId, UpdateBrandRequest $request): JsonResponse
     {
+        $this->service->createOrUpdateBrand($request, $brandId);
+        return response()->json([
+            'success' => true,
+            'message' => 'Marca atualizada com sucesso!'
+        ]);
+    }
 
+    /**
+     * @throws \Throwable
+     */
+    public function destroy(int $brandId): JsonResponse
+    {
+        $this->service->deleteBrand($brandId);
+        return response()->json([
+            'success' => true,
+            'message' => 'Marca excluida com sucesso!'
+        ]);
     }
 }

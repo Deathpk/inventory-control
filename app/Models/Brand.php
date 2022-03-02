@@ -34,10 +34,9 @@ class Brand extends Model
         return new Brand();
     }
 
-    public function fromRequest(StoreBrandRequest $request): self
+    public function fromRequest(string $name): void
     {
-        $this->setBrandData($request->getName());
-        return $this;
+        $this->setBrandData($name);
     }
 
     public function fromProduct(string $name): self
