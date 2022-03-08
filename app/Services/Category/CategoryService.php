@@ -6,7 +6,9 @@ namespace App\Services\Category;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Models\Brand;
 use App\Models\Category;
+use Exception;
 use Illuminate\Support\Collection;
 
 class CategoryService
@@ -47,9 +49,14 @@ class CategoryService
         $category->fromRequest($attributes);
     }
 
-    public function deleteCategory(Category $category): void
+    public function deleteCategory(int $category): void
     {
-        try{
+        try {
+            $category = Category::find($category);
+            if (!$category) {
+                throw new Exception('Categoria não encontrada no DB.');
+            }
+
             $category->delete();
         } catch (\Throwable $e) {
             throw new $e; //TODO CRIAR CUSTOM EXCEPTION

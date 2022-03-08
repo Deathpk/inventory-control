@@ -82,7 +82,7 @@ class ProductService
 
     public function listProducts(): Collection
     {
-        return Product::with(['brand', 'category'])->get();
+        return Product::all();
     }
 
 }

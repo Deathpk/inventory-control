@@ -3,19 +3,24 @@
 namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\AutoComplete\CategoryAutoCompleteService;
+use App\Services\AutoComplete\Interfaces\AutoCompleteService;
 use App\Services\Category\CategoryService;
 use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
     private CategoryService $service;
+    private CategoryAutoCompleteService $autocompleteService;
 
-    public function __construct(CategoryService $service)
+    public function __construct(CategoryService $service, CategoryAutoCompleteService $autoCompleteService)
     {
         $this->service = $service;
+        $this->autocompleteService = $autoCompleteService;
     }
 
     public function index(): JsonResponse
@@ -54,12 +59,21 @@ class CategoryController extends Controller
     /**
      * @throws \Throwable
      */
-    public function destroy(Category $category): JsonResponse
+    public function destroy(int $categoryId): JsonResponse
     {
-        $this->service->deleteCategory($category);
+        $this->service->deleteCategory($categoryId);
         return response()->json([
             'success' => true,
             'message' => 'Categoria excluida com sucesso!'
+        ]);
+    }
+
+    public function autoComplete(AutoCompleteRequest $request): JsonResponse
+    {
+        $results = $this->autocompleteService->retrieveResults($request);
+        return response()->json([
+            'success' => true,
+            'results' => $results
         ]);
     }
 }

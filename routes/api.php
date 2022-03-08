@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Autocomplete\AutocompleteController;
 use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Product\ProductController;
@@ -26,6 +27,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::post('/create', 'store');
     Route::put('/edit/{productId}', 'update');
     Route::delete('/delete/{productId}', 'destroy');
+    Route::get('/autocomplete', 'autoComplete');
 });
 
 Route::controller(CategoryController::class)->prefix('categories')->group(function () {
@@ -33,6 +35,7 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
     Route::post('/create', 'store');
     Route::put('/edit/{category}', 'update');
     Route::delete('/delete/{category}', 'destroy');
+    Route::get('/autocomplete', 'autoComplete');
 });
 
 Route::controller(BrandController::class)->prefix('brands')->group(function () {
@@ -40,4 +43,6 @@ Route::controller(BrandController::class)->prefix('brands')->group(function () {
     Route::post('/create', 'store');
     Route::put('/edit/{brandId}', 'update');
     Route::delete('/delete/{brandId}', 'destroy');
+    Route::get('/autocomplete', 'autoComplete');
 });
+

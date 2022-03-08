@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Product;
 use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Services\AutoComplete\ProductAutoCompleteService;
 use App\Services\Product\ProductService;
 use Illuminate\Http\JsonResponse;
 use JetBrains\PhpStorm\Pure;
@@ -14,10 +16,12 @@ use JetBrains\PhpStorm\Pure;
 class ProductController extends Controller
 {
     private ProductService $service;
+    private ProductAutoCompleteService $autoCompleteService;
 
-    #[Pure] public function __construct()
+    #[Pure] public function __construct(ProductService $service, ProductAutoCompleteService $autoCompleteService)
     {
-        $this->service = new ProductService();
+        $this->service = $service;
+        $this->autoCompleteService = $autoCompleteService;
     }
 
     public function index(): JsonResponse
@@ -64,6 +68,15 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Produto excluido com sucesso!'
+        ]);
+    }
+
+    public function autoComplete(AutoCompleteRequest $request): JsonResponse
+    {
+        $results = $this->autoCompleteService->retrieveResults($request);
+        return response()->json([
+            'success' => true,
+            'results' => $results
         ]);
     }
 }

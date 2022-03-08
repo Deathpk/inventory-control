@@ -36,6 +36,15 @@ class Product extends Model
         'brand_id'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d'
+    ];
+
+    protected $hidden = [
+        'deleted_at'
+    ];
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

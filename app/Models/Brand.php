@@ -24,6 +24,15 @@ class Brand extends Model
         'name',
     ];
 
+    protected $hidden = [
+        'deleted_at'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d'
+    ];
+
     public function product(): HasMany
     {
         return $this->hasMany(Product::class);
