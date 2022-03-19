@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Models\Product;
 use App\Services\AutoComplete\ProductAutoCompleteService;
 use App\Services\Product\ProductService;
 use Illuminate\Http\JsonResponse;
@@ -30,6 +31,18 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'products' => $productList
+        ]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function show(int $productId): JsonResponse
+    {
+        $specificProduct = $this->service->getProduct($productId);
+        return response()->json([
+            'success' => true,
+            'product' => $specificProduct
         ]);
     }
 

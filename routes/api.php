@@ -28,6 +28,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::put('/edit/{productId}', 'update');
     Route::delete('/delete/{productId}', 'destroy');
     Route::get('/autocomplete', 'autoComplete');
+    Route::get('/{productId}', 'show');
 });
 
 Route::controller(CategoryController::class)->prefix('categories')->group(function () {
@@ -36,6 +37,7 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
     Route::put('/edit/{category}', 'update');
     Route::delete('/delete/{category}', 'destroy');
     Route::get('/autocomplete', 'autoComplete');
+    Route::get('/{categoryId}', 'show');
 });
 
 Route::controller(BrandController::class)->prefix('brands')->group(function () {
@@ -44,5 +46,6 @@ Route::controller(BrandController::class)->prefix('brands')->group(function () {
     Route::put('/edit/{brandId}', 'update');
     Route::delete('/delete/{brandId}', 'destroy');
     Route::get('/autocomplete', 'autoComplete');
+    Route::get('/{brandId}', 'show');
 });
 

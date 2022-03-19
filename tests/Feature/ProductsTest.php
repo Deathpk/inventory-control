@@ -10,6 +10,10 @@ it('asserts that products can be created with category and brand', function (Col
     expect($response)->toHaveKey('success', true);
 })->with('products');
 
+it('asserts that specific product can be retrieved', function () {
+    expect(Product::query()->first())->not->toBeEmpty();
+});
+
 it('asserts that products can be updated with success', function () {
     $firstProductId = Product::first()->id;
     $response = $this->updateProduct($firstProductId)->json();

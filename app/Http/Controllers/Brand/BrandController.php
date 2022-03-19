@@ -33,6 +33,15 @@ class BrandController extends Controller
         ]);
     }
 
+    public function show(int $brandId): JsonResponse
+    {
+        $specificBrand = $this->service->getBrand($brandId);
+        return response()->json([
+            'success' => true,
+            'product' => $specificBrand
+        ]);
+    }
+
     /**
      * @throws \Throwable
      */

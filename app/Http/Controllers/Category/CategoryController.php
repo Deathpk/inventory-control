@@ -33,6 +33,18 @@ class CategoryController extends Controller
     }
 
     /**
+     * @throws \Exception
+     */
+    public function show(int $categoryId): JsonResponse
+    {
+        $specificCategory = $this->service->getCategory($categoryId);
+        return response()->json([
+            'success' => true,
+            'product' => $specificCategory
+        ]);
+    }
+
+    /**
      * @throws \Throwable
      */
     public function store(StoreCategoryRequest $request): JsonResponse

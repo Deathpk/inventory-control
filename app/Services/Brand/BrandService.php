@@ -7,6 +7,8 @@ namespace App\Services\Brand;
 use App\Http\Requests\Brand\StoreBrandRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
 use App\Models\Brand;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use mysql_xdevapi\Exception;
 
@@ -46,11 +48,22 @@ class BrandService
         /** @var Brand $brand */
         $brand = Brand::find($id);
         if (!$brand) {
-            throw new \Exception('Marca não encontrada no DB.');
+            throw new \Exception('Marca não encontrada no banco de dados.');
             //TODO CRIAR CUSTOM EXCEPTION
         }
 
         $brand->fromRequest($request->getName());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getBrand(int $id): Builder|Model
+    {
+        return Brand::query()->find($id) ??
+            throw new \Exception(
+                'Marca não encontrada no banco de dados.'
+            );
     }
 
     /**

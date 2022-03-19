@@ -9,6 +9,8 @@ use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +58,17 @@ class ProductService
         $this->product->fromRequest($attributes);
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function getProduct(int $id): Builder|Model
+    {
+        return Product::with(['category', 'brand'])->find($id) ??
+            throw new \Exception(
+                'Produto não encontrado no banco.'
+            );
+    }
+
     private function storeProduct(StoreProductRequest $request): void
     {
         $attributes = $request->getAttributes();
@@ -82,7 +95,7 @@ class ProductService
 
     public function listProducts(): Collection
     {
-        return Product::all();
+        return Product::with(['category', 'brand'])->get();
     }
 
 }

@@ -9,6 +9,8 @@ use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Brand;
 use App\Models\Category;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class CategoryService
@@ -47,6 +49,17 @@ class CategoryService
     {
         $attributes = $request->getAttributes();
         $category->fromRequest($attributes);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getCategory(int $id): Builder|Model
+    {
+        return Category::query()->find($id) ??
+            throw new \Exception(
+                'Categoria não encontrada no banco de dados.'
+            );
     }
 
     public function deleteCategory(int $category): void
