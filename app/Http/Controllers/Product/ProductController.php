@@ -6,6 +6,7 @@ use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
+use App\Http\Requests\Product\ImportProductsRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
@@ -91,5 +92,11 @@ class ProductController extends Controller
             'success' => true,
             'results' => $results
         ]);
+    }
+
+    public function import(ImportProductsRequest $request)
+    {
+        $importedWithSuccess = $this->service->importProducts($request->getAttributes());
+        //TODO
     }
 }

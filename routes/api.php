@@ -28,6 +28,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::put('/edit/{productId}', 'update');
     Route::delete('/delete/{productId}', 'destroy');
     Route::get('/autocomplete', 'autoComplete');
+    Route::post('/import', 'import');
     Route::get('/{productId}', 'show');
 });
 
