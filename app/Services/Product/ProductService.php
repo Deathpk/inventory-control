@@ -6,18 +6,16 @@ namespace App\Services\Product;
 
 use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
-use App\Http\Requests\Product\ImportProductsRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
+use App\Prototypes\Product\ImportedProduct;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Vtiful\Kernel\Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class ProductService
 {
@@ -31,14 +29,16 @@ class ProductService
     /**
      * @throws FailedToCreateOrUpdateProduct
      */
-    public function createOrUpdateProduct(StoreProductRequest|UpdateProductRequest $request, $id = null): void
+    public function createOrUpdateProduct(StoreProductRequest|UpdateProductRequest|Collection $productData, $id = null): void
     {
         try {
             DB::beginTransaction();
-            switch ($request) {
-                case $request instanceof StoreProductRequest : $this->storeProduct($request);
+            switch ($productData) {
+                case $productData instanceof StoreProductRequest : $this->storeProduct($productData);
                 break;
-                case $request instanceof UpdateProductRequest : $this->updateProduct($id, $request);
+                case $productData instanceof UpdateProductRequest : $this->updateProduct($id, $productData);
+                break;
+                case $productData instanceof Collection : $this->storeImportedProducts($productData);
                 break;
             }
             DB::commit();
@@ -61,6 +61,13 @@ class ProductService
         $this->setProduct($product);
         $attributes = $request->getAttributes();
         $this->product->fromRequest($attributes);
+    }
+
+    private function storeImportedProducts(Collection $products)
+    {
+        $products->each(function (ImportedProduct $product) {
+            Product::create()->fromRequest($product->toCollection());
+        });
     }
 
     /**
@@ -125,12 +132,27 @@ class ProductService
         //TODO ADICIONAR CUSTOM EXCEPTION.
     }
 
+    /**
+     * @throws FailedToCreateOrUpdateProduct
+     */
     private function createProductsBasedOnImport(UploadedFile $file)
     {
-//        $spreadSheet = new Spreadsheet();
-        $spreadSheet = IOFactory::load($file->getRealPath());
-        dd($spreadSheet);
-        //TODO CONTINUE IMPLEMENTATION CHECKING https://phpspreadsheet.readthedocs.io/en/latest/topics/reading-and-writing-to-file/
+        $products = $this->convertSpreadsheetToArray($file);
+
+        $importedProducts = $products->map(function (array $product) {
+            return ImportedProduct::create()->fromArray($product);
+        });
+
+        $this->createOrUpdateProduct($importedProducts);
+    }
+
+    private function convertSpreadsheetToArray(UploadedFile $file): Collection
+    {
+        $reader = new Xlsx();
+        $spreadSheet = $reader->load($file->getRealPath());
+        return collect($spreadSheet->getActiveSheet()->toArray())->map(function (array $productData) {
+            return collect($productData)->filter()->toArray();
+        })->forget([0]);
     }
 
 }

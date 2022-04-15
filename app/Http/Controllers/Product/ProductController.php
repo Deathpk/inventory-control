@@ -94,9 +94,15 @@ class ProductController extends Controller
         ]);
     }
 
-    public function import(ImportProductsRequest $request)
+    /**
+     * @throws \Exception
+     */
+    public function import(ImportProductsRequest $request): JsonResponse
     {
-        $importedWithSuccess = $this->service->importProducts($request->getAttributes());
-        //TODO
+        $this->service->importProducts($request->getAttributes());
+        return response()->json([
+            'success' => true,
+            'message' => 'Produtos importados com sucesso!'
+        ]);
     }
 }
