@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class ProductService
@@ -148,11 +149,18 @@ class ProductService
 
     private function convertSpreadsheetToArray(UploadedFile $file): Collection
     {
-        $reader = new Xlsx();
+        $reader = self::resolveFileReader($file);
         $spreadSheet = $reader->load($file->getRealPath());
         return collect($spreadSheet->getActiveSheet()->toArray())->map(function (array $productData) {
             return collect($productData)->filter()->toArray();
-        })->forget([0]);
+        })->forget([0])->filter();
+    }
+
+    private static function resolveFileReader(UploadedFile &$file): Csv|Xlsx
+    {
+        return $file->extension() === 'xlsx'
+            ? new Xlsx()
+            : new Csv();
     }
 
 }

@@ -53,10 +53,15 @@ class ImportedProduct
         $this->name = $product[self::NAME_KEY];
         $this->quantity = $product[self::QUANTITY_KEY];
         $this->limit_for_restock = $product[self::LIMIT_FOR_RESTOCK_KEY];
-        $this->paid_price = $product[self::PAID_PRICE_KEY];
-        $this->selling_price = $product[self::SELLING_PRICE_KEY];
+        $this->paid_price = self::convertToInteger($product[self::PAID_PRICE_KEY]);
+        $this->selling_price = self::convertToInteger($product[self::SELLING_PRICE_KEY]);
         $this->category_name = $product[self::CATEGORY_NAME_KEY];
         $this->brand_name = $product[self::BRAND_NAME_KEY];
+    }
+
+    private static function convertToInteger(float $value): int
+    {
+        return (int) round(($value * 100), 0);
     }
 
 }
