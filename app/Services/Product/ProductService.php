@@ -6,6 +6,7 @@ namespace App\Services\Product;
 
 use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
+use App\Http\Requests\Product\RemoveSoldUnitRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
@@ -21,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 class ProductService
 {
     private Product $product;
+    const MAX_FILE_SIZE_IN_BYTES = 3145728;
 
     public function setProduct(Product $product): void
     {
@@ -125,7 +127,9 @@ class ProductService
      */
     private function validateFile(UploadedFile $file): void
     {
-        $isValid = $file->isValid() && in_array($file->extension(), ['xlsx', 'csv']);
+        $isValid = $file->isValid()
+            && in_array($file->extension(), ['xlsx', 'csv'])
+            && $file->getSize() <= self::MAX_FILE_SIZE_IN_BYTES;
 
         if (!$isValid) {
             throw new \Exception('O Arquivo importado está corrompido ou não é válido.');
@@ -136,7 +140,7 @@ class ProductService
     /**
      * @throws FailedToCreateOrUpdateProduct
      */
-    private function createProductsBasedOnImport(UploadedFile $file)
+    private function createProductsBasedOnImport(UploadedFile $file): void
     {
         $products = $this->convertSpreadsheetToArray($file);
 
@@ -161,6 +165,27 @@ class ProductService
         return $file->extension() === 'xlsx'
             ? new Xlsx()
             : new Csv();
+    }
+
+    public function removeSoldUnit(RemoveSoldUnitRequest $request): void
+    {
+        $attributes = $request->getAttributes();
+        /** @var Product $product */
+        $product = Product::find($attributes['productId']);
+
+        if (!$product) {
+            throw new \Exception('Produto não encontrado na base de dados.');
+            //TODO VC JÁ SABE OQUE FAZER...
+        }
+
+        try {
+            DB::beginTransaction();
+            $product->removeSoldUnit($attributes['soldQuantity']);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
 }

@@ -7,6 +7,7 @@ use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\ImportProductsRequest;
+use App\Http\Requests\Product\RemoveSoldUnitRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
@@ -103,6 +104,17 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Produtos importados com sucesso!'
+        ]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function removeSoldUnit(RemoveSoldUnitRequest $request): JsonResponse
+    {
+        $this->service->removeSoldUnit($request);
+        return response()->json([
+            'success' => true
         ]);
     }
 }

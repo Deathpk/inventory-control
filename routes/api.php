@@ -29,6 +29,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::delete('/delete/{productId}', 'destroy');
     Route::get('/autocomplete', 'autoComplete');
     Route::post('/import', 'import');
+    Route::get('/sell', 'removeSoldUnit'); //TODO TIRAR ESSE NOME BOSTA.
     Route::get('/{productId}', 'show');
 });
 
