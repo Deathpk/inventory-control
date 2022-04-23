@@ -142,7 +142,7 @@ class Product extends Model
     {
         return ProductModelFactory::new();
     }
-
+    
     public function removeSoldUnit(int $quantitySold): void
     {
         $this->quantity = $this->quantity - $quantitySold;
