@@ -4,8 +4,10 @@
 namespace App\Services\Product;
 
 
+use App\Exceptions\AbstractException;
 use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
+use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\RemoveSoldUnitRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -60,7 +62,7 @@ class ProductService
     {
         $product = Product::find($id);
         if (!$product) {
-            throw new \Exception('Produto não encontrado no banco.');
+            throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
         }
         $this->setProduct($product);
         $attributes = $request->getAttributes();
@@ -80,9 +82,7 @@ class ProductService
     public function getProduct(int $id): Builder|Model
     {
         return Product::with(['category', 'brand'])->find($id) ??
-            throw new \Exception(
-                'Produto não encontrado no banco.'
-            );
+            throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
     }
 
     private function storeProduct(StoreProductRequest $request): void
@@ -99,7 +99,7 @@ class ProductService
         try {
             $product = Product::find($id);
             if (!$product) {
-                throw new \Exception('Produto não encontrado no banco.');
+                throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
             }
 
             $product->delete();
@@ -117,7 +117,7 @@ class ProductService
     /**
      * @throws \Exception
      */
-    public function importProducts(array $products)
+    public function importProducts(array $products): void
     {
         $this->validateFile($products['file']);
         $this->createProductsBasedOnImport($products['file']);
@@ -168,6 +168,9 @@ class ProductService
             : new Csv();
     }
 
+    /**
+     * @throws RecordNotFoundOnDatabaseException
+     */
     public function removeSoldUnit(RemoveSoldUnitRequest $request): void
     {
         $attributes = $request->getAttributes();
@@ -175,8 +178,7 @@ class ProductService
         $product = Product::find($attributes['productId']);
 
         if (!$product) {
-            throw new \Exception('Produto não encontrado na base de dados.');
-            //TODO VC JÁ SABE OQUE FAZER...
+            throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
         }
 
         try {
