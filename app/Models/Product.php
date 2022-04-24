@@ -142,10 +142,20 @@ class Product extends Model
     {
         return ProductModelFactory::new();
     }
-    
+
     public function removeSoldUnit(int $quantitySold): void
     {
         $this->quantity = $this->quantity - $quantitySold;
         $this->save();
+    }
+
+    public function getCostPrice(): int
+    {
+        return $this->paid_price;
+    }
+
+    public function getSellingPrice(): int
+    {
+        return $this->selling_price;
     }
 }

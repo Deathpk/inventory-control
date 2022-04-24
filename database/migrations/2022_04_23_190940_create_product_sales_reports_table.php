@@ -14,13 +14,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_sales_report', function (Blueprint $table) {
+        Schema::create('product_sales_reports', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignIdFor(Product::class);
             $table->integer('sold_quantity');
-            $table->integer('total_cost_price');
-            $table->integer('overall_profit');
+            $table->integer('cost_price');
+            $table->integer('profit');
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_sales_report');
+        Schema::dropIfExists('product_sales_reports');
     }
 };

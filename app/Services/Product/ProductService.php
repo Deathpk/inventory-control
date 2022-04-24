@@ -10,6 +10,7 @@ use App\Http\Requests\Product\RemoveSoldUnitRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
+use App\Models\ProductSalesReport;
 use App\Prototypes\Product\ImportedProduct;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -181,11 +182,19 @@ class ProductService
         try {
             DB::beginTransaction();
             $product->removeSoldUnit($attributes['soldQuantity']);
+            $this->addSaleToSalesReport($attributes);
+            //TODO ADICIONAR HISTÓRICO DE VENDA.
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
+    }
+
+    private function addSaleToSalesReport(array $attributes): void
+    {
+        //TODO TESTAR A DIFERENCA DE PERFORMANCE PASSANDO POR REFERENCIA , SÓ POR CURIOSIDADE KKKK
+        ProductSalesReport::create($attributes);
     }
 
 }
