@@ -14,6 +14,7 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
 use App\Prototypes\Product\ImportedProduct;
+use App\Services\History\HistoryService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -25,7 +26,13 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 class ProductService
 {
     private Product $product;
+    private HistoryService $historyService;
     const MAX_FILE_SIZE_IN_BYTES = 3145728;
+
+    public function __construct(HistoryService $historyService)
+    {
+        $this->historyService = $historyService;
+    }
 
     public function setProduct(Product $product): void
     {
@@ -182,15 +189,33 @@ class ProductService
         }
 
         try {
+
             DB::beginTransaction();
             $product->removeSoldUnit($attributes['soldQuantity']);
             $this->addSaleToSalesReport($attributes);
-            //TODO ADICIONAR HISTÓRICO DE VENDA.
+            $this->createHistory($attributes);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
+    }
+
+    private function createHistory(array $attributes, int $actionId)
+    {
+        $historyParams = [];
+        //TODO CRIAR OS PARAMETROS COM A FUNCAO ABAIXO , E DPS TERMINAR DE FAZER O ROLE.
+    }
+
+    public function getParamsForHistory(Collection $data): array
+    {
+        return [
+            'entityId' => $data->get('entityId'),
+            'entityType' => $data->get('entityType'),
+            'actionId' => $data->get('actionId'),
+            'changedById' => $data->get('changedById'),
+            'metadata' => $this->createMetaData($data)
+        ];
     }
 
     private function addSaleToSalesReport(array $attributes): void
