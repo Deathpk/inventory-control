@@ -3,16 +3,22 @@
 namespace App\Http\Controllers\Product;
 
 use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
+use App\Exceptions\Product\FailedToCreateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
+use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\ImportProductsRequest;
 use App\Http\Requests\Product\RemoveSoldUnitRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
-use App\Models\Product;
 use App\Services\AutoComplete\ProductAutoCompleteService;
+use App\Services\Product\CreateProductService;
+use App\Services\Product\ImportProductService;
 use App\Services\Product\ProductService;
+use App\Services\Product\RemoveSoldUnitService;
+use App\Services\Product\SearchProductService;
+use App\Services\Product\UpdateProductService;
 use Illuminate\Http\JsonResponse;
 use JetBrains\PhpStorm\Pure;
 
@@ -27,9 +33,9 @@ class ProductController extends Controller
         $this->autoCompleteService = $autoCompleteService;
     }
 
-    public function index(): JsonResponse
+    public function index(SearchProductService $service): JsonResponse
     {
-        $productList = $this->service->listProducts();
+        $productList = $service->listProducts();
         return response()->json([
             'success' => true,
             'products' => $productList
@@ -39,9 +45,9 @@ class ProductController extends Controller
     /**
      * @throws \Exception
      */
-    public function show(int $productId): JsonResponse
+    public function show(int $productId, SearchProductService $service): JsonResponse
     {
-        $specificProduct = $this->service->getProduct($productId);
+        $specificProduct = $service->getSpecificProduct($productId);
         return response()->json([
             'success' => true,
             'product' => $specificProduct
@@ -50,11 +56,11 @@ class ProductController extends Controller
 
 
     /**
-     * @throws FailedToCreateOrUpdateProduct
+     * @throws FailedToCreateProduct
      */
-    public function store(StoreProductRequest $request): JsonResponse
+    public function store(StoreProductRequest $request, CreateProductService $service): JsonResponse
     {
-        $this->service->createOrUpdateProduct($request);
+        $service->createProduct($request);
         return response()->json([
             'success' => true,
             'message' => 'Produto criado com sucesso!'
@@ -62,11 +68,11 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws FailedToCreateOrUpdateProduct
+     * @throws RecordNotFoundOnDatabaseException
      */
-    public function update(int $productId, UpdateProductRequest $request): JsonResponse
+    public function update(int $productId, UpdateProductRequest $request, UpdateProductService $service): JsonResponse
     {
-        $this->service->createOrUpdateProduct($request, $productId);
+        $service->updateProduct($productId, $request);
         return response()->json([
             'success' => true,
             'message' => 'Produto atualizado com sucesso!'
@@ -98,9 +104,9 @@ class ProductController extends Controller
     /**
      * @throws \Exception
      */
-    public function import(ImportProductsRequest $request): JsonResponse
+    public function import(ImportProductsRequest $request, ImportProductService $service): JsonResponse
     {
-        $this->service->importProducts($request->getAttributes());
+        $service->importProducts($request->getImportedFile());
         return response()->json([
             'success' => true,
             'message' => 'Produtos importados com sucesso!'
@@ -108,11 +114,12 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws \Exception
+     * @throws \Throwable
+     * @throws RecordNotFoundOnDatabaseException
      */
-    public function removeSoldUnit(RemoveSoldUnitRequest $request): JsonResponse
+    public function removeSoldUnit(RemoveSoldUnitRequest $request, RemoveSoldUnitService $service): JsonResponse
     {
-        $this->service->removeSoldUnit($request);
+        $service->removeSoldUnit($request);
         return response()->json([
             'success' => true
         ]);

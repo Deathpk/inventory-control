@@ -46,7 +46,7 @@ class History extends Model
     public function createChange(array $data): void
     {
         $this->entity_id = $data['entityId'];
-        $this->entity_type = $data['entity_type'];
+        $this->entity_type = $data['entityType'];
         $this->metadata = $data['metadata'];
         $this->changed_by_id = $data['changedById'];
         $this->action_id = $data['actionId'];

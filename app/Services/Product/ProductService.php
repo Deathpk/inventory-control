@@ -5,20 +5,22 @@ namespace App\Services\Product;
 
 
 use App\Exceptions\AbstractException;
-use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\RemoveSoldUnitRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Models\History;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
+use App\Models\User;
 use App\Prototypes\Product\ImportedProduct;
 use App\Services\History\HistoryService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -176,7 +178,7 @@ class ProductService
     }
 
     /**
-     * @throws RecordNotFoundOnDatabaseException
+     * @throws RecordNotFoundOnDatabaseException|\Throwable
      */
     public function removeSoldUnit(RemoveSoldUnitRequest $request): void
     {
@@ -189,38 +191,43 @@ class ProductService
         }
 
         try {
-
             DB::beginTransaction();
             $product->removeSoldUnit($attributes['soldQuantity']);
             $this->addSaleToSalesReport($attributes);
-            $this->createHistory($attributes);
+            $this->createHistory($attributes, History::PRODUCT_SOLD);
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
         }
     }
 
-    private function createHistory(array $attributes, int $actionId)
+    /**
+     * @throws \Throwable
+     */
+    private function createHistory(array $attributes, int $actionId): void
     {
-        $historyParams = [];
-        //TODO CRIAR OS PARAMETROS COM A FUNCAO ABAIXO , E DPS TERMINAR DE FAZER O ROLE.
+        /** @var User $currentLoggedUser */
+        $currentLoggedUser = Auth::user();
+
+        $params =  [
+            'entityId' => $attributes['productId'],
+            'entityType' => History::PRODUCT_ENTITY,
+            'actionId' => $actionId,
+            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'metadata' => $this->createHistoryMetaData($attributes)
+        ];
+
+        $this->historyService->createProductHistory($params);
     }
 
-    public function getParamsForHistory(Collection $data): array
-    {
-        return [
-            'entityId' => $data->get('entityId'),
-            'entityType' => $data->get('entityType'),
-            'actionId' => $data->get('actionId'),
-            'changedById' => $data->get('changedById'),
-            'metadata' => $this->createMetaData($data)
-        ];
+    private function createHistoryMetaData(array $data): string
+    {//TODO
+        return " ";
     }
 
     private function addSaleToSalesReport(array $attributes): void
     {
-        //TODO TESTAR A DIFERENCA DE PERFORMANCE PASSANDO POR REFERENCIA , SÓ POR CURIOSIDADE KKKK
         ProductSalesReport::create($attributes);
     }
 

@@ -6,6 +6,7 @@ namespace App\Exceptions;
 
 use App\Exceptions\Interfaces\CustomException;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\Pure;
 
@@ -29,8 +30,10 @@ class AbstractException extends Exception implements CustomException
 
     public function report(): void
     {
+        $loggedUser = 1;// Auth::user()->id; TODO DEPOIS DE IMPLEMENTAR O MODULO DE AUTH TIRAR ISSO.
+
         if($this->logMessage !== '') {
-            Log::error("{$this->logMessage} - Message: {$this->thrownException->getMessage()} \n - Trace: {$this->thrownException->getTraceAsString()}");
+            Log::error("{$this->logMessage} o erro aconteceu com o usuário: {$loggedUser}.\n - Message: {$this->thrownException->getMessage()} \n - Trace: {$this->thrownException->getTraceAsString()}");
         }
     }
 

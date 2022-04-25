@@ -37,8 +37,8 @@ class ImportProductsRequest extends FormRequest
         ];
     }
 
-    public function getAttributes()
+    public function getImportedFile()
     {
-        return $this->validated();
+        return $this->validated('file');
     }
 }
