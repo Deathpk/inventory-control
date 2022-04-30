@@ -3,17 +3,16 @@
 namespace App\Services\Product;
 
 use App\Exceptions\AbstractException;
+use App\Exceptions\Product\FailedToMarkProductAsSold;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
-use App\Http\Requests\Product\RemoveSoldUnitRequest;
+use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Models\History;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
-use App\Models\User;
 use App\Services\History\HistoryService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class RemoveSoldUnitService
+class RemoveSoldProductService
 {
     private array $attributes;
     private Product|null $product;
@@ -21,7 +20,7 @@ class RemoveSoldUnitService
     /**
      * @throws RecordNotFoundOnDatabaseException|\Throwable
      */
-    public function removeSoldUnit(RemoveSoldUnitRequest $request): void
+    public function removeSoldUnit(RemoveSoldProductRequest $request): void
     {
         $this->setAttributes($request->getAttributes());
         $this->findSelectedProduct();
@@ -29,13 +28,12 @@ class RemoveSoldUnitService
             DB::beginTransaction();
             $this->product->removeSoldUnit($this->attributes['soldQuantity']);
             $this->addSaleToSalesReport();
+            $this->createSoldHistory();
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            throw $e;
-            //TODO
+            throw new FailedToMarkProductAsSold($e);
         }
-
     }
 
     private function setAttributes(array $attributes): void
@@ -59,26 +57,22 @@ class RemoveSoldUnitService
     /**
      * @throws \Throwable
      */
-    private function createHistory(array $attributes, int $actionId): void
+    private function createSoldHistory(): void
     {
-        //TODO REFATORAR.
-        /** @var User $currentLoggedUser */
-        $currentLoggedUser = Auth::user();
         $historyService = new HistoryService();
 
         $params =  [
             'entityId' => $this->attributes['productId'],
             'entityType' => History::PRODUCT_ENTITY,
-            'actionId' => $actionId,
             'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
-            'metadata' => $this->createHistoryMetaData($attributes)
+            'metadata' => $this->createHistoryMetaData()
         ];
 
-        $historyService->createProductHistory($params);
+        $historyService->createHistory(History::PRODUCT_SOLD, $params);
     }
 
-    private function createHistoryMetaData(array $data): string
-    {//TODO IMPLEMENTAR
-        return " ";
+    private function createHistoryMetaData(): string
+    {
+        return collect(['entityId' => $this->attributes['productId'], 'changedBy' => 1])->toJson();
     }
 }

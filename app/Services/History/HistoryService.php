@@ -6,12 +6,10 @@ use App\Models\History;
 
 class HistoryService
 {
-    /**
-     * @throws \Throwable
-     */
-    public function createProductHistory(array $historyParams): void
+    public function createHistory(int $actionId, array $params): void
     {
         $history = new History();
-        $history->createChange($historyParams);
+        $history->createChange($actionId, $params);
+        $history->save();
     }
 }

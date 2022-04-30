@@ -40,16 +40,13 @@ class History extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * @throws \Throwable
-     */
-    public function createChange(array $data): void
+    public function createChange(int $actionId, array $data): void
     {
         $this->entity_id = $data['entityId'];
         $this->entity_type = $data['entityType'];
         $this->metadata = $data['metadata'];
         $this->changed_by_id = $data['changedById'];
-        $this->action_id = $data['actionId'];
-        $this->saveOrFail();
+        $this->action_id = $actionId;
+        $this->save();
     }
 }

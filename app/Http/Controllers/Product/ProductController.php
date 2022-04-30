@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Product;
 
-use App\Exceptions\Product\FailedToCreateOrUpdateProduct;
+use App\Exceptions\Product\AttachmentInvalid;
 use App\Exceptions\Product\FailedToCreateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
+use App\Exceptions\Product\FailedToImportProducts;
+use App\Exceptions\Product\FailedToUpdateProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\ImportProductsRequest;
-use App\Http\Requests\Product\RemoveSoldUnitRequest;
+use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Services\AutoComplete\ProductAutoCompleteService;
 use App\Services\Product\CreateProductService;
+use App\Services\Product\DeleteProductService;
 use App\Services\Product\ImportProductService;
-use App\Services\Product\ProductService;
-use App\Services\Product\RemoveSoldUnitService;
+use App\Services\Product\RemoveSoldProductService;
 use App\Services\Product\SearchProductService;
 use App\Services\Product\UpdateProductService;
 use Illuminate\Http\JsonResponse;
@@ -24,12 +26,10 @@ use JetBrains\PhpStorm\Pure;
 
 class ProductController extends Controller
 {
-    private ProductService $service;
     private ProductAutoCompleteService $autoCompleteService;
 
-    #[Pure] public function __construct(ProductService $service, ProductAutoCompleteService $autoCompleteService)
+    #[Pure] public function __construct(ProductAutoCompleteService $autoCompleteService)
     {
-        $this->service = $service;
         $this->autoCompleteService = $autoCompleteService;
     }
 
@@ -68,7 +68,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws RecordNotFoundOnDatabaseException
+     * @throws RecordNotFoundOnDatabaseException|FailedToUpdateProduct
      */
     public function update(int $productId, UpdateProductRequest $request, UpdateProductService $service): JsonResponse
     {
@@ -83,9 +83,9 @@ class ProductController extends Controller
     /**
      * @throws FailedToDeleteProduct
      */
-    public function destroy(int $productId): JsonResponse
+    public function destroy(int $productId, DeleteProductService $service): JsonResponse
     {
-        $this->service->deleteProduct($productId);
+        $service->deleteProduct($productId);
         return response()->json([
             'success' => true,
             'message' => 'Produto excluido com sucesso!'
@@ -102,7 +102,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws \Exception
+     * @throws FailedToImportProducts|AttachmentInvalid
      */
     public function import(ImportProductsRequest $request, ImportProductService $service): JsonResponse
     {
@@ -117,7 +117,7 @@ class ProductController extends Controller
      * @throws \Throwable
      * @throws RecordNotFoundOnDatabaseException
      */
-    public function removeSoldUnit(RemoveSoldUnitRequest $request, RemoveSoldUnitService $service): JsonResponse
+    public function removeSoldUnit(RemoveSoldProductRequest $request, RemoveSoldProductService $service): JsonResponse
     {
         $service->removeSoldUnit($request);
         return response()->json([

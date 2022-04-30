@@ -7,7 +7,7 @@ namespace App\Services\Product;
 use App\Exceptions\AbstractException;
 use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
-use App\Http\Requests\Product\RemoveSoldUnitRequest;
+use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\History;
@@ -180,7 +180,7 @@ class ProductService
     /**
      * @throws RecordNotFoundOnDatabaseException|\Throwable
      */
-    public function removeSoldUnit(RemoveSoldUnitRequest $request): void
+    public function removeSoldUnit(RemoveSoldProductRequest $request): void
     {
         $attributes = $request->getAttributes();
         /** @var Product $product */

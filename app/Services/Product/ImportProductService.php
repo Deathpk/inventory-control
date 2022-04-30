@@ -2,11 +2,15 @@
 
 namespace App\Services\Product;
 
+use App\Exceptions\Product\AttachmentInvalid;
 use App\Exceptions\Product\FailedToImportProducts;
+use App\Models\History;
 use App\Models\Product;
 use App\Prototypes\Product\ImportedProduct;
+use App\Services\History\HistoryService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
@@ -17,13 +21,19 @@ class ImportProductService
 
 
     /**
-     * @throws FailedToImportProducts
+     * @throws FailedToImportProducts|AttachmentInvalid
      */
     public function importProducts(UploadedFile $importedFile): void
     {
         $this->setImportedProductsFile($importedFile);
         $this->validateFile();
-        $this->createProductsBasedOnImport();
+        try {
+            DB::beginTransaction();
+            $this->createProductsBasedOnImport();
+            DB::commit();
+        } catch(\Throwable $e) {
+            throw new FailedToImportProducts($e);
+        }
     }
 
     private function setImportedProductsFile(UploadedFile $importedFile): void
@@ -32,7 +42,7 @@ class ImportProductService
     }
 
     /**
-     * @throws FailedToImportProducts
+     * @throws AttachmentInvalid
      */
     private function validateFile(): void
     {
@@ -41,7 +51,7 @@ class ImportProductService
             && $this->importedFile->getSize() <= self::MAX_FILE_SIZE_IN_BYTES;
 
         if (!$isValid) {
-            throw new FailedToImportProducts();
+            throw new AttachmentInvalid();
         }
     }
 
@@ -69,7 +79,8 @@ class ImportProductService
     private function storeImportedProducts(Collection $products): void
     {
         $products->each(function (ImportedProduct $product) {
-            Product::create()->fromRequest($product->toCollection());
+            $createdProduct = Product::create()->fromRequest($product->toCollection());
+            $this->createImportedProductHistory($createdProduct);
         });
     }
 
@@ -78,5 +89,30 @@ class ImportProductService
         return $this->importedFile->extension() === 'xlsx'
             ? new Xlsx()
             : new Csv();
+    }
+
+    private function createImportedProductHistory(Product &$product): void
+    {
+        $historyService = new HistoryService();
+        $params = [
+            'entityId' => $product->getId(),
+            'entityType' => History::PRODUCT_ENTITY,
+            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'metadata' => $this->createHistoryMetaData($product)
+        ];
+
+        $historyService->createHistory(History::PRODUCT_UPDATED, $params);
+    }
+
+    private function createHistoryMetaData(Product &$product): string
+    {
+        return collect([
+            'entityId' => $product->id,
+            'productName' => $product->name,
+            'initialQuantity' => $product->quantity,
+            'categoryId' => $product->category_id ?? null,
+            'brandId' => $product->brand_id ?? null,
+            'limitForRestock' => $product->limit_for_restock
+        ])->toJson();
     }
 }

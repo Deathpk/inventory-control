@@ -65,11 +65,13 @@ class Product extends Model
         return $this->id;
     }
 
-    public function fromRequest(Collection $attributes): void
+    public function fromRequest(Collection $attributes): self
     {
         $this->setProductData($attributes);
         $this->setProductRelations($attributes);
         $this->save();
+
+        return $this;
     }
 
     private function setProductData(Collection $attributes): void
