@@ -30,6 +30,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::get('/autocomplete', 'autoComplete');
     Route::post('/import', 'import');
     Route::get('/sell', 'removeSoldUnit'); //TODO TIRAR ESSE NOME BOSTA.
+    Route::post('/add-quantity', 'addToStock');
     Route::get('/{productId}', 'show');
 });
 

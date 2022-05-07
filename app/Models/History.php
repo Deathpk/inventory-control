@@ -26,6 +26,7 @@ class History extends Model
     const PRODUCT_UPDATED = 2;
     const PRODUCT_DELETED = 3;
     const PRODUCT_SOLD = 4;
+    const ADDED_QUANTITY = 5;
 
     protected $fillable = [
         'entity_id',

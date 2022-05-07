@@ -151,6 +151,12 @@ class Product extends Model
         $this->save();
     }
 
+    public function addQuantity(int $quantityToAdd): void
+    {
+        $this->quantity = $this->quantity + $quantityToAdd;
+        $this->save();
+    }
+
     public function getCostPrice(): int
     {
         return $this->paid_price;

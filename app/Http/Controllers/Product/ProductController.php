@@ -10,11 +10,13 @@ use App\Exceptions\Product\FailedToUpdateProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
+use App\Http\Requests\Product\AddQuantityToStockRequest;
 use App\Http\Requests\Product\ImportProductsRequest;
 use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Services\AutoComplete\ProductAutoCompleteService;
+use App\Services\Product\AddProductQuantityService;
 use App\Services\Product\CreateProductService;
 use App\Services\Product\DeleteProductService;
 use App\Services\Product\ImportProductService;
@@ -121,7 +123,19 @@ class ProductController extends Controller
     {
         $service->removeSoldUnit($request);
         return response()->json([
-            'success' => true
+            'success' => true,
+        ]);
+    }
+
+    /**
+     * @throws RecordNotFoundOnDatabaseException
+     */
+    public function addToStock(AddQuantityToStockRequest $request, AddProductQuantityService $service): JsonResponse
+    {
+        $service->addQuantityToStock($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Quantidade adicionada ao estoque com sucesso!'
         ]);
     }
 }

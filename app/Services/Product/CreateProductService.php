@@ -24,7 +24,7 @@ class CreateProductService
 
         try {
             DB::beginTransaction();
-            $this->entityId = Product::create()->fromRequest($this->attributes);
+            $this->entityId = Product::create()->fromRequest($this->attributes)->getId();
             $this->createProductCreatedHistory();
             DB::commit();
         } catch (\Throwable $e) {
