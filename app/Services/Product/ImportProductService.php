@@ -19,7 +19,6 @@ class ImportProductService
     private UploadedFile $importedFile;
     const MAX_FILE_SIZE_IN_BYTES = 3145728;
 
-
     /**
      * @throws FailedToImportProducts|AttachmentInvalid
      */
@@ -32,6 +31,7 @@ class ImportProductService
             $this->createProductsBasedOnImport();
             DB::commit();
         } catch(\Throwable $e) {
+            DB::rollBack();
             throw new FailedToImportProducts($e);
         }
     }

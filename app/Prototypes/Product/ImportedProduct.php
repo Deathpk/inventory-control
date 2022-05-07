@@ -4,6 +4,7 @@ namespace App\Prototypes\Product;
 
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class ImportedProduct
 {
@@ -59,8 +60,13 @@ class ImportedProduct
         $this->brand_name = $product[self::BRAND_NAME_KEY];
     }
 
-    private static function convertToInteger(float $value): int
+    private static function convertToInteger(float|string $value): int
     {
+        if (is_string($value)) {
+            $value = str_replace(',', '.',$value);
+            return (int) round(($value * 100), 0);
+        }
+
         return (int) round(($value * 100), 0);
     }
 
