@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Autocomplete\AutocompleteController;
 use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\Category\CategoryController;
@@ -20,6 +21,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('auth')
+    ->group(function () {
+        Route::post('/register', 'register')->withoutMiddleware('auth:sanctum');
+        Route::post('/login', 'login');
+        Route::post('/logout', 'logout');
 });
 
 Route::controller(ProductController::class)->prefix('products')->group(function() {
