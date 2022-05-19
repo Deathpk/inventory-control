@@ -5,15 +5,16 @@ namespace App\Services\Product;
 use App\Exceptions\AbstractException;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Models\Product;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class SearchProductService
 {
-    public function listProducts(): Collection
+    public function listProducts(): LengthAwarePaginator
     {
-        return Product::with(['category', 'brand'])->get();
+        return Product::with(['category', 'brand'])->paginate(15);
     }
 
     /**
