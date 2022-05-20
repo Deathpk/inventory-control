@@ -8,6 +8,7 @@ use Database\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -22,6 +23,7 @@ class Brand extends Model
 
     protected $fillable = [
         'name',
+        'company_id'
     ];
 
     protected $hidden = [
@@ -36,6 +38,11 @@ class Brand extends Model
     public function product(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public static function create(): Brand

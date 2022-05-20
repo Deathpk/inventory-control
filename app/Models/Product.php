@@ -55,6 +55,11 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public static function create(): self
     {
         return new self();

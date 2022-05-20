@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
  * @property string $entity_type
  * @property string $metadata
  * @property int $changed_by_id
+ * @property int $company_id
  * @property int $action_id
  */
 class History extends Model
@@ -31,14 +32,20 @@ class History extends Model
     protected $fillable = [
         'entity_id',
         'entity_type',
+        'company_id',
         'action_id',
         'metadata',
-        'changed_by_id'
+        'changed_by_id',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function createChange(int $actionId, array $data): void

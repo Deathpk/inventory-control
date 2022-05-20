@@ -2,6 +2,7 @@
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->integer('paid_price');
             $table->integer('selling_price');
+            $table->foreignIdFor(Company::class);
             $table->foreignIdFor(Brand::class);
             $table->foreignIdFor(Category::class);
             $table->integer('limit_for_restock');
