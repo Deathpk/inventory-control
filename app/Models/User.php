@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -46,6 +47,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -53,6 +59,23 @@ class User extends Authenticatable
 
     public function role(): HasOne
     {
-        return $this->hasOne(Roles::class);
+        return $this->hasOne(Role::class);
+    }
+
+    public function fromArray(array $data): self
+    {
+        $this->name = $data['name'];
+        $this->email = $data['email'];
+        $this->password = bcrypt($data['password']);
+        $this->company_id = $data['companyId'];
+        $this->role_id = $data['roleId'];
+        $this->save();
+
+        return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->hasVerifiedEmail();
     }
 }

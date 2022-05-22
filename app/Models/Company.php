@@ -6,10 +6,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
 
 class Company extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'cnpj',
+        'plan_id',
+    ];
+
+    public static function create(): self
+    {
+        return new self();
+    }
+
+    public function fromArray(array $data): self
+    {
+        $this->name = $data['companyName'];
+        $this->cnpj = $data['companyCnpj'];
+        $this->plan_id = $data['planId'];
+        $this->save();
+        return $this;
+    }
 
     public function users(): HasMany
     {
@@ -34,5 +55,10 @@ class Company extends Model
     public function brands(): HasMany
     {
         return $this->hasMany(Brand::class);
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 }
