@@ -11,6 +11,6 @@ class FailedToImportProducts extends AbstractException
     {
         $responseMessage = "Ocorreu um erro inesperado ao importar os produtos vinculados a planilha. Por favor , tente novamente , caso o erro persista , contacte  o suporte.";
         $logMessage = "Erro ao importar produtos via anexo.";
-        parent::__construct($responseMessage, $logMessage, $thrownException);
+        parent::__construct(responseMessage: $responseMessage, logMessage: $logMessage, thrownException: $thrownException);
     }
 }

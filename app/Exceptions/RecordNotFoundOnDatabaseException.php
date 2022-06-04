@@ -10,6 +10,6 @@ class RecordNotFoundOnDatabaseException extends AbstractException
     {
         $entityId = $entityId ? "de ID: {$entityId}" : '';
         $responseMessage = "Não conseguimos achar um registro do(a) {$reportedEntity} {$entityId} no banco. Por favor , tente novamente.";
-        parent::__construct($responseMessage);
+        parent::__construct(responseMessage: $responseMessage);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Http\Requests\Auth\RegisterApiTokenRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Models\Company;
 use App\Models\Plan;
@@ -14,34 +15,38 @@ class RegisterUserService
     private Company $createdCompany;
     private User $createdUser;
 
-    public function registerNewUser(RegisterUserRequest $request)
+    public function register(RegisterUserRequest $request): void
     {
+        //TODO
         //TODO ADICIONAR O TRY CATCH DO AMOR E AMIZADE...
-        $this->setAttributes($request);
-
-//        if ($this->shouldCheckForPlanPayment()) {
-//            $this->validateIfUserPaidSelectedPlan();
-//        }
-
-        $this->createCompany();
-        $this->createUser();
-        $this->issueTokenForUser();
+        //        $this->resolvePaymentIfRequired();
+//
+//        $this->createCompany();
+//        $this->createUser();
+        //TODO CHECAR COMO DIABOS VAMOS USAR A AUTENTICAÇÃO PARA O SPA...
     }
 
-    private function setAttributes(RegisterUserRequest &$request): void
+
+    private function setAttributes(RegisterUserRequest|RegisterApiTokenRequest &$request): void
     {
         $this->attributes = $request->getAttributes();
     }
 
-    private function shouldCheckForPlanPayment(): bool
+    private function resolvePaymentIfRequired(): void
+    {
+        if ($this->shouldValidatePlanPayment()) {
+             $this->validatePayment();
+        }
+    }
+
+    private function shouldValidatePlanPayment(): bool
     {
         return ! ($this->attributes->get('planId') === Plan::FREE_PLAN);
     }
 
-    private function validateIfUserPaidSelectedPlan(): bool
+    private function validatePayment(): void
     {
         //TODO ADICIONAR VALIDAÇÃO , SE O USUÁRIO PAGOU COM SUCESSO O PLANO ESCOLHIDO. CASO NÃO , LANÇAR EXERCEÇÃO...
-        return true;
     }
 
     private function createCompany(): void
@@ -76,17 +81,9 @@ class RegisterUserService
         ];
     }
 
-    private function issueTokenForUser(): void
-    {
-        $userAbilities = $this->resolveAbilities();
-        dd($this->createdUser->createToken('user', $userAbilities)->toJson());
-        $this->createdUser->createToken('user', $userAbilities);
-    }
-
     private function resolveAbilities(): array
     {
         //TODO
         return ['*'];
     }
-
 }

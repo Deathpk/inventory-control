@@ -11,6 +11,10 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property string $name
+ * @property Company $company
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -77,5 +81,15 @@ class User extends Authenticatable
     public function isEmailVerified(): bool
     {
         return $this->hasVerifiedEmail();
+    }
+
+    public function getCompany(): Company
+    {
+        return $this->company;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 }

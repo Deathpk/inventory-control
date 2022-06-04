@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int id;
@@ -19,6 +20,7 @@ use Illuminate\Support\Collection;
  * @property int $limit_for_restock
  * @property int $category_id
  * @property int $brand_id
+ * @property int $company_id
  * @property Category $category
  */
 class Product extends Model
@@ -33,7 +35,8 @@ class Product extends Model
         'paid_price',
         'selling_price',
         'category_id',
-        'brand_id'
+        'brand_id',
+        'company_id'
     ];
 
     protected $casts = [
@@ -86,6 +89,7 @@ class Product extends Model
         $this->limit_for_restock = $attributes->get('limitForRestock');
         $this->paid_price = $attributes->get('paidPrice');
         $this->selling_price = $attributes->get('sellingPrice');
+        $this->company_id = 1; //TODO QUANDO IMPLEMENTAR O AUTH , RETIRAR ISSO E PEGAR DO USER.
     }
 
     private function setProductRelations(Collection $attributes): void

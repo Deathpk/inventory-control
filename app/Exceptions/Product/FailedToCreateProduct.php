@@ -11,6 +11,6 @@ class FailedToCreateProduct extends AbstractException
     {
         $responseMessage = "Oops! , ocorreu um erro inesperado ao criar um produto , tente novamente. Se o erro persistir , contactar o suporte. ";
         $logMessage = "Ocorreu um erro ao criar um produto.";
-        parent::__construct($responseMessage, $logMessage, $thrownException);
+        parent::__construct(responseMessage: $responseMessage, logMessage: $logMessage, thrownException: $thrownException);
     }
 }

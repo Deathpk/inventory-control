@@ -14,6 +14,6 @@ class FailedToDeleteProduct extends AbstractException
     {
         $responseMessage = "Oops! , ocorreu um erro inesperado ao deletar produto , tente novamente. Se o erro persistir , contactar o suporte. ";
         $logMessage = "Ocorreu um erro ao deletar um produto.";
-        parent::__construct($responseMessage, $logMessage, $thrownException);
+        parent::__construct(responseMessage: $responseMessage, logMessage: $logMessage, thrownException: $thrownException);
     }
 }

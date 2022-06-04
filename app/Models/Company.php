@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Collection;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 
+/**
+ * @property PersonalAccessToken $token
+ */
 class Company extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
 
     protected $fillable = [
         'name',
@@ -60,5 +64,26 @@ class Company extends Model
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getPlanId(): int
+    {
+        return $this->plan()->getId();
+    }
+
+    public function canGenerateApiToken(): bool
+    {
+        //TODO DESCOMENTAR DPS...
+        return true;//! ($this->getPlanId() === Plan::FREE_PLAN);
+    }
+
+    public function specificTokenExists(int $id): bool
+    {
+        return $this->tokens()->where('id', $id)->exists();
+    }
+
+    public function revokeSelectedToken(int $id): void
+    {
+        $this->tokens()->where('id', $id)->delete();
     }
 }

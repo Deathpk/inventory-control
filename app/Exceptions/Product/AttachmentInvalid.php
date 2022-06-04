@@ -10,6 +10,6 @@ class AttachmentInvalid extends AbstractException
     #[Pure] public function __construct()
     {
         $responseMessage = "O Arquivo importado está corrompido ou não é válido. O tamanho do arquivo deve ser de no máximo 3MB.";
-        parent::__construct($responseMessage);
+        parent::__construct(responseMessage: $responseMessage);
     }
 }

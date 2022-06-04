@@ -21,4 +21,9 @@ class Plan extends Model
             'premium' => self::PREMIUM_PLAN
         ];
     }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
 }

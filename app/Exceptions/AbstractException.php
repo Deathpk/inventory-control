@@ -5,6 +5,7 @@ namespace App\Exceptions;
 
 
 use App\Exceptions\Interfaces\CustomException;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +20,8 @@ class AbstractException extends Exception implements CustomException
     const PRODUCT_ENTITY_LABEL = 'Produto';
     const CATEGORY_ENTITY_LABEL = 'Categoria';
     const BRAND_ENTITY_LABEL = 'Marca';
+    const USER_ENTITY_LABEL = 'Usuário';
+    const COMPANY_ENTITY_LABEL = 'Companhia';
 
     #[Pure] public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null)
     {
@@ -30,11 +33,31 @@ class AbstractException extends Exception implements CustomException
 
     public function report(): void
     {
-        $loggedUser = 1;// Auth::user()->id; TODO DEPOIS DE IMPLEMENTAR O MODULO DE AUTH TIRAR ISSO.
-
         if($this->logMessage !== '') {
-            Log::error("{$this->logMessage} o erro aconteceu com o usuário: {$loggedUser}.\n - Message: {$this->thrownException->getMessage()} \n - Trace: {$this->thrownException->getTraceAsString()}");
+            $reportedEntityMessage = $this->resolveReportedEntityMessage();
+            Log::error("{$reportedEntityMessage}. {$this->resolveDebuggingMessages()}");
         }
+    }
+
+    private function resolveReportedEntityMessage(): string
+    {
+        $loggedUser = Auth::user();
+
+        if ($loggedUser instanceof User) {
+            $companyId = $loggedUser->getCompany()->getId();
+            return "{$this->logMessage}, o erro ocorreu com o usuário de ID : {$loggedUser->getId()} \n da Companhia de ID: {$companyId}.";
+        }
+
+        return "{$this->logMessage}, o erro ocorreu com a companhia de ID: {$loggedUser->getCompany()->getId()}.";
+    }
+
+    private function resolveDebuggingMessages(): string
+    {
+        if ($this->thrownException) {
+            return "\n - Message: {$this->thrownException->getMessage()} \n - Trace: {$this->thrownException->getTraceAsString()}";
+        }
+
+        return " ";
     }
 
     public function getThrownResponse(): string

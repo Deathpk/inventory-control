@@ -28,6 +28,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
+            'description' => 'string|max:200',
             'quantity' => 'required|int',
             'paidPrice' => 'required|int',
             'sellingPrice' => 'required|int',
@@ -44,6 +45,8 @@ class StoreProductRequest extends FormRequest
         return [
             'name.required' => 'O nome do produto é um campo obrigatório.',
             'name.string' => 'O nome do produto deve conter somente caracteres Alfa Numéricos.',
+            'description.string' => 'A descrição do produto deve conter somente caracteres Alfa Numéricos.',
+            'description.max' => 'A descrição do produto deve conter no máximo 200 caractéres.',
             'quantity.required' => 'A quantidade atual do produto é um campo obrigatório.',
             'quantity.int' => 'O campo quantidade do prroduto deve conter somente numerais.',
             'categoryId.required' => 'O campo categoria do produto é obrigatório.',
