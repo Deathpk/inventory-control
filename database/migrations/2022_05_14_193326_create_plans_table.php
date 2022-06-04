@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('description');
             $table->string('allowed_features');
             $table->integer('price');
+            $table->integer('max_products_allowed');
+            $table->integer('max_users_allowed');
             $table->timestamps();
         });
     }

@@ -10,9 +10,14 @@ class Role extends Model
 {
     use HasFactory;
 
-    const ADMIN = 1;
-    const SALESMAN = 2;
-    const STORE_KEEPER = 3;
+    const ADMIN_ROLE = 1;
+    const ADMIN_ROLE_LABEL = 'admin';
+
+    const SALESMAN_ROLE = 2;
+    const SALESMAN_ROLE_LABEL = 'salesman';
+
+    const STORE_KEEPER_ROLE = 3;
+    const STORE_KEEPER_ROLE_LABEL = 'storeKeeper';
 
     protected $fillable = [
         'name',
@@ -27,9 +32,9 @@ class Role extends Model
     public static function getAvailableRoles(): array
     {
         return [
-            'admin' => self::ADMIN,
-            'salesman' => self::SALESMAN,
-            'storeKeeper' => self::STORE_KEEPER
+            'admin' => self::ADMIN_ROLE,
+            'salesman' => self::SALESMAN_ROLE,
+            'storeKeeper' => self::STORE_KEEPER_ROLE
         ];
     }
 }
