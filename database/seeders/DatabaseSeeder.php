@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,8 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Category::factory()->create();
-        Brand::factory()->create();
-        Product::factory()->create();
+        (new PlanSeeder())->run();
+        (new RolesSeeder())->run();
+        Company::factory()->count(5)->create();
+//        Brand::factory()->count(5)->create();
+//        Product::factory()->create();
     }
 }
