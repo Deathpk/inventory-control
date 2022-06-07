@@ -31,7 +31,8 @@ Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('au
         Route::post('/logout', 'logout');
 });
 
-Route::controller(ProductController::class)->prefix('products')->group(function() {
+Route::controller(ProductController::class)->middleware('auth:sanctum')
+    ->prefix('products')->group(function() {
     Route::get('/', 'index');
     Route::post('/create', 'store');
     Route::put('/edit/{productId}', 'update');
@@ -43,7 +44,8 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::get('/{productId}', 'show');
 });
 
-Route::controller(CategoryController::class)->prefix('categories')->group(function () {
+Route::controller(CategoryController::class)->middleware('auth:sanctum')
+    ->prefix('categories')->group(function () {
     Route::get('/', 'index');
     Route::post('/create', 'store');
     Route::put('/edit/{category}', 'update');
@@ -52,7 +54,8 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
     Route::get('/{categoryId}', 'show');
 });
 
-Route::controller(BrandController::class)->prefix('brands')->group(function () {
+Route::controller(BrandController::class)->middleware('auth:sanctum')
+    ->prefix('brands')->group(function () {
     Route::get('/', 'index');
     Route::post('/create', 'store');
     Route::put('/edit/{brandId}', 'update');
