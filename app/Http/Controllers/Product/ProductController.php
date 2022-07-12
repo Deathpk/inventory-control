@@ -11,6 +11,7 @@ use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\AddQuantityToStockRequest;
+use App\Http\Requests\Product\DeleteProductRequest;
 use App\Http\Requests\Product\ImportProductsRequest;
 use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
@@ -56,7 +57,6 @@ class ProductController extends Controller
         ]);
     }
 
-
     /**
      * @throws FailedToCreateProduct
      */
@@ -72,9 +72,9 @@ class ProductController extends Controller
     /**
      * @throws RecordNotFoundOnDatabaseException|FailedToUpdateProduct
      */
-    public function update(int $productId, UpdateProductRequest $request, UpdateProductService $service): JsonResponse
+    public function update(UpdateProductRequest $request, UpdateProductService $service): JsonResponse
     {
-        $service->updateProduct($productId, $request);
+        $service->updateProduct($request);
         return response()->json([
             'success' => true,
             'message' => 'Produto atualizado com sucesso!'
@@ -85,9 +85,9 @@ class ProductController extends Controller
     /**
      * @throws FailedToDeleteProduct
      */
-    public function destroy(int $productId, DeleteProductService $service): JsonResponse
+    public function destroy(DeleteProductRequest $request , DeleteProductService $service): JsonResponse
     {
-        $service->deleteProduct($productId);
+        $service->deleteProduct($request);
         return response()->json([
             'success' => true,
             'message' => 'Produto excluido com sucesso!'
@@ -116,22 +116,10 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws \Throwable
-     * @throws RecordNotFoundOnDatabaseException
-     */
-    public function removeSoldUnit(RemoveSoldProductRequest $request, RemoveSoldProductService $service): JsonResponse
-    {
-        $service->removeSoldUnit($request);
-        return response()->json([
-            'success' => true,
-        ]);
-    }
-
-    /**
      * @throws RecordNotFoundOnDatabaseException
      */
     public function addToStock(AddQuantityToStockRequest $request, AddProductQuantityService $service): JsonResponse
-    {
+    { //TODO MODIFICAR POR CONTA DO EXTERNAL_PRODUCT_ID.
         $service->addQuantityToStock($request);
         return response()->json([
             'success' => true,

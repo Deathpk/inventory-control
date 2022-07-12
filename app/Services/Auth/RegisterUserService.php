@@ -17,13 +17,11 @@ class RegisterUserService
 
     public function register(RegisterUserRequest $request): void
     {
-        //TODO
         //TODO ADICIONAR O TRY CATCH DO AMOR E AMIZADE...
-        //        $this->resolvePaymentIfRequired();
-//
-//        $this->createCompany();
-//        $this->createUser();
-        //TODO CHECAR COMO DIABOS VAMOS USAR A AUTENTICAÇÃO PARA O SPA...
+        $this->setAttributes($request);
+        $this->resolvePaymentIfRequired();
+        $this->createCompany();
+        $this->createUser();
     }
 
 

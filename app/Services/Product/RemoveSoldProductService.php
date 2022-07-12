@@ -10,10 +10,13 @@ use App\Models\History;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
 use App\Services\History\HistoryService;
+use App\Traits\History\RegisterHistory;
 use Illuminate\Support\Facades\DB;
 
 class RemoveSoldProductService
 {
+    use RegisterHistory;
+
     private array $attributes;
     private Product|null $product;
 
@@ -64,7 +67,7 @@ class RemoveSoldProductService
         $params =  [
             'entityId' => $this->attributes['productId'],
             'entityType' => History::PRODUCT_ENTITY,
-            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'changedById' => self::getChangedBy(),
             'metadata' => $this->createHistoryMetaData()
         ];
 

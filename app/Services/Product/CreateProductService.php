@@ -6,12 +6,17 @@ use App\Exceptions\Product\FailedToCreateProduct;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Models\History;
 use App\Models\Product;
+use App\Models\User;
 use App\Services\History\HistoryService;
+use App\Traits\History\RegisterHistory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CreateProductService
 {
+    use RegisterHistory;
+
     private Collection $attributes;
     private int $entityId;
 
@@ -43,7 +48,7 @@ class CreateProductService
         $params =  [
             'entityId' => $this->entityId,
             'entityType' => History::PRODUCT_ENTITY,
-            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'changedById' => self::getChangedBy(),
             'metadata' => $this->createHistoryMetaData()
         ];
 

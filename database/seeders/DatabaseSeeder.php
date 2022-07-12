@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         (new PlanSeeder())->run();
         (new RolesSeeder())->run();
         Company::factory()->count(5)->create();
-//        Brand::factory()->count(5)->create();
-//        Product::factory()->create();
+        (new BrandsSeeder())->run();
+        (new CategoriesSeeder())->run();
     }
 }

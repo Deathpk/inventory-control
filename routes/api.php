@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Sales\SalesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +28,7 @@ Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('au
         Route::post('/register-token', 'registerApiToken');
         Route::delete('/delete-token/{tokenId}', 'revokeApiToken');
         Route::post('/register', 'register')->withoutMiddleware('auth:sanctum');
-        Route::post('/login', 'login');
+        Route::post('/login', 'login')->withoutMiddleware('auth:sanctum');
         Route::post('/logout', 'logout');
 });
 
@@ -35,13 +36,17 @@ Route::controller(ProductController::class)->middleware('auth:sanctum')
     ->prefix('products')->group(function() {
     Route::get('/', 'index');
     Route::post('/create', 'store');
-    Route::put('/edit/{productId}', 'update');
-    Route::delete('/delete/{productId}', 'destroy');
+    Route::put('/edit', 'update');
+    Route::delete('/delete', 'destroy');
     Route::get('/autocomplete', 'autoComplete');
     Route::post('/import', 'import');
-    Route::get('/sell', 'removeSoldUnit'); //TODO TIRAR ESSE NOME BOSTA.
     Route::post('/add-quantity', 'addToStock');
     Route::get('/{productId}', 'show');
+});
+
+Route::controller(SalesController::class)->middleware('auth:sanctum')
+    ->prefix('sales')->group(function () {
+        Route::get('/sell', 'removeSoldUnits');
 });
 
 Route::controller(CategoryController::class)->middleware('auth:sanctum')

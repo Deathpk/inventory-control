@@ -41,14 +41,14 @@ class AbstractException extends Exception implements CustomException
 
     private function resolveReportedEntityMessage(): string
     {
-        $loggedUser = Auth::user();
+        $loggedEntity = Auth::user();
 
-        if ($loggedUser instanceof User) {
-            $companyId = $loggedUser->getCompany()->getId();
-            return "{$this->logMessage}, o erro ocorreu com o usuário de ID : {$loggedUser->getId()} \n da Companhia de ID: {$companyId}.";
+        if ($loggedEntity instanceof User) {
+            $companyId = $loggedEntity->getCompany()->getId();
+            return "{$this->logMessage}, o erro ocorreu com o usuário de ID : {$loggedEntity->getId()} \n da Companhia de ID: {$companyId}.";
         }
 
-        return "{$this->logMessage}, o erro ocorreu com a companhia de ID: {$loggedUser->getCompany()->getId()}.";
+        return "{$this->logMessage}, o erro ocorreu com a companhia de ID: {$loggedEntity->getId()}.";
     }
 
     private function resolveDebuggingMessages(): string

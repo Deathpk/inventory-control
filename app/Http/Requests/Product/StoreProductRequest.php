@@ -4,6 +4,7 @@ namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use JetBrains\PhpStorm\Pure;
 
@@ -16,7 +17,7 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // TODO MONTAR A LOGICA DE AUTH DPS...
+        return Auth::check();
     }
 
     /**
@@ -24,7 +25,7 @@ class StoreProductRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => 'required|string',
@@ -32,6 +33,7 @@ class StoreProductRequest extends FormRequest
             'quantity' => 'required|int',
             'paidPrice' => 'required|int',
             'sellingPrice' => 'required|int',
+            'externalProductId' => 'string',
             'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
             'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
             'brandId' => Rule::requiredIf(!$this->getBrandName()),
@@ -40,7 +42,7 @@ class StoreProductRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'name.required' => 'O nome do produto é um campo obrigatório.',
@@ -54,6 +56,7 @@ class StoreProductRequest extends FormRequest
             'paidPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
             'sellingPrice.required' => 'O campo valor de venda do produto é obrigatório.',
             'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
+            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
             'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
             'brandId.required' => 'O ID da marca do produto é obrigatório.',
             'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',

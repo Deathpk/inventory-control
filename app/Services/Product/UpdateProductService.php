@@ -9,25 +9,29 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\History;
 use App\Models\Product;
 use App\Services\History\HistoryService;
+use App\Traits\History\RegisterHistory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class UpdateProductService
 {
-    private int $id;
+    use RegisterHistory;
+
+    private Collection $requestAttributes;
     private stdClass $oldAttributes;
     private stdClass $updatedAttributes;
+    private int|string $entityId;
 
     /**
      * @throws RecordNotFoundOnDatabaseException|FailedToUpdateProduct
      */
-    public function updateProduct(int $productId, UpdateProductRequest $request): void
+    public function updateProduct(UpdateProductRequest $request): void
     {
-        $this->id = $productId;
-        $attributes = $request->getAttributes();
+        $this->requestAttributes = $request->getAttributes();
+
         /** @var Product $product */
-        $product = Product::find($productId);
+        $product = $this->resolveProduct();
         if (!$product) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
         }
@@ -36,7 +40,7 @@ class UpdateProductService
 
         try {
             DB::beginTransaction();
-            $updatedProduct = $product->fromRequest($attributes);
+            $updatedProduct = $product->fromRequest($this->requestAttributes);
             $this->updatedAttributes = (object) $updatedProduct->toArray();
             $this->createUpdatedProductHistory();
             DB::commit();
@@ -46,6 +50,17 @@ class UpdateProductService
         }
     }
 
+    private function resolveProduct(): ?Product
+    {
+        $product = Product::find($this->requestAttributes->get('productId'))
+            ??
+            Product::findByExternalId($this->requestAttributes->get('externalProductId'));
+
+        $this->entityId = $product->getId() ?? null;
+
+        return $product;
+    }
+
     /**
      * @throws \Throwable
      */
@@ -53,9 +68,9 @@ class UpdateProductService
     {
         $historyService = new HistoryService();
         $params = [
-            'entityId' => $this->id,
+            'entityId' => $this->entityId,
             'entityType' => History::PRODUCT_ENTITY,
-            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'changedById' => self::getChangedBy(),
             'metadata' => $this->createHistoryMetaData()
         ];
 
@@ -65,7 +80,7 @@ class UpdateProductService
     private function createHistoryMetaData(): string
     {
         return collect([
-            'entityId' => $this->id,
+            'entityId' => $this->entityId,
             'changes' => $this->resolveChanges()
         ]);
     }
@@ -77,7 +92,7 @@ class UpdateProductService
             'name', 'quantity',
             'limit_for_restock', 'paid_price',
             'selling_price', 'category_id',
-            'brand_id'
+            'brand_id', 'external_product_id'
         ]);
 
         $changeAbleProperties->each(function (string $column) use($changes) {

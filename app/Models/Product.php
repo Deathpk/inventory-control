@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
  * @property int $quantity
  * @property int $paid_price
  * @property int $selling_price
+ * @property string $external_product_id
  * @property int $limit_for_restock
  * @property int $category_id
  * @property int $brand_id
@@ -34,10 +35,12 @@ class Product extends Model
         'limit_for_restock',
         'paid_price',
         'selling_price',
+        'external_product_id',
         'category_id',
         'brand_id',
         'company_id'
     ];
+
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d',
@@ -47,6 +50,8 @@ class Product extends Model
     protected $hidden = [
         'deleted_at'
     ];
+
+    private int $loggedEntityId;
 
     public function category(): BelongsTo
     {
@@ -84,12 +89,15 @@ class Product extends Model
 
     private function setProductData(Collection $attributes): void
     {
+        $this->setLoggedEntityId();
+
         $this->name = $attributes->get('name');
         $this->quantity = $attributes->get('quantity');
         $this->limit_for_restock = $attributes->get('limitForRestock');
         $this->paid_price = $attributes->get('paidPrice');
         $this->selling_price = $attributes->get('sellingPrice');
-        $this->company_id = 1; //TODO QUANDO IMPLEMENTAR O AUTH , RETIRAR ISSO E PEGAR DO USER.
+        $this->external_product_id = $attributes->get('externalProductId') ?? null;
+        $this->company_id = $this->loggedEntityId;
     }
 
     private function setProductRelations(Collection $attributes): void
@@ -125,7 +133,10 @@ class Product extends Model
             return $existingCategory;
         }
 
-        return $this->category()->create(['name' => $categoryName]);
+        return $this->category()->create([
+            'name' => $categoryName,
+            'company_id' => $this->loggedEntityId
+        ]);
     }
 
     private function setBrand(int $brandId): void
@@ -141,7 +152,10 @@ class Product extends Model
             return $existingBrand;
         }
 
-        return $this->brand()->create(['name' => $brandName]);
+        return $this->brand()->create([
+            'name' => $brandName,
+            'company_id' => $this->loggedEntityId
+        ]);
     }
 
     /**
@@ -174,5 +188,17 @@ class Product extends Model
     public function getSellingPrice(): int
     {
         return $this->selling_price;
+    }
+
+    private function setLoggedEntityId(): void
+    {
+        $this->loggedEntityId = Auth::user() instanceof User
+            ? Auth::user()->getCompany()->getId()
+            : Auth::user()->getId();
+    }
+
+    public static function findByExternalId(string $externalProductId): ?Product
+    {
+        return Product::firstWhere('external_product_id', $externalProductId);
     }
 }

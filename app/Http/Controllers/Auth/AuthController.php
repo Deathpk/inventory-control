@@ -4,19 +4,25 @@ namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\Auth\FailedToIssueNewApiToken;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterApiTokenRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Services\Auth\RegisterApiTokenService;
 use App\Services\Auth\RegisterUserService;
 use App\Services\Auth\RevokeApiTokenService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
 
-    public function register(RegisterUserRequest $request, RegisterUserService $service)
+    public function register(RegisterUserRequest $request, RegisterUserService $service): JsonResponse
     {
-        //TODO
+        $service->register($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Cadastro concluído com sucesso , por favor , insira as informações de login e entre novamente.'
+        ]);
     }
 
     /**
@@ -46,12 +52,24 @@ class AuthController extends Controller
 
     public function invite()
     {
-
+        //TODO
     }
 
-    public function login()
+    public function login(LoginRequest $request): JsonResponse
     {
-        //TODO
+        if (!Auth::attempt($request->getCredentials())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuário e / ou senha inválidos.'
+            ],401);
+        }
+
+        $request->session()->regenerate();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login efetuado com sucesso!'
+        ]);
     }
 
     public function logout()

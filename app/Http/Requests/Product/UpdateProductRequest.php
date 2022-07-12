@@ -23,9 +23,11 @@ class UpdateProductRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
+            'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
+            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string'],
             'name' => 'required|string',
             'quantity' => 'required|int',
             'paidPrice' => 'required|int',
@@ -38,9 +40,11 @@ class UpdateProductRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
+            'productId.required' => 'O campo ID do produto é obrigatório.',
+            'productId.int' => 'O campo ID do produto deve conter somente numerais',
             'name.required' => 'O nome do produto é um campo obrigatório.',
             'name.string' => 'O nome do produto deve conter somente caracteres Alfa Numéricos.',
             'quantity.required' => 'A quantidade atual do produto é um campo obrigatório.',
@@ -50,6 +54,7 @@ class UpdateProductRequest extends FormRequest
             'paidPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
             'sellingPrice.required' => 'O campo valor de venda do produto é obrigatório.',
             'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
+            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
             'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
             'brandId.required' => 'O ID da marca do produto é obrigatório.',
             'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',
@@ -58,7 +63,7 @@ class UpdateProductRequest extends FormRequest
         ];
     }
 
-    public function getProductId(): int
+    public function getProductId(): ?int
     {
         return $this->request->get('productId');
     }
@@ -111,5 +116,10 @@ class UpdateProductRequest extends FormRequest
     public function getLimitForRestock(): int
     {
         return $this->request->get('limitForRestock');
+    }
+
+    public function getExternalProductId(): ?string
+    {
+        return $this->request->get('externalProductId');
     }
 }
