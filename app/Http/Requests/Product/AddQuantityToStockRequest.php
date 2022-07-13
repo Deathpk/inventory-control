@@ -3,6 +3,9 @@
 namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class AddQuantityToStockRequest extends FormRequest
 {
@@ -11,9 +14,9 @@ class AddQuantityToStockRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -21,29 +24,37 @@ class AddQuantityToStockRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'productId' => 'required|int|min:1',
+            'productId' => [Rule::requiredIf(!$this->getExternalProductId()),'int','min:1'],
+            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string'],
             'quantity' => 'required|int|min:1'
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'productId.required' => 'O produto a ser adicionado é obrigatório.',
             'productId.int' => 'O ID do produto deve ser do tipo inteiro.',
             'productId.min' => 'O ID do produto deve ser maior que zero.',
+            'externalProductId.required' => 'O código de identificação externo do produto é obrigatório.',
+            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
             'quantity.required' => 'A quantidade a ser adicionada é obrigatória.',
             'quantity.int' => 'A quantidade a ser adicionada deve ser composta de um número inteiro.',
             'quantity.min' => 'A quantidade a ser adicionada deve ser maior que zero.',
         ];
     }
 
-    public function getProductId(): int
+    public function getProductId(): ?int
     {
         return $this->request->get('productId');
+    }
+
+    public function getExternalProductId(): ?string
+    {
+        return $this->request->get('externalProductId');
     }
 
     public function getQuantityToAdd(): int
@@ -51,4 +62,8 @@ class AddQuantityToStockRequest extends FormRequest
         return $this->request->get('quantity');
     }
 
+    public function getAttributes(): Collection
+    {
+        return $this->collect($this->validated());
+    }
 }

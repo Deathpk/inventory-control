@@ -6,6 +6,7 @@ use App\Exceptions\Product\AttachmentInvalid;
 use App\Exceptions\Product\FailedToCreateProduct;
 use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\Product\FailedToImportProducts;
+use App\Exceptions\Product\FailedToListProducts;
 use App\Exceptions\Product\FailedToUpdateProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Controllers\Controller;
@@ -36,6 +37,9 @@ class ProductController extends Controller
         $this->autoCompleteService = $autoCompleteService;
     }
 
+    /**
+     * @throws FailedToListProducts
+     */
     public function index(SearchProductService $service): JsonResponse
     {
         $productList = $service->listProducts();
@@ -119,7 +123,7 @@ class ProductController extends Controller
      * @throws RecordNotFoundOnDatabaseException
      */
     public function addToStock(AddQuantityToStockRequest $request, AddProductQuantityService $service): JsonResponse
-    { //TODO MODIFICAR POR CONTA DO EXTERNAL_PRODUCT_ID.
+    {
         $service->addQuantityToStock($request);
         return response()->json([
             'success' => true,

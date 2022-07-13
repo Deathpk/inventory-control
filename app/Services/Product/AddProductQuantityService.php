@@ -8,10 +8,15 @@ use App\Http\Requests\Product\AddQuantityToStockRequest;
 use App\Models\History;
 use App\Models\Product;
 use App\Services\History\HistoryService;
+use App\Traits\History\RegisterHistory;
+use Illuminate\Support\Collection;
 
 class AddProductQuantityService
 {
-    private int $productId;
+    use RegisterHistory;
+
+    private int $entityId;
+    private int|string $productId;
     private int $quantity;
 
     /**
@@ -20,11 +25,12 @@ class AddProductQuantityService
     public function addQuantityToStock(AddQuantityToStockRequest $request): void
     {
         $this->setProps($request);
-        $product = Product::find($this->productId);
-
+        $product = $this->resolveProduct();
         if (!$product) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
         }
+
+        $this->entityId = $product->getId();
 
         $product->addQuantity($this->quantity);
         $this->registerAddedQuantityToHistory();
@@ -32,8 +38,17 @@ class AddProductQuantityService
 
     private function setProps(AddQuantityToStockRequest $request): void
     {
-        $this->productId = $request->getProductId();
-        $this->quantity  = $request->getQuantityToAdd();
+        $this->productId = $request->getProductId() ?? $request->getExternalProductId();
+        $this->quantity = $request->getQuantityToAdd();
+    }
+
+    private function resolveProduct(): ?Product
+    {
+        if (is_integer($this->productId)) {
+            return Product::find($this->productId);
+        }
+
+        return Product::findByExternalId($this->productId);
     }
 
     private function registerAddedQuantityToHistory(): void
@@ -41,9 +56,9 @@ class AddProductQuantityService
         $historyService = new HistoryService();
 
         $params =  [
-            'entityId' => $this->productId,
+            'entityId' => $this->entityId,
             'entityType' => History::PRODUCT_ENTITY,
-            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'changedById' => self::getChangedBy(),
             'metadata' => $this->createHistoryMetaData()
         ];
 
