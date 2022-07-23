@@ -8,6 +8,7 @@ use App\Models\History;
 use App\Models\Product;
 use App\Prototypes\Product\ImportedProduct;
 use App\Services\History\HistoryService;
+use App\Traits\History\RegisterHistory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class ImportProductService
 {
+    use RegisterHistory;
+
     private UploadedFile $importedFile;
     const MAX_FILE_SIZE_IN_BYTES = 3145728;
 
@@ -97,7 +100,7 @@ class ImportProductService
         $params = [
             'entityId' => $product->getId(),
             'entityType' => History::PRODUCT_ENTITY,
-            'changedById' => 1,//TODO DEPOIS DE CRIAR O MODULO DE AUTH , RETIRAR ISSO.
+            'changedById' => self::getChangedBy(),
             'metadata' => $this->createHistoryMetaData($product)
         ];
 

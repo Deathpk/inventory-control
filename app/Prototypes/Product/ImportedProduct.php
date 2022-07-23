@@ -15,6 +15,8 @@ class ImportedProduct
     const SELLING_PRICE_KEY = 4;
     const CATEGORY_NAME_KEY = 5;
     const BRAND_NAME_KEY = 6;
+    const EXTERNAL_PRODUCT_ID_KEY = 7;
+    const PRODUCT_DESCRIPTION = 8;
 
     public string $name;
     public int $quantity;
@@ -23,6 +25,8 @@ class ImportedProduct
     public int $selling_price;
     public string $category_name;
     public string $brand_name;
+    public string|null $external_product_id;
+    public string|null $description;
 
     #[Pure] public static function create(): self
     {
@@ -44,9 +48,10 @@ class ImportedProduct
             'paidPrice' => $this->paid_price,
             'sellingPrice' => $this->selling_price,
             'categoryName' => $this->category_name,
-            'brandName' => $this->brand_name
+            'brandName' => $this->brand_name,
+            'externalProductId' => $this->external_product_id,
+            'description' => $this->description
         ]);
-
     }
 
     private function setProductInfo(array $product): void
@@ -58,6 +63,8 @@ class ImportedProduct
         $this->selling_price = self::convertToInteger($product[self::SELLING_PRICE_KEY]);
         $this->category_name = $product[self::CATEGORY_NAME_KEY];
         $this->brand_name = $product[self::BRAND_NAME_KEY];
+        $this->external_product_id = $product[self::EXTERNAL_PRODUCT_ID_KEY] ?? null;
+        $this->description = $product[self::PRODUCT_DESCRIPTION] ?? null;
     }
 
     private static function convertToInteger(float|string $value): int

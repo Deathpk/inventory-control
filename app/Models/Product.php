@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * @property int id;
  * @property string $name
+ * @property string $description
  * @property int $quantity
  * @property int $paid_price
  * @property int $selling_price
@@ -92,6 +93,7 @@ class Product extends Model
         $this->setLoggedEntityId();
 
         $this->name = $attributes->get('name');
+        $this->description = $attributes->get('description') ?? null;
         $this->quantity = $attributes->get('quantity');
         $this->limit_for_restock = $attributes->get('limitForRestock');
         $this->paid_price = $attributes->get('paidPrice');
