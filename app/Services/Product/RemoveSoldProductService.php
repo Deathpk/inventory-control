@@ -11,11 +11,13 @@ use App\Models\Product;
 use App\Models\ProductSalesReport;
 use App\Services\History\HistoryService;
 use App\Traits\History\RegisterHistory;
+use App\Traits\UsesLoggedEntityId;
 use Illuminate\Support\Facades\DB;
 
 class RemoveSoldProductService
 {
     use RegisterHistory;
+    use UsesLoggedEntityId;
 
     private array $attributes;
     private Product|null $product;
@@ -26,9 +28,9 @@ class RemoveSoldProductService
     public function removeSoldUnit(RemoveSoldProductRequest $request): void
     {
         $this->setAttributes($request->getAttributes());
-        $this->findSelectedProduct();
         try {
             DB::beginTransaction();
+            $this->findSelectedProduct();
             $this->product->removeSoldUnit($this->attributes['soldQuantity']);
             $this->addSaleToSalesReport();
             $this->createSoldHistory();
@@ -46,15 +48,24 @@ class RemoveSoldProductService
 
     private function findSelectedProduct(): void
     {
-        $this->product = Product::find($this->attributes['productId']);
+        $this->setProduct();
         if (!$this->product) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
         }
     }
 
+    private function setProduct(): void
+    {
+        if (isset($this->attributes['productId'])) {
+            $this->product = Product::find($this->attributes['productId']);
+        } else {
+            $this->product = Product::findByExternalId($this->attributes['externalProductId']);
+        }
+    }
+
     private function addSaleToSalesReport(): void
     {
-        ProductSalesReport::create($this->attributes);
+        ProductSalesReport::create()->fromArray($this->attributes);
     }
 
     /**
@@ -65,7 +76,7 @@ class RemoveSoldProductService
         $historyService = new HistoryService();
 
         $params =  [
-            'entityId' => $this->attributes['productId'],
+            'entityId' => $this->product->getId(),
             'entityType' => History::PRODUCT_ENTITY,
             'changedById' => self::getChangedBy(),
             'metadata' => $this->createHistoryMetaData()
@@ -76,6 +87,9 @@ class RemoveSoldProductService
 
     private function createHistoryMetaData(): string
     {
-        return collect(['entityId' => $this->attributes['productId'], 'changedBy' => 1])->toJson();
+        return collect([
+            'entityId' => $this->product->getId()
+            , 'changedBy' => self::getChangedBy()
+        ])->toJson();
     }
 }

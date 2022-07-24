@@ -46,7 +46,7 @@ Route::controller(ProductController::class)->middleware('auth:sanctum')
 
 Route::controller(SalesController::class)->middleware('auth:sanctum')
     ->prefix('sales')->group(function () {
-        Route::get('/sell', 'removeSoldUnits');
+        Route::post('/sell', 'removeSoldUnits');
 });
 
 Route::controller(CategoryController::class)->middleware('auth:sanctum')

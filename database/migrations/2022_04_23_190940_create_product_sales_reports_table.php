@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignIdFor(Product::class);
+            $table->foreignIdFor(Company::class);
             $table->integer('sold_quantity');
             $table->integer('cost_price');
             $table->integer('profit');

@@ -3,6 +3,9 @@
 namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\RequiredIf;
 
 class RemoveSoldProductRequest extends FormRequest
 {
@@ -11,9 +14,9 @@ class RemoveSoldProductRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -25,7 +28,8 @@ class RemoveSoldProductRequest extends FormRequest
     {
         return [
             'soldQuantity' => 'required|int',
-            'productId' => 'required|int'
+            'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
+            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string']
         ];
     }
 
@@ -36,11 +40,23 @@ class RemoveSoldProductRequest extends FormRequest
             'soldQuantity.int' => 'A quantidade de unidades vendidas deve conter somente numerais inteiros.',
             'productId.required' => 'O ID do produto é obrigatório.',
             'productId.int' => 'O ID do produto deve conter somente numerais inteiros.',
+            'externalProductId.required' => 'O código de identificação externo do produto é obrigatório.',
+            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
         ];
     }
 
     public function getAttributes(): array
     {
         return $this->validated();
+    }
+
+    public function getProductId(): ?int
+    {
+        return $this->request->get('productId', null);
+    }
+
+    public function getExternalProductId(): ?string
+    {
+        return $this->request->get('externalProductId', null);
     }
 }

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property integer $product_id
+ * @property integer $company_id
  * @property integer $sold_quantity
  * @property integer $cost_price,
  * @property integer $profit
@@ -16,9 +19,11 @@ use Illuminate\Support\Collection;
 class ProductSalesReport extends Model
 {
     use HasFactory;
+    use UsesLoggedEntityId;
 
     protected $fillable = [
         'product_id',
+        'company_id',
         'sold_quantity',
         'cost_price',
         'profit'
@@ -30,18 +35,31 @@ class ProductSalesReport extends Model
         return $this->hasOne(Product::class);
     }
 
-    public static function create(array $attributes): void
+    public static function create(): self
     {
-        /** @var Product $soldProduct */
-        $soldProduct = Product::find($attributes['productId']);
+        return new self();
+    }
+
+    public function fromArray(array $attributes)
+    {
+        $soldProduct = $this->findSoldProduct($attributes);
         $costPrice = $soldProduct->getCostPrice();
         $sellingPrice = $soldProduct->getSellingPrice();
 
-        $newInstance = new self();
-        $newInstance->product_id = $attributes['productId'];
-        $newInstance->sold_quantity = $attributes['soldQuantity'];
-        $newInstance->cost_price = $costPrice;
-        $newInstance->profit = ($sellingPrice - $costPrice) * $attributes['soldQuantity'];
-        $newInstance->save();
+        $this->product_id = $soldProduct->getId();
+        $this->company_id = self::getLoggedCompanyId();
+        $this->sold_quantity = $attributes['soldQuantity'];
+        $this->cost_price = $costPrice;
+        $this->profit = ($sellingPrice - $costPrice) * $attributes['soldQuantity'];
+        $this->save();
+    }
+
+    private function findSoldProduct(array &$attributes): Product
+    {
+        if (isset($attributes['productId'])) {
+            return Product::find($attributes['productId']);
+        } else {
+            return Product::findByExternalId($attributes['externalProductId']);
+        }
     }
 }

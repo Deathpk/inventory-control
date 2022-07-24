@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UsesLoggedEntityId;
 use Database\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,6 +30,7 @@ class Product extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use UsesLoggedEntityId;
 
     protected $fillable = [
         'name',
@@ -51,8 +53,6 @@ class Product extends Model
     protected $hidden = [
         'deleted_at'
     ];
-
-    private int $loggedEntityId;
 
     public function category(): BelongsTo
     {
@@ -90,8 +90,6 @@ class Product extends Model
 
     private function setProductData(Collection $attributes): void
     {
-        $this->setLoggedEntityId();
-
         $this->name = $attributes->get('name');
         $this->description = $attributes->get('description') ?? null;
         $this->quantity = $attributes->get('quantity');
@@ -99,7 +97,7 @@ class Product extends Model
         $this->paid_price = $attributes->get('paidPrice');
         $this->selling_price = $attributes->get('sellingPrice');
         $this->external_product_id = $attributes->get('externalProductId') ?? null;
-        $this->company_id = $this->loggedEntityId;
+        $this->company_id = self::getLoggedCompanyId();
     }
 
     private function setProductRelations(Collection $attributes): void
@@ -137,7 +135,7 @@ class Product extends Model
 
         return $this->category()->create([
             'name' => $categoryName,
-            'company_id' => $this->loggedEntityId
+            'company_id' => self::getLoggedCompanyId()
         ]);
     }
 
@@ -156,7 +154,7 @@ class Product extends Model
 
         return $this->brand()->create([
             'name' => $brandName,
-            'company_id' => $this->loggedEntityId
+            'company_id' => self::getLoggedCompanyId()
         ]);
     }
 
@@ -190,13 +188,6 @@ class Product extends Model
     public function getSellingPrice(): int
     {
         return $this->selling_price;
-    }
-
-    private function setLoggedEntityId(): void
-    {
-        $this->loggedEntityId = Auth::user() instanceof User
-            ? Auth::user()->getCompany()->getId()
-            : Auth::user()->getId();
     }
 
     public static function findByExternalId(string $externalProductId): ?Product

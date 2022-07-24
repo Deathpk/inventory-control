@@ -68,7 +68,7 @@ class UpdateProductRequest extends FormRequest
 
     public function getProductId(): ?int
     {
-        return $this->request->get('productId');
+        return $this->request->get('productId', null);
     }
 
     public function getAttributes(): Collection
@@ -123,6 +123,6 @@ class UpdateProductRequest extends FormRequest
 
     public function getExternalProductId(): ?string
     {
-        return $this->request->get('externalProductId');
+        return $this->request->get('externalProductId', null);
     }
 }

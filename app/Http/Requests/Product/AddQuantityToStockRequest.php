@@ -49,12 +49,12 @@ class AddQuantityToStockRequest extends FormRequest
 
     public function getProductId(): ?int
     {
-        return $this->request->get('productId');
+        return $this->request->get('productId', null);
     }
 
     public function getExternalProductId(): ?string
     {
-        return $this->request->get('externalProductId');
+        return $this->request->get('externalProductId', null);
     }
 
     public function getQuantityToAdd(): int
