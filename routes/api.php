@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Reports\SalesReportController;
 use App\Http\Controllers\Sales\SalesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,12 @@ Route::controller(ProductController::class)->middleware('auth:sanctum')
 Route::controller(SalesController::class)->middleware('auth:sanctum')
     ->prefix('sales')->group(function () {
         Route::post('/sell', 'removeSoldUnits');
+});
+
+Route::controller(SalesReportController::class)->middleware('auth:sanctum')
+    ->prefix('reports/sales')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/most-sold', 'mostSoldProduct');
 });
 
 Route::controller(CategoryController::class)->middleware('auth:sanctum')

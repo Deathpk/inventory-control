@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -30,9 +31,9 @@ class ProductSalesReport extends Model
     ];
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    public function product(): ?HasOne
+    public function product(): ?BelongsTo
     {
-        return $this->hasOne(Product::class);
+        return $this->belongsTo(Product::class);
     }
 
     public static function create(): self
