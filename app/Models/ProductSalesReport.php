@@ -29,7 +29,13 @@ class ProductSalesReport extends Model
         'cost_price',
         'profit'
     ];
+
     protected $dateFormat = 'Y-m-d H:i:s';
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d'
+    ];
 
     public function product(): ?BelongsTo
     {

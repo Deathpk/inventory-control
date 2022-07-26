@@ -20,10 +20,7 @@ class SalesReportController extends Controller
             throw new UnauthorizedException();
         }
 
-        return response()->json([
-           'success' => true,
-            'sales' => $service->getAllSales()
-        ]);
+        return $service->getSalesReport()->response();
     }
 
     public function mostSoldProduct(SalesReportService $service): JsonResponse
