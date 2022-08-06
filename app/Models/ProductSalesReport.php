@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\FilterTenant;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,9 +38,24 @@ class ProductSalesReport extends Model
         'updated_at' => 'datetime:Y-m-d'
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new FilterTenant());
+    }
+
     public function product(): ?BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function company(): ?BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public static function create(): self

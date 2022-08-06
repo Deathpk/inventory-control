@@ -3,60 +3,105 @@
 namespace App\Services\Reports;
 
 use App\Exceptions\Reports\FailedToRetrieveSalesReport;
-use App\Http\Resources\ProductSalesReportCollection;
-use App\Http\Resources\ProductSalesReportResource;
+use App\Http\Requests\Reports\GeneralSalesReportRequest;
+use App\Http\Resources\Reports\ProductSalesReportResource;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
+use App\Prototypes\Reports\SaleReport;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class SalesReportService
 {
     use UsesLoggedEntityId;
 
+    private string|null $filterBy;
+    private Builder|null $salesReportQuery;
+    private AnonymousResourceCollection $allSales;
+
+    public function __construct(string $filterBy = null)
+    {
+        $this->filterBy = $filterBy;
+        $this->salesReportQuery = ProductSalesReport::query()->with('product');
+    }
+
     /**
      * @throws FailedToRetrieveSalesReport
      */
-    public function getSalesReport(): AnonymousResourceCollection
+    public function getSalesReport(): array
     {
         try {
-            $allSales = $this->getAllSales();
-            return ProductSalesReportResource::collection($allSales);
+            $this->allSales = ProductSalesReportResource::collection($this->getAllSales());
+            return $this->prepareSalesReportForResponse();
         } catch(\Throwable $e) {
             throw new FailedToRetrieveSalesReport($e);
         }
     }
 
-    private function getAllSales(): LengthAwarePaginator
+    private function prepareSalesReportForResponse(): array
     {
-        return  ProductSalesReport::query()
-            ->with('product')
-            ->where('company_id', self::getLoggedCompanyId())
-            ->paginate(10);
+        $metadata = $this->getSalesReportMetaData();
+
+        return [
+            'sales' => $this->allSales,
+            'metadata' => $metadata
+        ];
     }
 
-    public function getMostSoldProduct()
+    private function getSalesReportMetaData(): array
     {
-        try {
-            return $this->resolveMostSoldProduct();
-        } catch (\Throwable $e) {
-            throw new FailedToRetrieveSalesReport($e);
+        $overallProfit = 0;
+        $overallCost = 0;
+
+        collect($this->allSales)->each(function(array $sale) use(&$overallProfit, &$overallCost) {
+            $overallProfit += $sale['profit'];
+            $overallCost += $sale['cost_price'];
+        });
+
+       return [
+         'overallProfit' => $overallProfit,
+         'overallCost' => $overallCost
+       ];
+    }
+
+    private function getAllSales(): LengthAwarePaginator
+    {
+      return $this->applyFilterToSalesQuery()->paginate(10);
+    }
+
+    private function applyFilterToSalesQuery(): Builder
+    {
+        switch ($this->filterBy) {
+            case GeneralSalesReportRequest::WEEKLY_TYPE_FILTER:
+                //TODO
+                return $this->salesReportQuery;
+            case GeneralSalesReportRequest::MONTLY_TYPE_FILTER:
+                return $this->salesReportQuery->whereMonth('created_at', Carbon::now()->month);
+            case GeneralSalesReportRequest::YEARLY_TYPE_FILTER:
+                return $this->salesReportQuery->whereYear('created_at', Carbon::now()->year);
         }
     }
 
-    private function resolveMostSoldProduct(): Product
+    public function getMostSoldProducts()
     {
-        $allSalesReports = ProductSalesReport::query()
-            ->where('company_id', self::getLoggedCompanyId())
-            ->select(['product_id', 'sold_quantity'])
+        $allSaleReports = $this->getLoggedCompanyInstance()
+            ->salesReport()
+            ->with('product')
             ->get();
 
-        $mostSoldProduct = $allSalesReports->map(function (ProductSalesReport $eoq) {
-            //TODO
-        });
-//        $mostSoldProduct = ProductSalesReportResource::query()
-//            ->withMax('product', 'sold_quantity')->get();
-//        dd($mostSoldProduct);
+        return $this->resolveMostSoldProducts($allSaleReports);
+    }
+
+    private function resolveMostSoldProducts(Collection $allSaleReports)
+    {
+        $result = collect();
+        $soldProducts = $allSaleReports->map(function (ProductSalesReport $saleReport) {
+            return SaleReport::create()->fromArray($saleReport);
+        }); //TODO FAZER SAPORRA COM ARRAY PURO VAI SER MUITO MAIS FACIL!
+        dd($soldProducts);
     }
 }

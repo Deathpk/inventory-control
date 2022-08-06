@@ -61,6 +61,11 @@ class Company extends Model
         return $this->hasMany(Brand::class);
     }
 
+    public function salesReport(): ?HasMany
+    {
+        return $this->hasMany(ProductSalesReport::class);
+    }
+
     public function getId(): int
     {
         return $this->id;

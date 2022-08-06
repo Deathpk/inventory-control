@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Reports;
 
-use App\Models\Product;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

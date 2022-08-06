@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\FilterTenant;
 use App\Traits\UsesLoggedEntityId;
 use Database\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -45,6 +46,15 @@ class Product extends Model
         'company_id'
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new FilterTenant());
+    }
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d',

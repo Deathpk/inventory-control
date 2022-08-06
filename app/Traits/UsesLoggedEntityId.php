@@ -15,6 +15,13 @@ trait UsesLoggedEntityId
             : Auth::user()->getId();
     }
 
+    public static function getLoggedCompanyInstance(): Company
+    {
+        return Auth::user() instanceof User
+            ? Auth::user()->getCompany()
+            : Auth::user();
+    }
+
     public static function getLoggedEntityInstance(): User|Company
     {
         /** @var User|Company $loggedEntityInstance */
