@@ -11,6 +11,7 @@ use App\Models\Category;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class CategoryService
@@ -76,8 +77,12 @@ class CategoryService
         }
     }
 
-    public function listAllCategories(): Collection
+    public function listAllCategories($paginated = false): LengthAwarePaginator|Collection
     {
+        if ($paginated) {
+            return Category::query()->paginate(30);
+        }
+
         return Category::all();
     }
 }

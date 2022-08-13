@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryCollection;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\AutoComplete\CategoryAutoCompleteService;
 use App\Services\AutoComplete\Interfaces\AutoCompleteService;
@@ -23,25 +25,19 @@ class CategoryController extends Controller
         $this->autocompleteService = $autoCompleteService;
     }
 
-    public function index(): JsonResponse
+    public function index(): CategoryCollection
     {
-        $categories = $this->service->listAllCategories();
-        return response()->json([
-            'success' => true,
-            'categories' => $categories
-        ]);
+        $categories = $this->service->listAllCategories(true);
+        return new CategoryCollection($categories);
     }
 
     /**
      * @throws \Exception
      */
-    public function show(int $categoryId): JsonResponse
+    public function show(int $categoryId): CategoryResource
     {
         $specificCategory = $this->service->getCategory($categoryId);
-        return response()->json([
-            'success' => true,
-            'product' => $specificCategory
-        ]);
+        return CategoryResource::make($specificCategory);
     }
 
     /**

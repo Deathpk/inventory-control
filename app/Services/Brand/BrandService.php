@@ -9,6 +9,7 @@ use App\Http\Requests\Brand\UpdateBrandRequest;
 use App\Models\Brand;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use mysql_xdevapi\Exception;
 
@@ -85,8 +86,12 @@ class BrandService
         }
     }
 
-    public function listBrands(): Collection
+    public function listBrands($paginated = false): Collection|LengthAwarePaginator
     {
+        if ($paginated) {
+            return Brand::query()->paginate(30);
+        }
+
         return Brand::all();
     }
 

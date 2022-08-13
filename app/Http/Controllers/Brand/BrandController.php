@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Brand\StoreBrandRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
+use App\Http\Resources\BrandCollection;
+use App\Http\Resources\BrandResource;
 use App\Services\AutoComplete\BrandAutoCompleteService;
 use App\Services\AutoComplete\Interfaces\AutoCompleteService;
 use App\Services\Brand\BrandService;
@@ -24,22 +26,16 @@ class BrandController extends Controller
         $this->autoCompleteService = $autoCompleteService;
     }
 
-    public function index(): JsonResponse
+    public function index(): BrandCollection
     {
-        $brands = $this->service->listBrands();
-        return response()->json([
-            'success' => true,
-            'brands' => $brands
-        ]);
+        $brands = $this->service->listBrands(true);
+        return new BrandCollection($brands);
     }
 
-    public function show(int $brandId): JsonResponse
+    public function show(int $brandId): BrandResource
     {
         $specificBrand = $this->service->getBrand($brandId);
-        return response()->json([
-            'success' => true,
-            'product' => $specificBrand
-        ]);
+        return BrandResource::make($specificBrand);
     }
 
     /**

@@ -5,10 +5,13 @@ namespace App\Services\Product;
 use App\Exceptions\AbstractException;
 use App\Exceptions\Product\FailedToListProducts;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
 
 class SearchProductService
@@ -16,10 +19,14 @@ class SearchProductService
     /**
      * @throws FailedToListProducts
      */
-    public function listProducts(): LengthAwarePaginator
+    public function listProducts($paginated = false): LengthAwarePaginator|Builder|Collection
     {
         try {
-            return Product::with(['category', 'brand'])->paginate(15);
+            if ($paginated) {
+                return Product::with(['category', 'brand'])->paginate(15);
+            }
+
+            return Product::with(['category', 'brand'])->get();
         } catch (\Throwable $e) {
             throw new FailedToListProducts($e);
         }
@@ -28,9 +35,13 @@ class SearchProductService
     /**
      * @throws RecordNotFoundOnDatabaseException
      */
-    public function getSpecificProduct(int $id): Builder|Model
+    public function getSpecificProduct(int $id): ProductResource
     {
-        return Product::with(['category', 'brand'])->find($id) ??
+        $specificProduct = Product::with(['category', 'brand'])->find($id);
+        if (!$specificProduct) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
+        }
+
+        return ProductResource::make($specificProduct);
     }
 }

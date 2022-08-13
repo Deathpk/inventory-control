@@ -17,6 +17,8 @@ use App\Http\Requests\Product\ImportProductsRequest;
 use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Services\AutoComplete\ProductAutoCompleteService;
 use App\Services\Product\AddProductQuantityService;
 use App\Services\Product\CreateProductService;
@@ -40,25 +42,19 @@ class ProductController extends Controller
     /**
      * @throws FailedToListProducts
      */
-    public function index(SearchProductService $service): JsonResponse
+    public function index(SearchProductService $service): ProductCollection
     {
-        $productList = $service->listProducts();
-        return response()->json([
-            'success' => true,
-            'products' => $productList
-        ]);
+       $products = $service->listProducts(true);
+       return new ProductCollection($products);
     }
 
     /**
      * @throws \Exception
      */
-    public function show(int $productId, SearchProductService $service): JsonResponse
+    public function show(int $productId, SearchProductService $service): ProductResource
     {
         $specificProduct = $service->getSpecificProduct($productId);
-        return response()->json([
-            'success' => true,
-            'product' => $specificProduct
-        ]);
+        return ProductResource::make($specificProduct);
     }
 
     /**
