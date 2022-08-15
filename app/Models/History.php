@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\FilterTenant;
+use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +20,7 @@ use Illuminate\Support\Collection;
 class History extends Model
 {
     use HasFactory;
+    use UsesLoggedEntityId;
 
     const PRODUCT_ENTITY = 'product';
     const BRAND_ENTITY = 'brand';
@@ -38,6 +41,11 @@ class History extends Model
         'changed_by_id',
     ];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new FilterTenant());
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -54,6 +62,7 @@ class History extends Model
         $this->entity_type = $data['entityType'];
         $this->metadata = $data['metadata'];
         $this->changed_by_id = $data['changedById'];
+        $this->company_id = self::getLoggedCompanyId();
         $this->action_id = $actionId;
         $this->save();
     }

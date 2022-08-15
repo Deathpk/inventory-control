@@ -21,8 +21,6 @@ return new class extends Migration
             $table->foreignIdFor(Product::class);
             $table->foreignIdFor(Company::class);
             $table->integer('sold_quantity');
-            $table->integer('cost_price');
-            $table->integer('profit');
         });
     }
 

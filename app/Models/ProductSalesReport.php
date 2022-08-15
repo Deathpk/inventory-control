@@ -4,19 +4,15 @@ namespace App\Models;
 
 use App\Models\Scopes\FilterTenant;
 use App\Traits\UsesLoggedEntityId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * @property integer $product_id
  * @property integer $company_id
  * @property integer $sold_quantity
- * @property integer $cost_price,
- * @property integer $profit
  */
 class ProductSalesReport extends Model
 {
@@ -27,8 +23,6 @@ class ProductSalesReport extends Model
         'product_id',
         'company_id',
         'sold_quantity',
-        'cost_price',
-        'profit'
     ];
 
     protected $dateFormat = 'Y-m-d H:i:s';
@@ -63,24 +57,36 @@ class ProductSalesReport extends Model
         return new self();
     }
 
-    public function fromArray(array $attributes)
+    public function fromArray(array $attributes): void
     {
-        $soldProduct = $this->findSoldProduct($attributes);
-        $costPrice = $soldProduct->getCostPrice();
-        $sellingPrice = $soldProduct->getSellingPrice();
+        $soldProductId = $this->findSoldProduct($attributes)->getId();
+        $productSaleReport = self::query()->firstWhere('product_id', $soldProductId);
 
-        $this->product_id = $soldProduct->getId();
+        if ($productSaleReport) {
+            $this->updateSoldQuantity($productSaleReport, $attributes['soldQuantity']);
+        } else {
+            $this->createNewSaleReport($soldProductId, $attributes['soldQuantity']);
+        }
+    }
+
+    private function createNewSaleReport(int &$soldProductId, int &$soldQuantity): void
+    {
+        $this->product_id = $soldProductId;
         $this->company_id = self::getLoggedCompanyId();
-        $this->sold_quantity = $attributes['soldQuantity'];
-        $this->cost_price = $costPrice;
-        $this->profit = ($sellingPrice - $costPrice) * $attributes['soldQuantity'];
+        $this->sold_quantity = $soldQuantity;
         $this->save();
     }
 
-    private function findSoldProduct(array &$attributes): Product
+    private function updateSoldQuantity(ProductSalesReport $saleReport, int &$soldQuantity): void
+    {
+        $saleReport->sold_quantity = $saleReport->sold_quantity + $soldQuantity;
+        $saleReport->save();
+    }
+
+    private function findSoldProduct(array &$attributes): Builder|Product
     {
         if (isset($attributes['productId'])) {
-            return Product::find($attributes['productId']);
+            return Product::query()->find($attributes['productId']);
         } else {
             return Product::findByExternalId($attributes['externalProductId']);
         }

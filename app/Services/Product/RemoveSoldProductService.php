@@ -30,7 +30,7 @@ class RemoveSoldProductService
         $this->setAttributes($request->getAttributes());
         try {
             DB::beginTransaction();
-            $this->findSelectedProduct();
+            $this->findAndSetSelectedProduct();
             $this->product->removeSoldUnit($this->attributes['soldQuantity']);
             $this->addSaleToSalesReport();
             $this->createSoldHistory();
@@ -46,7 +46,7 @@ class RemoveSoldProductService
         $this->attributes = $attributes;
     }
 
-    private function findSelectedProduct(): void
+    private function findAndSetSelectedProduct(): void
     {
         $this->setProduct();
         if (!$this->product) {
