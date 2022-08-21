@@ -2,38 +2,34 @@
 
 namespace App\Services\Product;
 
-use App\Exceptions\AbstractException;
+use App\Events\Sales\SaleCreated;
 use App\Exceptions\Product\FailedToMarkProductAsSold;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\RemoveSoldProductRequest;
-use App\Models\History;
 use App\Models\Product;
-use App\Models\ProductSalesReport;
-use App\Services\History\HistoryService;
 use App\Traits\History\RegisterHistory;
 use App\Traits\UsesLoggedEntityId;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RemoveSoldProductService
 {
     use RegisterHistory;
     use UsesLoggedEntityId;
 
-    private array $attributes;
-    private Product|null $product;
+    private Collection $soldProducts;
 
     /**
      * @throws RecordNotFoundOnDatabaseException|\Throwable
      */
-    public function removeSoldUnit(RemoveSoldProductRequest $request): void
+    public function removeSoldUnitsFromStock(RemoveSoldProductRequest $request): void
     {
-        $this->setAttributes($request->getAttributes());
+        $this->setSoldProducts($request->getAttributes());
+
         try {
             DB::beginTransaction();
-            $this->findAndSetSelectedProduct();
-            $this->product->removeSoldUnit($this->attributes['soldQuantity']);
-            $this->addSaleToSalesReport();
-            $this->createSoldHistory();
+            $this->resolveProductsSoldUnits();
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -41,55 +37,36 @@ class RemoveSoldProductService
         }
     }
 
-    private function setAttributes(array $attributes): void
+    private function setSoldProducts(Collection $soldProductList): void
     {
-        $this->attributes = $attributes;
+        $this->soldProducts = $soldProductList;
     }
 
-    private function findAndSetSelectedProduct(): void
+
+    private function resolveProductsSoldUnits(): void
     {
-        $this->setProduct();
-        if (!$this->product) {
-            throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
+        $this->soldProducts->each(function (array $soldProduct) {
+
+           $entityId = $soldProduct['productId'] ?? $soldProduct['externalProductId'];
+           $product = self::getSoldProduct($entityId);
+
+           if (!$product) {
+               //TODO CRIAR UMA CUSTOM VALIDATION
+               throw new NotFoundHttpException('Produto não encontrado na nossa base de dados');
+           }
+
+           $product->removeSoldUnit($soldProduct['soldQuantity']);
+        });
+
+        event(new SaleCreated($this->soldProducts, self::getLoggedCompanyId()));
+    }
+
+    private static function getSoldProduct(int|string $entityId): ?Product
+    {
+        if (is_int($entityId)) {
+            return Product::query()->find($entityId);
         }
-    }
 
-    private function setProduct(): void
-    {
-        if (isset($this->attributes['productId'])) {
-            $this->product = Product::find($this->attributes['productId']);
-        } else {
-            $this->product = Product::findByExternalId($this->attributes['externalProductId']);
-        }
-    }
-
-    private function addSaleToSalesReport(): void
-    {
-        ProductSalesReport::create()->fromArray($this->attributes);
-    }
-
-    /**
-     * @throws \Throwable
-     */
-    private function createSoldHistory(): void
-    {
-        $historyService = new HistoryService();
-
-        $params =  [
-            'entityId' => $this->product->getId(),
-            'entityType' => History::PRODUCT_ENTITY,
-            'changedById' => self::getChangedBy(),
-            'metadata' => $this->createHistoryMetaData()
-        ];
-
-        $historyService->createHistory(History::PRODUCT_SOLD, $params);
-    }
-
-    private function createHistoryMetaData(): string
-    {
-        return collect([
-            'entityId' => $this->product->getId()
-            , 'changedBy' => self::getChangedBy()
-        ])->toJson();
+        return Product::findByExternalId($entityId);
     }
 }

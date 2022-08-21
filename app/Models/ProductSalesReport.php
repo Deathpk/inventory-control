@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\FilterTenant;
+use App\Services\History\HistoryService;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -90,5 +91,30 @@ class ProductSalesReport extends Model
         } else {
             return Product::findByExternalId($attributes['externalProductId']);
         }
+    }
+
+    /**
+     * TODO
+     */
+    private function createSalesHistory(): void
+    {
+//        $historyService = new HistoryService();
+
+//        $params =  [
+//            'entityId' => $this->product->getId(),
+//            'entityType' => History::PRODUCT_ENTITY,
+//            'changedById' => self::getChangedBy(),
+//            'metadata' => $this->createHistoryMetaData()
+//        ];
+
+//        $historyService->createHistory(History::PRODUCT_SOLD, $params);
+    }
+
+    private function createHistoryMetaData(): string
+    {
+//        return collect([
+//            'entityId' => $this->product->getId()
+//            , 'changedBy' => self::getChangedBy()
+//        ])->toJson();
     }
 }

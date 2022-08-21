@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\Sales\SaleCreated;
+use App\Listeners\Sales\CreateProductSaleReport;
+use App\Listeners\Sales\CreateSaleReport;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,10 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        SaleCreated::class => [
+            CreateProductSaleReport::class,
+//            CreateSaleReport::class
+        ]
     ];
 
     /**

@@ -16,7 +16,7 @@ class SalesController extends Controller
      */
     public function removeSoldUnits(RemoveSoldProductRequest $request, RemoveSoldProductService $service): JsonResponse
     {
-        $service->removeSoldUnit($request);
+        $service->removeSoldUnitsFromStock($request);
         return response()->json([
             'success' => true
         ]);

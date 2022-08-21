@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\RequiredIf;
@@ -34,36 +35,35 @@ class RemoveSoldProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'soldQuantity' => 'required|int',
-            'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
-            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string']
+            'soldProducts.*' => ['required', 'array'],
+//            'soldProducts.*.productId' => [Rule::requiredIf(!$this->externalProductIdExists()), 'int'],
+            'soldProducts.*.soldQuantity' => ['required', 'int'],
+//            'soldProducts.externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string']
+//            'soldQuantity' => 'required|int',
+//            'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
+//            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string']
         ];
     }
 
     public function messages(): array
     {
         return [
-            'soldQuantity.required' => 'A quantidade de unidades vendidas é obrigatória.',
-            'soldQuantity.int' => 'A quantidade de unidades vendidas deve conter somente numerais inteiros.',
-            'productId.required' => 'O ID do produto é obrigatório.',
-            'productId.int' => 'O ID do produto deve conter somente numerais inteiros.',
-            'externalProductId.required' => 'O código de identificação externo do produto é obrigatório.',
-            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
+            'soldProducts.required' => 'Os produtos vendidos são obrigatórios.',
+            'soldProducts.array' => 'Os produtos vendidos devem estar contidos em um array de objetos.',
+            'soldProducts.productId.required' => 'O ID de cada produto vendido é obrigatório.',
+            'soldProducts.soldQuantity.required' => 'A quantidade de unidades vendidas é obrigatória em cada produto vendido.',
+            'soldProducts.soldQuantity.int' => 'A quantidade de unidades vendidas deve conter somente numerais inteiros.',
+//            'soldQuantity.required' => 'A quantidade de unidades vendidas é obrigatória.',
+//            'soldQuantity.int' => 'A quantidade de unidades vendidas deve conter somente numerais inteiros.',
+//            'productId.required' => 'O ID do produto é obrigatório.',
+//            'productId.int' => 'O ID do produto deve conter somente numerais inteiros.',
+//            'externalProductId.required' => 'O código de identificação externo do produto é obrigatório.',
+//            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
         ];
     }
 
-    public function getAttributes(): array
+    public function getAttributes(): Collection
     {
-        return $this->validated();
-    }
-
-    public function getProductId(): ?int
-    {
-        return $this->request->get('productId', null);
-    }
-
-    public function getExternalProductId(): ?string
-    {
-        return $this->request->get('externalProductId', null);
+        return collect($this->toArray()['soldProducts']);
     }
 }

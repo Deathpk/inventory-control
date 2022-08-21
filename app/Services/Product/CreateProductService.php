@@ -49,13 +49,13 @@ class CreateProductService
             'entityId' => $this->entityId,
             'entityType' => History::PRODUCT_ENTITY,
             'changedById' => self::getChangedBy(),
-            'metadata' => $this->createHistoryMetaData()
+            'metadata' => $this->getHistoryMetaData()
         ];
 
         $historyService->createHistory(History::PRODUCT_CREATED, $params);
     }
 
-    private function createHistoryMetaData(): string
+    private function getHistoryMetaData(): string
     {
         return collect([
             'entityId' => $this->entityId,
