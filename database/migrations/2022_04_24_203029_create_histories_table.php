@@ -21,8 +21,8 @@ return new class extends Migration
             $table->bigInteger('entity_id');
             $table->enum('entity_type', [History::PRODUCT_ENTITY, History::CATEGORY_ENTITY, History::BRAND_ENTITY]);
             $table->text('metadata');
-            $table->foreignIdFor(User::class, 'changed_by_id');
-            $table->foreignIdFor(Company::class);
+            $table->foreignIdFor(User::class, 'changed_by_id')->constrained('users');
+            $table->foreignIdFor(Company::class)->constrained();
             $table->enum('action_id', [History::PRODUCT_CREATED, History::PRODUCT_UPDATED, History::PRODUCT_DELETED, History::PRODUCT_SOLD, History::ADDED_QUANTITY]);
             $table->timestamps();
         });

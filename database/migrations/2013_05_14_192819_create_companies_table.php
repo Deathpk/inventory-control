@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Plan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,13 +14,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sales_report', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('cnpj');
+            $table->foreignIdFor(Plan::class)->constrained();
             $table->timestamps();
-            $table->foreignIdFor(\App\Models\Company::class);
-            $table->text('products');
-            $table->integer('total_price');
-            $table->integer('profit');
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_report');
+        Schema::dropIfExists('companies');
     }
 };

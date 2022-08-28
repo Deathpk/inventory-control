@@ -18,8 +18,8 @@ return new class extends Migration
         Schema::create('product_sales_reports', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignIdFor(Product::class);
-            $table->foreignIdFor(Company::class);
+            $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(Company::class)->constrained();
             $table->integer('sold_quantity');
         });
     }

@@ -24,9 +24,9 @@ return new class extends Migration
             $table->integer('quantity');
             $table->integer('paid_price');
             $table->integer('selling_price');
-            $table->foreignIdFor(Company::class);
-            $table->foreignIdFor(Brand::class);
-            $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(Company::class)->constrained();
+            $table->foreignIdFor(Brand::class)->constrained();
+            $table->foreignIdFor(Category::class)->constrained();
             $table->integer('limit_for_restock');
             $table->timestamps();
             $table->softDeletes();

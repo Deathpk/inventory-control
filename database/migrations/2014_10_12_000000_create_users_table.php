@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignIdFor(Company::class);
-            $table->foreignIdFor(Role::class);
+            $table->foreignIdFor(Company::class)->constrained();
+            $table->foreignIdFor(Role::class)->constrained();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
