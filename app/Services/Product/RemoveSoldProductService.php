@@ -57,7 +57,7 @@ class RemoveSoldProductService
 
            $product->removeSoldUnit($soldProduct['soldQuantity']);
         });
-
+        
         event(new SaleCreated($this->soldProducts, self::getLoggedCompanyId()));
     }
 

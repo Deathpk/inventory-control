@@ -22,7 +22,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         SaleCreated::class => [
             CreateProductSaleReport::class,
-//            CreateSaleReport::class
+           CreateSaleReport::class
         ]
     ];
 
