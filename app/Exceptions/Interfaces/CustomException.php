@@ -2,7 +2,4 @@
 
 namespace App\Exceptions\Interfaces;
 
-interface CustomException
-{
-
-}
+interface CustomException {}

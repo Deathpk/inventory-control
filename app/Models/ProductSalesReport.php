@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Scopes\FilterTenant;
 use App\Services\History\HistoryService;
+use App\Traits\History\RegisterHistory;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +20,7 @@ class ProductSalesReport extends Model
 {
     use HasFactory;
     use UsesLoggedEntityId;
+    use RegisterHistory;
 
     protected $fillable = [
         'product_id',
@@ -68,6 +70,8 @@ class ProductSalesReport extends Model
         } else {
             $this->createNewSaleReport($soldProductId, $attributes['soldQuantity']);
         }
+
+        $this->createSalesHistory($soldProductId, $attributes['soldQuantity']);
     }
 
     private function createNewSaleReport(int &$soldProductId, int &$soldQuantity): void
@@ -96,25 +100,20 @@ class ProductSalesReport extends Model
     /**
      * TODO
      */
-    private function createSalesHistory(): void
+    private function createSalesHistory(int $productSoldId, $soldQuantity): void
     {
-//        $historyService = new HistoryService();
+       $historyService = new HistoryService();
 
-//        $params =  [
-//            'entityId' => $this->product->getId(),
-//            'entityType' => History::PRODUCT_ENTITY,
-//            'changedById' => self::getChangedBy(),
-//            'metadata' => $this->createHistoryMetaData()
-//        ];
+       $params =  [
+           'entityId' => $productSoldId,
+           'entityType' => History::PRODUCT_ENTITY,
+           'changedById' => self::getChangedBy(),
+           'metadata' => collect([
+             'entityId' => $productSoldId,
+             'soldQuantity' => $soldQuantity
+            ])->toJson()
+       ];
 
-//        $historyService->createHistory(History::PRODUCT_SOLD, $params);
-    }
-
-    private function createHistoryMetaData(): string
-    {
-//        return collect([
-//            'entityId' => $this->product->getId()
-//            , 'changedBy' => self::getChangedBy()
-//        ])->toJson();
+       $historyService->createHistory(History::PRODUCT_SOLD, $params);
     }
 }

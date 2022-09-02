@@ -3,7 +3,10 @@
 
 namespace App\Services\Category;
 
-
+use App\Exceptions\AbstractException;
+use App\Exceptions\Category\FailedToListCategories;
+use App\Exceptions\FailedToDeleteEntity;
+use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Brand;
@@ -13,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Throwable;
 
 class CategoryService
 {
@@ -58,9 +62,7 @@ class CategoryService
     public function getCategory(int $id): Builder|Model
     {
         return Category::query()->find($id) ??
-            throw new \Exception(
-                'Categoria não encontrada no banco de dados.'
-            );
+          throw new RecordNotFoundOnDatabaseException(AbstractException::CATEGORY_ENTITY_LABEL, $id);
     }
 
     public function deleteCategory(int $category): void
@@ -73,16 +75,22 @@ class CategoryService
 
             $category->delete();
         } catch (\Throwable $e) {
-            throw new $e; //TODO CRIAR CUSTOM EXCEPTION
+            throw new FailedToDeleteEntity(AbstractException::CATEGORY_ENTITY_LABEL, $e);
         }
     }
 
     public function listAllCategories($paginated = false): LengthAwarePaginator|Collection
     {
-        if ($paginated) {
-            return Category::query()->paginate(30);
-        }
+        try {
 
-        return Category::all();
+            if ($paginated) {
+                return Category::query()->paginate(30);
+            }
+    
+            return Category::all();
+
+        } catch(Throwable $e) {
+            throw new FailedToListCategories($e);
+        }
     }
 }

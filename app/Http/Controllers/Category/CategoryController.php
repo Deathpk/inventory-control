@@ -45,6 +45,7 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request): JsonResponse
     {
+        //TODO CRIAR UM METODO SOMENTE PARA O CREATE
         $this->service->createOrUpdateCategory($request);
         return response()->json([
             'success' => true,
@@ -57,6 +58,7 @@ class CategoryController extends Controller
      */
     public function update(Category $category, UpdateCategoryRequest $request): JsonResponse
     {
+        //TODO CRIAR UM METODO SOMENTE PARA O UPDATE
         $this->service->createOrUpdateCategory($request, $category);
         return response()->json([
            'success' => true,

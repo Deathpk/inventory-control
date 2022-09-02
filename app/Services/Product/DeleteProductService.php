@@ -3,6 +3,7 @@
 namespace App\Services\Product;
 
 use App\Exceptions\AbstractException;
+use App\Exceptions\FailedToDeleteEntity;
 use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\DeleteProductRequest;
@@ -28,6 +29,7 @@ class DeleteProductService
 
         try {
             $product = $this->resolveProduct();
+            
             if (!$product) {
                 throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
             }
@@ -35,7 +37,7 @@ class DeleteProductService
             $product->delete();
             $this->createProductDeletedHistory($product->getId());
         } catch (\Throwable $e) {
-            throw new FailedToDeleteProduct($e);
+            throw new FailedToDeleteEntity(AbstractException::PRODUCT_ENTITY_LABEL, $e);
         }
     }
 

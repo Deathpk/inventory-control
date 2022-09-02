@@ -108,7 +108,8 @@ class ProductController extends Controller
      */
     public function import(ImportProductsRequest $request, ImportProductService $service): JsonResponse
     {
-        $service->importProducts($request->getImportedFile());
+        $importedFile = $request->getImportedFile();
+        $service->importProducts($importedFile);
         return response()->json([
             'success' => true,
             'message' => 'Produtos importados com sucesso!'

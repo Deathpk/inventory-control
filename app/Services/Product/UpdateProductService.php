@@ -30,8 +30,8 @@ class UpdateProductService
     {
         $this->requestAttributes = $request->getAttributes();
 
-        /** @var Product $product */
         $product = $this->resolveProduct();
+
         if (!$product) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
         }

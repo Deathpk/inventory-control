@@ -2,7 +2,8 @@
 
 namespace App\Services\Product;
 
-use App\Exceptions\Product\FailedToCreateProduct;
+use App\Exceptions\AbstractException;
+use App\Exceptions\FailedToCreateEntity;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Models\History;
 use App\Models\Product;
@@ -34,7 +35,7 @@ class CreateProductService
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            throw new FailedToCreateProduct($e);
+            throw new FailedToCreateEntity(AbstractException::PRODUCT_ENTITY_LABEL, $e);
         }
     }
 

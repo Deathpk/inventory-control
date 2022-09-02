@@ -3,7 +3,11 @@
 
 namespace App\Services\Brand;
 
-
+use App\Exceptions\AbstractException;
+use App\Exceptions\Brand\FailedToListBrands;
+use App\Exceptions\FailedToCreateEntity;
+use App\Exceptions\FailedToDeleteEntity;
+use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Brand\StoreBrandRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
 use App\Models\Brand;
@@ -12,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use mysql_xdevapi\Exception;
+use Throwable;
 
 class BrandService
 {
@@ -22,20 +27,22 @@ class BrandService
         $this->brand = $brand;
     }
 
-    /**
-     * @throws \Throwable
-     */
-    public function createOrUpdateBrand(StoreBrandRequest|UpdateBrandRequest $request, int $brandId = null): void
+    public function createBrand(StoreBrandRequest $request): void
     {
-        try{
-            switch ($request) {
-                case $request instanceof StoreBrandRequest: $this->storeBrand($request);break;
-                case $request instanceof UpdateBrandRequest: $this->updateBrand($request, $brandId);break;
-            }
-        } catch (\Throwable $e) {
-            throw $e; //TODO CRIAR CUSTOM EXCEPTION
+        try {
+            $this->storeBrand($request);
+        } catch(Throwable $e) {
+            throw new FailedToCreateEntity(AbstractException::BRAND_ENTITY_LABEL, $e);
         }
+    }
 
+    public function updateBrand(UpdateBrandRequest $request, int $brandId): void
+    {
+        try {
+            $this->updateExistingBrand($request, $brandId);
+        } catch(Throwable $e) {
+            throw new FailedToCreateEntity(AbstractException::BRAND_ENTITY_LABEL, $e);
+        }
     }
 
     private function storeBrand(StoreBrandRequest $request): void
@@ -44,13 +51,12 @@ class BrandService
     }
 
 
-    private function updateBrand(UpdateBrandRequest $request, int $id): void
+    private function updateExistingBrand(UpdateBrandRequest $request, int $id): void
     {
         /** @var Brand $brand */
         $brand = Brand::find($id);
         if (!$brand) {
-            throw new \Exception('Marca não encontrada no banco de dados.');
-            //TODO CRIAR CUSTOM EXCEPTION
+            throw new RecordNotFoundOnDatabaseException(AbstractException::BRAND_ENTITY_LABEL, $id);
         }
 
         $brand->fromRequest($request->getName());
@@ -62,37 +68,39 @@ class BrandService
     public function getBrand(int $id): Builder|Model
     {
         return Brand::query()->find($id) ??
-            throw new \Exception(
-                'Marca não encontrada no banco de dados.'
-            );
+            throw new RecordNotFoundOnDatabaseException(AbstractException::BRAND_ENTITY_LABEL, $id);
     }
 
     /**
      * @throws \Throwable
      */
-    public function deleteBrand(int $brandId): void
+    public function deleteBrand(int $id): void
     {
         try{
             /** @var Brand $brand */
-            $brand = Brand::find($brandId);
+            $brand = Brand::find($id);
             if (!$brand) {
-                throw new Exception('Marca não encontrada no DB.');
+                throw new RecordNotFoundOnDatabaseException(AbstractException::BRAND_ENTITY_LABEL, $id);
             }
 
             $brand->delete();
 
         } catch (\Throwable $e) {
-            throw $e;//TODO CRIAR CUSTOM EXCEPTION
+            throw new FailedToDeleteEntity(AbstractException::BRAND_ENTITY_LABEL, $e);
         }
     }
 
     public function listBrands($paginated = false): Collection|LengthAwarePaginator
     {
-        if ($paginated) {
-            return Brand::query()->paginate(30);
+        try {
+            if ($paginated) {
+                return Brand::query()->paginate(30);
+            }
+            return Brand::all();
+        } catch(Throwable $e) {
+            throw new FailedToListBrands($e);
         }
 
-        return Brand::all();
     }
 
 }

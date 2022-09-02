@@ -10,6 +10,8 @@ use App\Models\Product;
 use App\Services\History\HistoryService;
 use App\Traits\History\RegisterHistory;
 use Illuminate\Support\Collection;
+use Throwable;
+use App\Exceptions\Product\FailedToAddQuantityToStock;
 
 class AddProductQuantityService
 {
@@ -25,6 +27,7 @@ class AddProductQuantityService
     public function addQuantityToStock(AddQuantityToStockRequest $request): void
     {
         $this->setProps($request);
+
         $product = $this->resolveProduct();
         if (!$product) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
@@ -32,7 +35,12 @@ class AddProductQuantityService
 
         $this->entityId = $product->getId();
 
-        $product->addQuantity($this->quantity);
+        try {
+            $product->addQuantity($this->quantity);
+        } catch(Throwable $e) {
+            throw new FailedToAddQuantityToStock($e);
+        }
+        
         $this->registerAddedQuantityToHistory();
     }
 

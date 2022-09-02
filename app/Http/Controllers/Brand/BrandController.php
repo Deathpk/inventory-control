@@ -43,7 +43,7 @@ class BrandController extends Controller
      */
     public function store(StoreBrandRequest $request): JsonResponse
     {
-        $this->service->createOrUpdateBrand($request);
+        $this->service->createBrand($request);
         return response()->json([
             'success' => true,
             'message' => 'Marca criada com sucesso!'
@@ -55,7 +55,7 @@ class BrandController extends Controller
      */
     public function update(int $brandId, UpdateBrandRequest $request): JsonResponse
     {
-        $this->service->createOrUpdateBrand($request, $brandId);
+        $this->service->updateBrand($request, $brandId);
         return response()->json([
             'success' => true,
             'message' => 'Marca atualizada com sucesso!'
