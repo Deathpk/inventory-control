@@ -29,7 +29,6 @@ class SalesReportController extends Controller
 
     public function mostSoldProduct(SalesReportService $service): JsonResponse
     {
-        //TODO
         if (!Auth::check()) {
             throw new UnauthorizedException();
         }

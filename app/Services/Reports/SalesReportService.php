@@ -4,6 +4,8 @@ namespace App\Services\Reports;
 
 use App\Exceptions\Reports\FailedToRetrieveSalesReport;
 use App\Http\Requests\Reports\GeneralSalesReportRequest;
+use App\Http\Resources\Reports\MostSoldProductResource;
+use App\Http\Resources\Reports\MostSoldProductsReportCollection;
 use App\Http\Resources\Reports\ProductSalesReportResource;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
@@ -86,22 +88,22 @@ class SalesReportService
         }
     }
 
-    public function getMostSoldProducts()
+    public function getMostSoldProducts(): Collection
     {
-        $allSaleReports = $this->getLoggedCompanyInstance()
+        $mostSoldProducts = $this->getLoggedCompanyInstance()
             ->salesReport()
             ->with('product')
+            ->orderBy('sold_quantity','desc')
+            ->take(3)
             ->get();
 
-        return $this->resolveMostSoldProducts($allSaleReports);
+        return $this->resolveMostSoldProducts($mostSoldProducts);
     }
 
-    private function resolveMostSoldProducts(Collection $allSaleReports)
+    private function resolveMostSoldProducts(Collection $allSaleReports): Collection
     {
-        $result = collect();
-        $soldProducts = $allSaleReports->map(function (ProductSalesReport $saleReport) {
-            return SaleReport::create()->fromArray($saleReport);
-        }); //TODO FAZER SAPORRA COM ARRAY PURO VAI SER MUITO MAIS FACIL!
-        dd($soldProducts);
+        return $allSaleReports->map(function (ProductSalesReport $report) {
+            return MostSoldProductResource::make($report);
+        });
     }
 }
