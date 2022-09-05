@@ -100,13 +100,13 @@ class Product extends Model
 
     private function setProductData(Collection $attributes): void
     {
-        $this->name = $attributes->get('name');
-        $this->description = $attributes->get('description') ?? null;
-        $this->quantity = $attributes->get('quantity');
-        $this->limit_for_restock = $attributes->get('limitForRestock');
-        $this->paid_price = $attributes->get('paidPrice');
-        $this->selling_price = $attributes->get('sellingPrice');
-        $this->external_product_id = $attributes->get('externalProductId') ?? null;
+        $this->name = $attributes->get('name') ?? $this->name;
+        $this->description = $attributes->get('description') ?? $this->description;
+        $this->quantity = $attributes->get('quantity') ?? $this->quantity;
+        $this->limit_for_restock = $attributes->get('limitForRestock') ?? $this->limit_for_restock;
+        $this->paid_price = $attributes->get('paidPrice') ?? $this->paid_price;
+        $this->selling_price = $attributes->get('sellingPrice') ?? $this->selling_price;
+        $this->external_product_id = $attributes->get('externalProductId') ?? $this->external_product_id;
         $this->company_id = self::getLoggedCompanyId();
     }
 
@@ -116,14 +116,16 @@ class Product extends Model
         $brand = null;
 
         if (!$attributes->get('categoryId')) {
-            $category = $this->createCategory($attributes->get('categoryName'));
+            $categoryName = $attributes->get('categoryName') ?? $this->category->name;
+            $category = $this->createCategory($categoryName);
             $category->save();
         }
 
         $this->setCategory($category?->getId() ?? $attributes->get('categoryId'));
 
         if (!$attributes->get('brandId')) {
-            $brand = $this->createBrand($attributes->get('brandName'));
+            $brandName = $attributes->get('brandName') ?? $this->brand->name;
+            $brand = $this->createBrand($brandName);
             $brand->save();
         }
 

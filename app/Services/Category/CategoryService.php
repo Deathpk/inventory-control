@@ -5,7 +5,9 @@ namespace App\Services\Category;
 
 use App\Exceptions\AbstractException;
 use App\Exceptions\Category\FailedToListCategories;
+use App\Exceptions\FailedToCreateEntity;
 use App\Exceptions\FailedToDeleteEntity;
+use App\Exceptions\FailedToUpdateEntity;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
@@ -27,27 +29,28 @@ class CategoryService
         $this->category = $category;
     }
 
-    public function createOrUpdateCategory(StoreCategoryRequest|UpdateCategoryRequest $request, Category $category = null): void
+    public function create(StoreCategoryRequest $request): void
     {
         try {
-            switch ($request) {
-                case $request instanceof StoreCategoryRequest:
-                    $this->storeCategory($request);
-                    break;
-                case $request instanceof UpdateCategoryRequest:
-                    $this->updateCategory($request, $category);
-                    break;
-            }
-        } catch (\Throwable $e) {
-            throw $e;
-            //TODO Criar custom exceptipn
-        }
+            $this->storeCategory($request);
+        } catch (Throwable $e) {
+            throw new FailedToCreateEntity(AbstractException::CATEGORY_ENTITY_LABEL, $e);
+        } 
     }
 
     private function storeCategory(StoreCategoryRequest $request): void
     {
         $attributes = $request->getAttributes();
         Category::create()->fromRequest($attributes);
+    }
+
+    public function update(UpdateCategoryRequest $request, Category $category): void
+    {
+        try {
+            $this->updateCategory($request, $category);
+        } catch (Throwable $e) {
+            throw new FailedToUpdateEntity(AbstractException::CATEGORY_ENTITY_LABEL, $e);
+        }
     }
 
     private function updateCategory(UpdateCategoryRequest $request, Category $category): void

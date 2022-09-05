@@ -35,16 +35,16 @@ class UpdateProductRequest extends FormRequest
         return [
             'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
             'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string'],
-            'name' => 'required|string',
+            'name' => 'string',
             'description' => 'string|max:200',
-            'quantity' => 'required|int',
-            'paidPrice' => 'required|int',
-            'sellingPrice' => 'required|int',
-            'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
-            'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
-            'brandId' => Rule::requiredIf(!$this->getBrandName()),
-            'brandName' => Rule::requiredIf(!$this->getBrandId()),
-            'limitForRestock' => 'required|int'
+            'quantity' => 'int',
+            'paidPrice' => 'int',
+            'sellingPrice' => 'int',
+            'categoryId' => 'int',
+            'categoryName' => 'string',
+            'brandId' => 'int',
+            'brandName' => 'string',
+            'limitForRestock' => 'int'
         ];
     }
 
@@ -53,22 +53,18 @@ class UpdateProductRequest extends FormRequest
         return [
             'productId.required' => 'O campo ID do produto é obrigatório.',
             'productId.int' => 'O campo ID do produto deve conter somente numerais',
-            'name.required' => 'O nome do produto é um campo obrigatório.',
+            'externalProductId.required' => 'O ID externo do produto é obrigatório quando o ID do produto não estiver presente.',
+            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
             'name.string' => 'O nome do produto deve conter somente caracteres Alfa Numéricos.',
             'description.string' => 'A descrição do produto deve conter somente caracteres Alfa Numéricos.',
             'description.max' => 'A descrição do produto deve conter no máximo 200 caractéres.',
-            'quantity.required' => 'A quantidade atual do produto é um campo obrigatório.',
             'quantity.int' => 'O campo quantidade do prroduto deve conter somente numerais.',
-            'categoryId.required' => 'O campo categoria do produto é obrigatório.',
-            'paidPrice.required' => 'O campo valor de custo do produto é obrigatório.',
+            'categoryId.int' => 'O campo ID da categoria do produto deve conter somente numerais',
+            'categoryName.string' => 'O nome da categoria do produto deve conter somente caracteres Alfa Numéricos.',
+            'brandId.int' => 'O campo ID da marca do produto deve conter somente numerais',
+            'brandName.string' => 'O nome da marca do produto deve conter somente caracteres Alfa Numéricos.',
             'paidPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
-            'sellingPrice.required' => 'O campo valor de venda do produto é obrigatório.',
             'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
-            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
-            'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
-            'brandId.required' => 'O ID da marca do produto é obrigatório.',
-            'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',
-            'limitForRestock.required' => 'O campo quantidade para reposição é obrigatório',
             'limitForRestock.int' => 'O campo quantidade para reposição deve conter somente numerais.'
         ];
     }

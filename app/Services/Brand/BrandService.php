@@ -7,6 +7,7 @@ use App\Exceptions\AbstractException;
 use App\Exceptions\Brand\FailedToListBrands;
 use App\Exceptions\FailedToCreateEntity;
 use App\Exceptions\FailedToDeleteEntity;
+use App\Exceptions\FailedToUpdateEntity;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Brand\StoreBrandRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
@@ -41,7 +42,7 @@ class BrandService
         try {
             $this->updateExistingBrand($request, $brandId);
         } catch(Throwable $e) {
-            throw new FailedToCreateEntity(AbstractException::BRAND_ENTITY_LABEL, $e);
+            throw new FailedToUpdateEntity(AbstractException::BRAND_ENTITY_LABEL, $e);
         }
     }
 

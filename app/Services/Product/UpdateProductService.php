@@ -3,6 +3,7 @@
 namespace App\Services\Product;
 
 use App\Exceptions\AbstractException;
+use App\Exceptions\FailedToUpdateEntity;
 use App\Exceptions\Product\FailedToUpdateProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -46,7 +47,7 @@ class UpdateProductService
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            throw new FailedToUpdateProduct($e);
+            throw new FailedToUpdateEntity(AbstractException::PRODUCT_ENTITY_LABEL, $e);
         }
     }
 
@@ -55,7 +56,7 @@ class UpdateProductService
         $product = Product::find($this->requestAttributes->get('productId'))
             ??
             Product::findByExternalId($this->requestAttributes->get('externalProductId'));
-
+        
         $this->entityId = $product->getId() ?? null;
 
         return $product;
