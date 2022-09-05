@@ -23,12 +23,12 @@ class AbstractException extends Exception implements CustomException
     const USER_ENTITY_LABEL = 'Usuário';
     const COMPANY_ENTITY_LABEL = 'Companhia';
 
-    #[Pure] public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null)
+    #[Pure] public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null, int $statusCode = null)
     {
         $this->responseMessage = $responseMessage;
         $this->logMessage = $logMessage;
         $this->thrownException = $thrownException;
-        parent::__construct($this->responseMessage, $this->getCode());
+        parent::__construct($this->responseMessage, $statusCode ?? $this->getCode());
     }
 
     public function report(): void

@@ -3,7 +3,9 @@
 namespace App\Services\Product;
 
 use App\Events\Sales\SaleCreated;
+use App\Exceptions\AbstractException;
 use App\Exceptions\Product\FailedToMarkProductAsSold;
+use App\Exceptions\Product\SoldQuantityBiggerThanAvailableQuantity;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Models\Product;
@@ -11,7 +13,7 @@ use App\Traits\History\RegisterHistory;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Exceptions\Interfaces\CustomException;
 
 class RemoveSoldProductService
 {
@@ -31,6 +33,9 @@ class RemoveSoldProductService
             DB::beginTransaction();
             $this->resolveProductsSoldUnits();
             DB::commit();
+        } catch(CustomException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Throwable $e) {
             DB::rollBack();
             throw new FailedToMarkProductAsSold($e);
@@ -49,10 +54,14 @@ class RemoveSoldProductService
 
            $entityId = $soldProduct['productId'] ?? $soldProduct['externalProductId'];
            $product = self::getSoldProduct($entityId);
+           $availableQuantity = $product->getQuantity();
 
            if (!$product) {
-               //TODO CRIAR UMA CUSTOM VALIDATION
-               throw new NotFoundHttpException('Produto não encontrado na nossa base de dados');
+             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
+           }
+
+           if($availableQuantity < $soldProduct['soldQuantity']) {
+             throw new SoldQuantityBiggerThanAvailableQuantity();
            }
 
            $product->removeSoldUnit($soldProduct['soldQuantity']);

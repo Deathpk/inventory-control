@@ -202,6 +202,11 @@ class Product extends Model
         return $this->selling_price;
     }
 
+    public function getQuantity(): int
+    {
+        return $this->quantity;
+    }
+
     public static function findByExternalId(string $externalProductId): Builder|Product|null
     {
         return Product::query()->firstWhere('external_product_id', $externalProductId);
