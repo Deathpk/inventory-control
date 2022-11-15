@@ -207,6 +207,11 @@ class Product extends Model
         return $this->quantity;
     }
 
+    public function needsReposition(): bool
+    {
+        return $this->quantity <= $this->limit_for_restock;
+    }
+
     public static function findByExternalId(string $externalProductId): Builder|Product|null
     {
         return Product::query()->firstWhere('external_product_id', $externalProductId);

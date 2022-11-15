@@ -26,7 +26,7 @@ class SaleReport extends Model
         'total_price',
         'profit'
     ];
-    
+
     protected $table = 'sales_report';
 
     protected $casts = [
@@ -63,11 +63,11 @@ class SaleReport extends Model
     {
         $totalPrice = 0;
         $profit = 0;
-        
+
         collect($soldProducts)->each(function (array $soldProduct) use(&$totalPrice, &$profit) {
-            $product = isset($soldProduct['productId']) 
-            ? Product::find($soldProduct['productId'])
-            : Product::findByExternalId($soldProduct['externalProductId']);
+            $product = isset($soldProduct['productId'])
+                ? Product::find($soldProduct['productId'])
+                : Product::findByExternalId($soldProduct['externalProductId']);
 
             if($product) {
                 $sellingPrice = $product->getSellingPrice();

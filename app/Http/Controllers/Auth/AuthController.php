@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
 
+//    public function registerNewCompany(Request $request)
+//    {
+//        // TODO
+//    }
+
     public function register(RegisterUserRequest $request, RegisterUserService $service): JsonResponse
     {
         $service->register($request);

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Product;
 
+use App\Exceptions\FailedToCreateEntity;
+use App\Exceptions\FailedToDeleteEntity;
+use App\Exceptions\FailedToUpdateEntity;
 use App\Exceptions\Product\AttachmentInvalid;
-use App\Exceptions\Product\FailedToCreateProduct;
-use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\Product\FailedToImportProducts;
 use App\Exceptions\Product\FailedToListProducts;
-use App\Exceptions\Product\FailedToUpdateProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutoComplete\AutoCompleteRequest;
@@ -58,7 +58,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws FailedToCreateProduct
+     * @throws FailedToCreateEntity
      */
     public function store(StoreProductRequest $request, CreateProductService $service): JsonResponse
     {
@@ -70,7 +70,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws RecordNotFoundOnDatabaseException|FailedToUpdateProduct
+     * @throws RecordNotFoundOnDatabaseException|FailedToUpdateEntity
      */
     public function update(UpdateProductRequest $request, UpdateProductService $service): JsonResponse
     {
@@ -83,7 +83,7 @@ class ProductController extends Controller
 
 
     /**
-     * @throws FailedToDeleteProduct
+     * @throws FailedToDeleteEntity
      */
     public function destroy(DeleteProductRequest $request , DeleteProductService $service): JsonResponse
     {

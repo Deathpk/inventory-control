@@ -4,7 +4,6 @@ namespace App\Services\Product;
 
 use App\Exceptions\AbstractException;
 use App\Exceptions\FailedToUpdateEntity;
-use App\Exceptions\Product\FailedToUpdateProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\History;
@@ -25,7 +24,7 @@ class UpdateProductService
     private int|string $entityId;
 
     /**
-     * @throws RecordNotFoundOnDatabaseException|FailedToUpdateProduct
+     * @throws RecordNotFoundOnDatabaseException|FailedToUpdateEntity
      */
     public function updateProduct(UpdateProductRequest $request): void
     {
@@ -56,7 +55,7 @@ class UpdateProductService
         $product = Product::find($this->requestAttributes->get('productId'))
             ??
             Product::findByExternalId($this->requestAttributes->get('externalProductId'));
-        
+
         $this->entityId = $product->getId() ?? null;
 
         return $product;

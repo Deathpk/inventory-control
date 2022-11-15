@@ -20,6 +20,5 @@ class ProductAutoCompleteService implements AutoCompleteService
         } catch(Throwable $e) {
             throw new FailedToRetrieveResults(AbstractException::PRODUCT_ENTITY_LABEL, $e);
         }
-        
     }
 }

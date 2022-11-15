@@ -4,7 +4,6 @@ namespace App\Services\Product;
 
 use App\Exceptions\AbstractException;
 use App\Exceptions\FailedToDeleteEntity;
-use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\DeleteProductRequest;
 use App\Models\History;
@@ -17,11 +16,11 @@ class DeleteProductService
 {
     use RegisterHistory;
 
-    private $isExternalId;
-    private $productId;
+    private bool $isExternalId;
+    private int $productId;
 
     /**
-     * @throws FailedToDeleteProduct
+     * @throws FailedToDeleteEntity
      */
     public function deleteProduct(DeleteProductRequest $request): void
     {
@@ -29,7 +28,7 @@ class DeleteProductService
 
         try {
             $product = $this->resolveProduct();
-            
+
             if (!$product) {
                 throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
             }
@@ -51,7 +50,6 @@ class DeleteProductService
 
     private function resolveProduct(): ?Product
     {
-
         if (!$this->isExternalId) {
             return Product::find($this->productId);
         }

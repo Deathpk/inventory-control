@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Events\Sales\SaleCreated;
+use App\Listeners\Sales\CheckIfSoldProductsNeedsReposition;
 use App\Listeners\Sales\CreateProductSaleReport;
 use App\Listeners\Sales\CreateSaleReport;
 use Illuminate\Auth\Events\Registered;
@@ -22,7 +23,8 @@ class EventServiceProvider extends ServiceProvider
         ],
         SaleCreated::class => [
             CreateProductSaleReport::class,
-           CreateSaleReport::class
+            CreateSaleReport::class,
+            CheckIfSoldProductsNeedsReposition::class
         ]
     ];
 

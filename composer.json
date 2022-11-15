@@ -12,7 +12,9 @@
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
         "pestphp/pest": "^1.21",
-        "phpoffice/phpspreadsheet": "dev-NumberFormatMask-Helpers"
+        "phpoffice/phpspreadsheet": "dev-NumberFormatMask-Helpers",
+        "symfony/http-client": "^6.1",
+        "symfony/mailgun-mailer": "^6.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

@@ -71,6 +71,16 @@ class Company extends Model
         return $this->id;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getEmail(): string
+    {
+        //TODO
+    }
+
     public function getPlanId(): int
     {
         return $this->plan()->getId();

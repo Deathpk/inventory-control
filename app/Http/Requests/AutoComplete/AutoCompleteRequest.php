@@ -3,6 +3,7 @@
 namespace App\Http\Requests\AutoComplete;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class AutoCompleteRequest extends FormRequest
 {
@@ -11,9 +12,9 @@ class AutoCompleteRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+       return Auth::check();
     }
 
     /**

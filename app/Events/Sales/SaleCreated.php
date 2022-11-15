@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class SaleCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, SerializesModels;
 
     protected Collection $soldProducts;
     protected int $companyId;

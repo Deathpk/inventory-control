@@ -30,7 +30,7 @@ class RegisterUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:120'],
-            'email' => ['required', 'email', 'unique:App\Models\User,email'],
+            'email' => ['required', 'confirmed', 'email', 'unique:App\Models\User,email'],
             'roleId' => ['required', Rule::in(Role::getAvailableRoles())],
             'password' => ['required', 'confirmed',
                 Password::min(8)

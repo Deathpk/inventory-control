@@ -22,7 +22,7 @@ class CreateProductService
     private int $entityId;
 
     /**
-     * @throws FailedToCreateProduct
+     * @throws FailedToCreateEntity
      */
     public function createProduct(StoreProductRequest $request): void
     {
