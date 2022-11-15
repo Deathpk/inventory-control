@@ -19,14 +19,13 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
     {
         $companyData = self::extractCompanyRequiredDataForEmail($event->getCompanyId());
         $soldProductsArray = $event->getSoldProducts();
-        $extractedSoldProducts = self::extractSoldProductsFromArray($soldProductsArray); // TODO FAZER UMA QUERY PARA PEGAR SOMENTE OS DADOS NECESSÁRIOS PARA O ENVIO DO E-MAIL.
+        $extractedSoldProducts = self::extractSoldProductsRequiredDataFromArray($soldProductsArray); // TODO FAZER UMA QUERY PARA PEGAR SOMENTE OS DADOS NECESSÁRIOS PARA O ENVIO DO E-MAIL.
 
         $productsInNeedOfReposition = $this->resolveProductsInNeedOfReposition($extractedSoldProducts);
 
         if ($productsInNeedOfReposition->isNotEmpty()) {
             Mail::send(new RepositionNeeded($productsInNeedOfReposition, $companyData));
         }
-        // TODO CHECAR SE CADA PRODUTO QUE FOI VENDIDO CHEGOU NO LIMITE DE REPOSIÇÃO , SE SIM , DISPARAR E-MAIL PARA A COMPANHIA E USUÁRIOS.
     }
 
     private static function extractCompanyRequiredDataForEmail(int $companyId): array
@@ -41,15 +40,32 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
         ];
     }
 
-    private static function extractSoldProductsFromArray(Collection $soldProductsArray): Collection
+    private static function extractSoldProductsRequiredDataFromArray(Collection $soldProductsArray): Collection
     {
         return $soldProductsArray->map(function(array $soldProductData) {
             $hasExternalId = array_key_exists('externalProductId', $soldProductData);
             if ($hasExternalId) {
-                return Product::findByExternalId($soldProductData['externalProductId']);
+                return Product::with([
+                    'brand' => function($query) {
+                        $query->select(['id', 'name']);
+                    },
+                    'category' => function($query) {
+                        $query->select(['id', 'name']);
+                    }
+                ])
+                ->where('external_id', $soldProductData['externalProductId'])
+                ->get();
             }
 
-             return Product::find($soldProductData['productId']);
+             return Product::with([
+                 'brand' => function($query) {
+                    $query->select(['id', 'name']);
+                },
+                 'category' => function($query) {
+                    $query->select(['id', 'name']);
+                 }
+             ])
+             ->find($soldProductData['productId']);
         });
     }
 
