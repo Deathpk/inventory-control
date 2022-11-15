@@ -18,6 +18,7 @@ class Company extends Model
 
     protected $fillable = [
         'name',
+        'email',
         'cnpj',
         'plan_id',
     ];
@@ -78,7 +79,7 @@ class Company extends Model
 
     public function getEmail(): string
     {
-        //TODO
+        return $this->email;
     }
 
     public function getPlanId(): int

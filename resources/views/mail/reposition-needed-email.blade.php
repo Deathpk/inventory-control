@@ -12,7 +12,7 @@
         </tr>
         @foreach($products as $product)
             <tr>
-                <td style="text-align: center" style="padding-left: 5px">{{$product['id']}}</td>
+                <td style="text-align: center" style="padding-left: 5px">{{$product['external_product_id'] ?? $product['id']}}</td>
                 <td style="text-align: center" style="padding-left: 5px">{{$product['name']}}</td>
                 <td style="text-align: center" style="padding-left: 5px">{{$product['quantity']}}</td>
                 <td style="text-align: center" style="padding-left: 5px">{{$product['limit_for_restock']}}</td>

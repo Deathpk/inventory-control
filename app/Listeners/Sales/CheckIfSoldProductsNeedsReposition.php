@@ -19,12 +19,12 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
     {
         $companyData = self::extractCompanyRequiredDataForEmail($event->getCompanyId());
         $soldProductsArray = $event->getSoldProducts();
-        $extractedSoldProducts = self::extractSoldProductsRequiredDataFromArray($soldProductsArray); // TODO FAZER UMA QUERY PARA PEGAR SOMENTE OS DADOS NECESSÁRIOS PARA O ENVIO DO E-MAIL.
+        $extractedSoldProducts = self::extractSoldProductsRequiredDataFromArray($soldProductsArray);
 
-        $productsInNeedOfReposition = $this->resolveProductsInNeedOfReposition($extractedSoldProducts);
+        $this->resolveProductsInNeedOfReposition($extractedSoldProducts);
 
-        if ($productsInNeedOfReposition->isNotEmpty()) {
-            Mail::send(new RepositionNeeded($productsInNeedOfReposition, $companyData));
+        if ($extractedSoldProducts->isNotEmpty()) {
+            Mail::send(new RepositionNeeded($extractedSoldProducts, $companyData));
         }
     }
 
@@ -32,11 +32,11 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
     {
         $company = Company::query()
             ->where('id', $companyId)
-            ->find($companyId, ['name']);// todo add email when migration is done
+            ->find($companyId, ['name']);//, 'email'
 
         return [
           'name' => $company->getName(),
-          'email' => 'bettercallmiguel@gmail.com'
+          'email' => 'bettercallmiguel@gmail.com'//$company->getEmail()
         ];
     }
 
@@ -45,39 +45,43 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
         return $soldProductsArray->map(function(array $soldProductData) {
             $hasExternalId = array_key_exists('externalProductId', $soldProductData);
             if ($hasExternalId) {
-                return Product::with([
-                    'brand' => function($query) {
-                        $query->select(['id', 'name']);
-                    },
-                    'category' => function($query) {
-                        $query->select(['id', 'name']);
-                    }
-                ])
-                ->where('external_id', $soldProductData['externalProductId'])
-                ->get();
+                return self::getProductDataBasedOnExternalId($soldProductData['externalProductId']);
             }
 
-             return Product::with([
-                 'brand' => function($query) {
-                    $query->select(['id', 'name']);
-                },
-                 'category' => function($query) {
-                    $query->select(['id', 'name']);
-                 }
-             ])
-             ->find($soldProductData['productId']);
+            return self::getProductDataBasedOnId($soldProductData['productId']);
         });
     }
 
-    private function resolveProductsInNeedOfReposition(Collection &$soldProducts): Collection
+    private static function getProductDataBasedOnExternalId(string $externalProductId): Product
     {
-        $productsInNeedOfReposition = collect();
-        $soldProducts->each(function (Product $product) use(&$productsInNeedOfReposition) {
-            if ($product->needsReposition()) {
-                $productsInNeedOfReposition->push($product);
+        return Product::with([
+            'brand' => function($query) {
+                $query->select(['id', 'name']);
+            },
+            'category' => function($query) {
+                $query->select(['id', 'name']);
             }
-        });
+        ])
+        ->where('external_product_id', $externalProductId)
+        ->first();
+    }
 
-        return $productsInNeedOfReposition;
+    private static function getProductDataBasedOnId(int $id): Product
+    {
+        return Product::with([
+            'brand' => function($query) {
+                $query->select(['id', 'name']);
+            },
+            'category' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ])->find($id);
+    }
+
+    private function resolveProductsInNeedOfReposition(Collection &$soldProducts): void
+    {
+        $soldProducts->filter(function (Product $product) {
+            return $product->needsReposition();
+        });
     }
 }

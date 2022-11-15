@@ -25,7 +25,7 @@ class RepositionNeeded extends AbstractEmail
 
         parent::__construct(
             self::SUBJECT,
-            'bettercallmiguel@gmail.com',//['email'],
+            $company['email'],
             $company['name'],
             $data,
             self::VIEW
