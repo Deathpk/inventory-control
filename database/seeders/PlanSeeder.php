@@ -17,7 +17,6 @@ class PlanSeeder extends Seeder
     public function run(): void
     {
         $availablePlansMap = collect([
-            Plan::getPlanAttributesBasedOnType(Plan::FREE_PLAN_LABEL),
             Plan::getPlanAttributesBasedOnType(Plan::ESSENTIAL_PLAN_LABEL),
             Plan::getPlanAttributesBasedOnType(Plan::PREMIUM_PLAN_LABEL)
         ]);
