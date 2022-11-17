@@ -32,6 +32,7 @@ class RegisterApiTokenService
 
     private function issueTokenForCompany(): string
     {
+        //TODO CRIAR UMA POLICY PARA CHECAR SE A COMPANHIA PODE UTILIZAR API. NESSE CASO SOMENTE PLANO PREMIUM.
         /** @var Company $company */
         $company = Auth::user()->getCompany();
         return $company->createToken($this->tokenAlias)->plainTextToken;

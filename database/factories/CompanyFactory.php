@@ -25,7 +25,8 @@ class CompanyFactory extends Factory
         return [
             'name' => $this->faker->company,
             'cnpj' => $fakePtBrCompany->cnpj(),
-            'plan_id' => rand(1,3)
+            'email' => $this->faker->email(),
+            'plan_id' => rand(1,2)
         ];
     }
 }

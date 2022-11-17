@@ -32,11 +32,11 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
     {
         $company = Company::query()
             ->where('id', $companyId)
-            ->find($companyId, ['name']);//, 'email'
+            ->find($companyId, ['name', 'email']);
 
         return [
           'name' => $company->getName(),
-          'email' => 'bettercallmiguel@gmail.com'//$company->getEmail()
+          'email' => $company->getEmail()
         ];
     }
 

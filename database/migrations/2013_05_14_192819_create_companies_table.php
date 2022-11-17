@@ -16,8 +16,9 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('cnpj');
+            $table->string('name', 120);
+            $table->string('cnpj', 18);
+            $table->string('email');
             $table->foreignIdFor(Plan::class)->constrained();
             $table->timestamps();
         });
