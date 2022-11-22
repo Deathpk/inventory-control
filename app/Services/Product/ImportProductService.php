@@ -6,7 +6,7 @@ use App\Exceptions\Product\AttachmentInvalid;
 use App\Exceptions\Product\FailedToImportProducts;
 use App\Models\History;
 use App\Models\Product;
-use App\Prototypes\Product\ImportedProduct;
+use App\ValueObjects\Product\ImportedProduct;
 use App\Services\History\HistoryService;
 use App\Traits\History\RegisterHistory;
 use Illuminate\Http\UploadedFile;
@@ -72,7 +72,7 @@ class ImportProductService
     private function convertSpreadsheetToCollection(): Collection
     {
         $reader = $this->resolveFileReader();
-        $spreadSheet = $reader->load($this->importedFile->getRealPath());
+        $spreadSheet = $reader->load($this->importedFile->getRealPath()); //->getActiveSheet()->toArray()
 
         return collect($spreadSheet->getActiveSheet()->toArray())->map(function (array $productData) {
             return collect($productData)->filter()->toArray();

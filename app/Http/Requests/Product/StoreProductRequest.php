@@ -45,7 +45,7 @@ class StoreProductRequest extends FormRequest
             'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
             'brandId' => Rule::requiredIf(!$this->getBrandName()),
             'brandName' => Rule::requiredIf(!$this->getBrandId()),
-            'limitForRestock' => 'required|int'
+            'minimumQuantity' => 'required|int'
         ];
     }
 
@@ -67,8 +67,8 @@ class StoreProductRequest extends FormRequest
             'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
             'brandId.required' => 'O ID da marca do produto é obrigatório.',
             'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',
-            'limitForRestock.required' => 'O campo quantidade para reposição é obrigatório',
-            'limitForRestock.int' => 'O campo quantidade para reposição deve conter somente numerais.'
+            'minimumQuantity.required' => 'O campo quantidade minima para reposição é obrigatório',
+            'minimumQuantity.int' => 'O campo quantidade minima para reposição deve conter somente numerais.'
         ];
     }
 
@@ -117,8 +117,8 @@ class StoreProductRequest extends FormRequest
         return $this->request->get('sellingPrice');
     }
 
-    public function getLimitForRestock(): int
+    public function getMinimumQuantity(): int
     {
-        return $this->request->get('limitForRestock');
+        return $this->request->get('minimumQuantity');
     }
 }

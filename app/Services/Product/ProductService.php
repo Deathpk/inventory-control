@@ -5,7 +5,6 @@ namespace App\Services\Product;
 
 
 use App\Exceptions\AbstractException;
-use App\Exceptions\Product\FailedToDeleteProduct;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
@@ -14,7 +13,7 @@ use App\Models\History;
 use App\Models\Product;
 use App\Models\ProductSalesReport;
 use App\Models\User;
-use App\Prototypes\Product\ImportedProduct;
+use App\ValueObjects\Product\ImportedProduct;
 use App\Services\History\HistoryService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

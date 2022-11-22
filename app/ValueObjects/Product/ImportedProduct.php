@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Prototypes\Product;
+namespace App\ValueObjects\Product;
 
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
