@@ -90,7 +90,7 @@ class UpdateProductService
         $changes = collect();
         $changeAbleProperties = collect([
             'name', 'quantity',
-            'limit_for_restock', 'paid_price',
+            'minimum_quantity', 'paid_price',
             'selling_price', 'category_id',
             'brand_id', 'external_product_id'
         ]);

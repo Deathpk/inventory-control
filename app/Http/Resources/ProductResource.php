@@ -24,7 +24,7 @@ class ProductResource extends JsonResource
             'quantity' => $this->quantity,
             'paid_price' => $this->paid_price,
             'selling_price' => $this->selling_price,
-            'limit_for_restock' => $this->limit_for_restock,
+            'minimum_quantity' => $this->minimum_quantity,
             'category' => CategoryResource::make($this->category),
             'brand' => BrandResource::make($this->brand)
         ];

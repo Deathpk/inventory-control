@@ -15,7 +15,7 @@
             <td style="text-align: center; padding-left: 5px">{{$product['external_product_id'] ?? $product['id']}}</td>
             <td style="text-align: center; padding-left: 5px">{{$product['name']}}</td>
             <td style="text-align: center; padding-left: 5px">{{$product['quantity']}}</td>
-            <td style="text-align: center; padding-left: 5px">{{$product['limit_for_restock']}}</td>
+            <td style="text-align: center; padding-left: 5px">{{$product['minimum_quantity']}}</td>
             <td style="text-align: center; padding-left: 5px">{{$product['category']['name']}}</td>
             <td style="text-align: center; padding-left: 5px">{{$product['brand']['name']}}</td>
         </tr>

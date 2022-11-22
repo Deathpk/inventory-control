@@ -10,7 +10,7 @@ class ImportedProduct
 {
     const NAME_KEY = 0;
     const QUANTITY_KEY = 1;
-    const LIMIT_FOR_RESTOCK_KEY = 2;
+    const MINIMUM_QUANTITY_KEY = 2;
     const PAID_PRICE_KEY = 3;
     const SELLING_PRICE_KEY = 4;
     const CATEGORY_NAME_KEY = 5;
@@ -20,7 +20,7 @@ class ImportedProduct
 
     public string $name;
     public int $quantity;
-    public int $limit_for_restock;
+    public int $minimum_quantity;
     public int $paid_price;
     public int $selling_price;
     public string $category_name;
@@ -44,7 +44,7 @@ class ImportedProduct
         return collect([
             'name' => $this->name,
             'quantity' => $this->quantity,
-            'limitForRestock' => $this->limit_for_restock,
+            'minimum_quantity' => $this->minimum_quantity,
             'paidPrice' => $this->paid_price,
             'sellingPrice' => $this->selling_price,
             'categoryName' => $this->category_name,
@@ -58,7 +58,7 @@ class ImportedProduct
     {
         $this->name = $product[self::NAME_KEY];
         $this->quantity = $product[self::QUANTITY_KEY];
-        $this->limit_for_restock = $product[self::LIMIT_FOR_RESTOCK_KEY];
+        $this->minimum_quantity = $product[self::MINIMUM_QUANTITY_KEY];
         $this->paid_price = self::convertToInteger($product[self::PAID_PRICE_KEY]);
         $this->selling_price = self::convertToInteger($product[self::SELLING_PRICE_KEY]);
         $this->category_name = $product[self::CATEGORY_NAME_KEY];

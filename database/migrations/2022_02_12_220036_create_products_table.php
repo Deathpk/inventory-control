@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignIdFor(Company::class)->constrained();
             $table->foreignIdFor(Brand::class)->constrained();
             $table->foreignIdFor(Category::class)->constrained();
-            $table->integer('limit_for_restock');
+            $table->integer('minimum_quantity');
             $table->timestamps();
             $table->softDeletes();
         });

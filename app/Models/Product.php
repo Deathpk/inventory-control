@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
  * @property int $paid_price
  * @property int $selling_price
  * @property string $external_product_id
- * @property int $limit_for_restock
+ * @property int $minimum_quantity
  * @property int $category_id
  * @property int $brand_id
  * @property int $company_id
@@ -36,7 +36,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'quantity',
-        'limit_for_restock',
+        'minimum_quantity',
         'paid_price',
         'selling_price',
         'external_product_id',
@@ -103,7 +103,7 @@ class Product extends Model
         $this->name = $attributes->get('name') ?? $this->name;
         $this->description = $attributes->get('description') ?? $this->description;
         $this->quantity = $attributes->get('quantity') ?? $this->quantity;
-        $this->limit_for_restock = $attributes->get('limitForRestock') ?? $this->limit_for_restock;
+        $this->minimum_quantity = $attributes->get('limitForRestock') ?? $this->minimum_quantity;
         $this->paid_price = $attributes->get('paidPrice') ?? $this->paid_price;
         $this->selling_price = $attributes->get('sellingPrice') ?? $this->selling_price;
         $this->external_product_id = $attributes->get('externalProductId') ?? $this->external_product_id;
@@ -209,7 +209,7 @@ class Product extends Model
 
     public function needsReposition(): bool
     {
-        return $this->quantity <= $this->limit_for_restock;
+        return $this->quantity <= $this->minimum_quantity;
     }
 
     public static function findByExternalId(string $externalProductId): Builder|Product|null

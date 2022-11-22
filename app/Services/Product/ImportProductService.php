@@ -115,7 +115,7 @@ class ImportProductService
             'initialQuantity' => $product->quantity,
             'categoryId' => $product->category_id ?? null,
             'brandId' => $product->brand_id ?? null,
-            'limitForRestock' => $product->limit_for_restock
+            'minimumQuantity' => $product->minimum_quantity
         ])->toJson();
     }
 }

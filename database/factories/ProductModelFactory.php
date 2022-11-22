@@ -34,7 +34,7 @@ class ProductModelFactory extends Factory
             'selling_price' => 35000,
             'brand_id' => Brand::query()->first()->id,
             'category_id' => Category::query()->first()->id,
-            'limit_for_restock' => 10,
+            'minimum_quantity' => 10,
         ];
     }
 }
