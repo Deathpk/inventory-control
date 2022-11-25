@@ -19,12 +19,11 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
     {
         $companyData = self::extractCompanyRequiredDataForEmail($event->getCompanyId());
         $soldProductsArray = $event->getSoldProducts();
-        $extractedSoldProducts = self::extractSoldProductsRequiredDataFromArray($soldProductsArray);
+        $extractedSoldProducts = $this->extractSoldProductsRequiredDataFromArray($soldProductsArray);
+        $productsInNeedOfReposition = self::resolveProductsInNeedOfReposition($extractedSoldProducts);
 
-        $this->resolveProductsInNeedOfReposition($extractedSoldProducts);
-
-        if ($extractedSoldProducts->isNotEmpty()) {
-            Mail::send(new RepositionNeeded($extractedSoldProducts, $companyData));
+        if ($productsInNeedOfReposition->isNotEmpty()) {
+            Mail::send(new RepositionNeeded($productsInNeedOfReposition, $companyData));
         }
     }
 
@@ -40,7 +39,7 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
         ];
     }
 
-    private static function extractSoldProductsRequiredDataFromArray(Collection $soldProductsArray): Collection
+    private function extractSoldProductsRequiredDataFromArray(Collection $soldProductsArray): Collection
     {
         return $soldProductsArray->map(function(array $soldProductData) {
             $hasExternalId = array_key_exists('externalProductId', $soldProductData);
@@ -78,9 +77,9 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
         ])->find($id);
     }
 
-    private function resolveProductsInNeedOfReposition(Collection &$soldProducts): void
+    private static function resolveProductsInNeedOfReposition(Collection $extractedSoldProducts): Collection
     {
-        $soldProducts->filter(function (Product $product) {
+        return $extractedSoldProducts->filter(function (Product $product) {
             return $product->needsReposition();
         });
     }

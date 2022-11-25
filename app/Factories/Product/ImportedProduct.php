@@ -39,6 +39,19 @@ class ImportedProduct
         return $this;
     }
 
+    private function setProductInfo(array $product): void
+    {
+        $this->name = $product[self::NAME_KEY];
+        $this->quantity = $product[self::QUANTITY_KEY];
+        $this->minimum_quantity = $product[self::MINIMUM_QUANTITY_KEY];
+        $this->paid_price = self::convertToInteger($product[self::PAID_PRICE_KEY]);
+        $this->selling_price = self::convertToInteger($product[self::SELLING_PRICE_KEY]);
+        $this->category_name = $product[self::CATEGORY_NAME_KEY];
+        $this->brand_name = $product[self::BRAND_NAME_KEY];
+        $this->external_product_id = $product[self::EXTERNAL_PRODUCT_ID_KEY] ?? null;
+        $this->description = $product[self::PRODUCT_DESCRIPTION] ?? null;
+    }
+
     public function toCollection(): Collection
     {
         return collect([
@@ -52,19 +65,6 @@ class ImportedProduct
             'externalProductId' => $this->external_product_id,
             'description' => $this->description
         ]);
-    }
-
-    private function setProductInfo(array $product): void
-    {
-        $this->name = $product[self::NAME_KEY];
-        $this->quantity = $product[self::QUANTITY_KEY];
-        $this->minimum_quantity = $product[self::MINIMUM_QUANTITY_KEY];
-        $this->paid_price = self::convertToInteger($product[self::PAID_PRICE_KEY]);
-        $this->selling_price = self::convertToInteger($product[self::SELLING_PRICE_KEY]);
-        $this->category_name = $product[self::CATEGORY_NAME_KEY];
-        $this->brand_name = $product[self::BRAND_NAME_KEY];
-        $this->external_product_id = $product[self::EXTERNAL_PRODUCT_ID_KEY] ?? null;
-        $this->description = $product[self::PRODUCT_DESCRIPTION] ?? null;
     }
 
     private static function convertToInteger(float|string $value): int
