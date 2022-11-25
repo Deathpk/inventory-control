@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brand\BrandController;
+use App\Http\Controllers\BuyListController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Reports\SalesReportController;
@@ -75,4 +76,12 @@ Route::controller(BrandController::class)->middleware('auth:sanctum')
     Route::get('/autocomplete', 'autoComplete');
     Route::get('/{brandId}', 'show');
 });
+
+Route::controller(BuyListController::class)->middleware('auth:sanctum')
+    ->prefix('buy-list')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/add-item', 'store');
+        Route::put('/edit', 'update');
+        Route::delete('/remove', 'destroy');
+    });
 

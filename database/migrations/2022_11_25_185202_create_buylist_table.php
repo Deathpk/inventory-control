@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Plan;
+use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,14 +12,12 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('buy_list', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 120);
-            $table->string('cnpj', 18);
-            $table->string('email')->unique();
-            $table->foreignIdFor(Plan::class)->constrained();
+            $table->foreignIdFor(Company::class)->constrained();
+            $table->text('products');
             $table->timestamps();
         });
     }
@@ -29,8 +27,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('buy_list');
     }
 };

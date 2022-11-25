@@ -4,9 +4,9 @@ namespace App\Services\Product;
 
 use App\Exceptions\Product\AttachmentInvalid;
 use App\Exceptions\Product\FailedToImportProducts;
+use App\Factories\Product\ImportedProduct;
 use App\Models\History;
 use App\Models\Product;
-use App\ValueObjects\Product\ImportedProduct;
 use App\Services\History\HistoryService;
 use App\Traits\History\RegisterHistory;
 use Illuminate\Http\UploadedFile;

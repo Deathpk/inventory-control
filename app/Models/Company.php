@@ -67,6 +67,11 @@ class Company extends Model
         return $this->hasMany(ProductSalesReport::class);
     }
 
+    public function buyList(): HasOne
+    {
+        return $this->hasOne(BuyList::class);
+    }
+
     public function getId(): int
     {
         return $this->id;
