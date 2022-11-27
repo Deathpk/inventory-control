@@ -6,6 +6,7 @@ use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\RemoveProductFromBuyListRequest;
 use App\Http\Requests\StoreBuyListRequest;
 use App\Http\Requests\UpdateBuyListRequest;
+use App\Http\Resources\BuyListCollection;
 use App\Services\BuyListService;
 use Illuminate\Http\JsonResponse;
 
@@ -18,9 +19,10 @@ class BuyListController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(): BuyListCollection
     {
-
+        $buyList = $this->service->showCurrentBuyList();
+        return new BuyListCollection($buyList);
     }
 
     /**
