@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -52,5 +53,10 @@ class UpdateBuyListRequest extends FormRequest
     public function getExternalProductId(): ?string
     {
         return $this->request->get('externalProductId', null);
+    }
+
+    public function getAttributes(): Collection
+    {
+        return collect($this->validated());
     }
 }

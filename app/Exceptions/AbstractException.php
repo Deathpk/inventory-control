@@ -22,6 +22,7 @@ class AbstractException extends Exception implements CustomException
     const BRAND_ENTITY_LABEL = 'Marca';
     const USER_ENTITY_LABEL = 'Usuário';
     const COMPANY_ENTITY_LABEL = 'Companhia';
+    const BUY_LIST_ITEM_ENTITY_LABEL = 'Item na Lista de compras';
 
     #[Pure] public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null, int $statusCode = null)
     {

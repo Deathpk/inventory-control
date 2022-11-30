@@ -53,6 +53,12 @@ class BuyList extends Model
         $this->save();
     }
 
+    public function updateBuyListProduct(string $updatedBuyListProducts): void
+    {
+        $this->products = $updatedBuyListProducts;
+        $this->save();
+    }
+
     private function setBuyListData(Collection $attributes): void
     {
        $this->company_id = self::getLoggedCompanyId();

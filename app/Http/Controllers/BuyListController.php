@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\FailedToUpdateEntity;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\RemoveProductFromBuyListRequest;
 use App\Http\Requests\StoreBuyListRequest;
@@ -37,13 +38,29 @@ class BuyListController extends Controller
         ]);
     }
 
-    public function update(UpdateBuyListRequest $request)
+    /**
+     * @throws FailedToUpdateEntity
+     * @throws RecordNotFoundOnDatabaseException
+     */
+    public function update(UpdateBuyListRequest $request): JsonResponse
     {
-        //TODO
+       $this->service->updateListItem($request);
+       return response()->json([
+          'success' => true,
+          'message' => 'Item da lista de compras editado com sucesso!'
+       ]);
     }
 
-    public function destroy(RemoveProductFromBuyListRequest $request)
+    /**
+     * @throws FailedToUpdateEntity
+     * @throws RecordNotFoundOnDatabaseException
+     */
+    public function destroy(RemoveProductFromBuyListRequest $request): JsonResponse
     {
-        //TODO
+        $this->service->removeProductFromBuyList($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Item da lista de compras removido com sucesso!'
+        ]);
     }
 }

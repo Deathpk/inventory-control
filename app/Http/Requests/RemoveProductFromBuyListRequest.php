@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -41,11 +42,16 @@ class RemoveProductFromBuyListRequest extends FormRequest
 
     public function getProductId(): ?int
     {
-        return $this->request->get('productId', null);
+        return (int) $this->query('productId');
     }
 
     public function getExternalProductId(): ?string
     {
-        return $this->request->get('externalProductId', null);
+        return $this->query('externalProductId');
+    }
+
+    public function getAttributes(): Collection
+    {
+        return collect($this->validated());
     }
 }
