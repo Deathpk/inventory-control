@@ -27,27 +27,31 @@ class RemoveProductFromBuyListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'productId' => [Rule::requiredIf(!$this->getExternalProductId())],
-            'externalProductId' => [Rule::requiredIf(!$this->getProductId())],
+            'productId' => 'required',
+            'isExternal' => 'required',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'productId.required' => 'O campo ID do produto é obrigatório!',
-            'externalProductId.required' => 'O campo ExternalId do produto é obrigatório quando o ID do produto estiver ausente!',
+            'productId.required' => 'O campo Id do produto é obrigatório!',
+            'isExternal.required' => 'O campo isExternal é obrigatório!',
         ];
     }
 
-    public function getProductId(): ?int
+    public function getProductId(): int|string
     {
+        if($this->getIsExternal()) {
+            return $this->query('productId');
+        }
+
         return (int) $this->query('productId');
     }
 
-    public function getExternalProductId(): ?string
+    public function getIsExternal(): bool
     {
-        return $this->query('externalProductId');
+        return (bool) $this->query('isExternal');
     }
 
     public function getAttributes(): Collection

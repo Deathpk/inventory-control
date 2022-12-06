@@ -161,23 +161,6 @@ class BuyListService
         }
     }
 
-    /**
-     * @throws FailedToUpdateEntity
-     * @throws RecordNotFoundOnDatabaseException
-     */
-    public function removeProductFromBuyList(RemoveProductFromBuyListRequest $request): void
-    {
-        $this->attributes = $request->getAttributes();
-        $this->resolveEntityIdAndLabel();
-        $this->checkIfRequiredProductExists();
-        $productsFromCurrentList = self::getProductsFromCurrentBuyList();
-        $this->productExistsOnCurrentBuyList($productsFromCurrentList);
-        $updatedBuyListProducts = $this->removeItemFromBuyList($productsFromCurrentList);
-        $buyList = self::getCurrentBuyList();
-
-        $buyList->updateBuyListProduct($updatedBuyListProducts);
-    }
-
     private function removeItemFromBuyList(Collection $productsFromCurrentList): string
     {
         return $productsFromCurrentList->filter(function (object $buyListProduct) {

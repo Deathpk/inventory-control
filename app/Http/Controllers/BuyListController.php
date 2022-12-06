@@ -9,6 +9,7 @@ use App\Http\Requests\StoreBuyListRequest;
 use App\Http\Requests\UpdateBuyListRequest;
 use App\Http\Resources\BuyListCollection;
 use App\Services\BuyListService;
+use App\Services\RemoveProductFromBuyListService;
 use Illuminate\Http\JsonResponse;
 
 class BuyListController extends Controller
@@ -55,9 +56,9 @@ class BuyListController extends Controller
      * @throws FailedToUpdateEntity
      * @throws RecordNotFoundOnDatabaseException
      */
-    public function destroy(RemoveProductFromBuyListRequest $request): JsonResponse
+    public function destroy(RemoveProductFromBuyListRequest $request, RemoveProductFromBuyListService $service): JsonResponse
     {
-        $this->service->removeProductFromBuyList($request);
+        $service->removeProductFromBuyList($request);
         return response()->json([
             'success' => true,
             'message' => 'Item da lista de compras removido com sucesso!'
