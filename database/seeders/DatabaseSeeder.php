@@ -14,11 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // (new PlanSeeder())->run();
-        // (new RolesSeeder())->run();
-        // Company::factory()->count(5)->create();
-        // (new BrandsSeeder())->run();
-        // (new CategoriesSeeder())->run();
+        (new PlanSeeder())->run();
+        (new RolesSeeder())->run();
+        Company::factory()->count(5)->create();
+        (new BrandsSeeder())->run();
+        (new CategoriesSeeder())->run();
         (new BuyListSeeder())->run();
     }
 }
