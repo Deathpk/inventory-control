@@ -8,6 +8,7 @@ use App\Http\Requests\RemoveProductFromBuyListRequest;
 use App\Http\Requests\StoreBuyListRequest;
 use App\Http\Requests\UpdateBuyListRequest;
 use App\Http\Resources\BuyListCollection;
+use App\Services\AddProductToBuyListService;
 use App\Services\BuyListService;
 use App\Services\RemoveProductFromBuyListService;
 use Illuminate\Http\JsonResponse;
@@ -30,9 +31,9 @@ class BuyListController extends Controller
     /**
      * @throws RecordNotFoundOnDatabaseException
      */
-    public function store(StoreBuyListRequest $request): JsonResponse
+    public function store(StoreBuyListRequest $request, AddProductToBuyListService $service): JsonResponse
     {
-        $this->service->addToBuyList($request);
+        $service->addToBuyList($request);
         return response()->json([
             'sucess' => true,
             'message' => 'Produto adicionado a lista de compras com sucesso!'
