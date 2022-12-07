@@ -31,6 +31,7 @@ class RemoveProductFromBuyListService
             $this->isExternal = $request->getIsExternal();
             $this->entityId = $request->getProductId();
             $this->entityIdLabel = $this->isExternal ? 'externalProductId' : 'productId';
+
             $this->checkIfRequiredProductExists();
             $productsFromCurrentList = self::getProductsFromCurrentBuyList();
             $this->productExistsOnCurrentBuyList($productsFromCurrentList);
@@ -50,15 +51,15 @@ class RemoveProductFromBuyListService
         }
     }
 
-    private static function getCurrentBuyList(): ?BuyList
-    {
-        return BuyList::first();
-    }
-
     private static function getProductsFromCurrentBuyList(): Collection
     {
         $currentBuyList = self::getCurrentBuyList();
         return collect(json_decode($currentBuyList->products));
+    }
+
+    private static function getCurrentBuyList(): ?BuyList
+    {
+        return BuyList::first();
     }
 
     private function productExistsOnCurrentBuyList(Collection $productsFromCurrentBuyList): void

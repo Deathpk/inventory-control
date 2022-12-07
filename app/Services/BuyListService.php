@@ -31,7 +31,6 @@ class BuyListService
     private function getCurrentFormattedBuyList(): Collection
     {
         $originalBuyList = self::getProductsFromBuyList();
-
         return $originalBuyList->map(function (object $buyListItem) {
            $product = self::getProductDataFromBuyListItem($buyListItem);
            return new BuyListProduct($product);
@@ -143,9 +142,10 @@ class BuyListService
     private function updateBuyListProductsObject(Collection $productsFromCurrentList): string
     {
         return $productsFromCurrentList->map(function (object $buyListItem) {
-            if ($buyListItem->{$this->entityIdLabel} === $this->entityId) {
+            if (property_exists($buyListItem, $this->entityIdLabel) && $buyListItem->{$this->entityIdLabel} == $this->entityId) {
                 $buyListItem->repositionQuantity = $this->attributes->get('repositionQuantity');
             }
+            
             return $buyListItem;
         })->toJson();
     }
@@ -153,7 +153,9 @@ class BuyListService
     private function productExistsOnCurrentBuyList(Collection $productsFromCurrentBuyList): void
     {
         $productExistsOnList = $productsFromCurrentBuyList->filter(function (object $buyListProduct) {
-            return $buyListProduct->{$this->entityIdLabel} === $this->entityId;
+            return property_exists($buyListProduct, $this->entityIdLabel) 
+            &&
+            $buyListProduct->{$this->entityIdLabel} == $this->entityId;
         })->isNotEmpty();
 
         if (!$productExistsOnList) {

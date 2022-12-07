@@ -45,6 +45,12 @@ class BuyList extends Model
         $this->save();
     }
 
+    private function setBuyListData(Collection $attributes): void
+    {
+       $this->company_id = self::getLoggedCompanyId();
+       $this->products = collect([$attributes->toArray()])->toJson();
+    }
+
     public function addProductToExistingBuyList(Collection $attributes): void
     {
         $existingProducts = collect(json_decode($this->products));
@@ -57,12 +63,6 @@ class BuyList extends Model
     {
         $this->products = $updatedBuyListProducts;
         $this->save();
-    }
-
-    private function setBuyListData(Collection $attributes): void
-    {
-       $this->company_id = self::getLoggedCompanyId();
-       $this->products = collect([$attributes->toArray()])->toJson();
     }
 
     public function company(): BelongsTo
