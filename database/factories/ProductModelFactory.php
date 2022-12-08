@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -27,14 +28,21 @@ class ProductModelFactory extends Factory
      */
     public function definition(): array
     {
+        return self::getMock();
+    }
+
+    public static function getMock(): array
+    {
+        $paidPrice = rand(10,10000);
         return [
-            'name' => 'HD Seagate Barracuda 2TB',
-            'quantity' => 20,
-            'paid_price' => 12000,
-            'selling_price' => 35000,
+            'name' => 'Testing Product',
+            'description' => 'A testing Product.',
+            'quantity' => rand(1,100),
+            'paid_price' => $paidPrice,
+            'selling_price' => $paidPrice + rand(10,1000),
             'brand_id' => Brand::query()->first()->id,
             'category_id' => Category::query()->first()->id,
-            'minimum_quantity' => 10,
+            'minimum_quantity' => rand(1,10)
         ];
     }
 }
