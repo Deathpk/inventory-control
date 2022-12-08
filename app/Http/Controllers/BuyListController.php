@@ -9,22 +9,16 @@ use App\Http\Requests\StoreBuyListRequest;
 use App\Http\Requests\UpdateBuyListRequest;
 use App\Http\Resources\BuyListCollection;
 use App\Services\AddProductToBuyListService;
-use App\Services\BuyListService;
+use App\Services\GetBuyListService;
 use App\Services\RemoveProductFromBuyListService;
+use App\Services\UpdateBuyListProductService;
 use Illuminate\Http\JsonResponse;
 
 class BuyListController extends Controller
 {
-    private readonly BuyListService $service;
-
-    public function __construct(BuyListService $service)
+    public function index(GetBuyListService $service): BuyListCollection
     {
-        $this->service = $service;
-    }
-
-    public function index(): BuyListCollection
-    {
-        $buyList = $this->service->showCurrentBuyList();
+        $buyList = $service->showCurrentBuyList();
         return new BuyListCollection($buyList);
     }
 
@@ -44,9 +38,9 @@ class BuyListController extends Controller
      * @throws FailedToUpdateEntity
      * @throws RecordNotFoundOnDatabaseException
      */
-    public function update(UpdateBuyListRequest $request): JsonResponse
+    public function update(UpdateBuyListRequest $request, UpdateBuyListProductService $service): JsonResponse
     {
-       $this->service->updateListItem($request);
+       $service->updateListItem($request);
        return response()->json([
           'success' => true,
           'message' => 'Item da lista de compras editado com sucesso!'

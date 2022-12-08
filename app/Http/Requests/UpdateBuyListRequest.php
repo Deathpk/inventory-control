@@ -47,7 +47,7 @@ class UpdateBuyListRequest extends FormRequest
 
     public function getProductId(): ?int
     {
-        return $this->request->get('productId', null);
+        return (int) $this->request->get('productId', null);
     }
 
     public function getExternalProductId(): ?string

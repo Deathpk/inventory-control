@@ -29,7 +29,7 @@ class AddProductToBuyListService
         $this->resolveEntityIdAndLabel();
         $this->checkIfRequiredProductExists();
 
-        try{
+        try {
             $existingBuyList = BuyList::first();
 
             if (!$existingBuyList) {
