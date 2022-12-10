@@ -48,8 +48,8 @@ class AbstractException extends Exception implements CustomException
             $companyId = $loggedEntity->getCompany()->getId();
             return "{$this->logMessage}, o erro ocorreu com o usuário de ID : {$loggedEntity->getId()} \n da Companhia de ID: {$companyId}.";
         }
-
-        return "{$this->logMessage}, o erro ocorreu com a companhia de ID: {$loggedEntity->getId()}.";
+        $companyId = $loggedEntity->getId();
+        return "{$this->logMessage}, o erro ocorreu com a companhia de ID: {$companyId}.";
     }
 
     private function resolveDebuggingMessages(): string

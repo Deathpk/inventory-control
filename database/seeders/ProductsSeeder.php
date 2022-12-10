@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class ProductsSeeder extends Seeder
 {
-        /**
+    /**
      * Run the database seeds.
      *
      * @return void
-     */
+    */
     public function run(): void
     {
         Company::all()->each(function(Company $company) {

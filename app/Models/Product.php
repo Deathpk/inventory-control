@@ -212,8 +212,62 @@ class Product extends Model
         return $this->quantity <= $this->minimum_quantity;
     }
 
+    public static function findByIdWithRelations(int $id): Product|null
+    {
+        return Product::with([
+            'brand' => function($query) {
+                $query->select(['id', 'name']);
+            },
+            'category' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ])->find($id);
+    }
+
+    public static function findByIdWithRelationsWithoutTenantFilter(int $id, int $companyId)
+    {
+        return Product::with([
+            'brand' => function($query) {
+                $query->select(['id', 'name']);
+            },
+            'category' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ])->withoutGlobalScope(FilterTenant::class)
+        ->where('company_id', $companyId)
+        ->find($id);
+    }
+
     public static function findByExternalId(string $externalProductId): Builder|Product|null
     {
         return Product::query()->firstWhere('external_product_id', $externalProductId);
+    }
+
+    public static function findByExternalIdWithRelations(string $externalProductId): Builder|Product|null
+    {
+        return Product::with([
+            'brand' => function($query) {
+                $query->select(['id', 'name']);
+            },
+            'category' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ])->where('external_product_id', $externalProductId)
+        ->first();
+    }
+
+    public static function findByExternalIdWithRelationsWithoutTenantFilter(string $externalProductId, int $companyId)
+    {
+        return Product::with([
+            'brand' => function($query) {
+                $query->select(['id', 'name']);
+            },
+            'category' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ])->withoutGlobalScope(FilterTenant::class)
+        ->where('company_id', $companyId)
+        ->where('external_product_id', $externalProductId)
+        ->first();
     }
 }
