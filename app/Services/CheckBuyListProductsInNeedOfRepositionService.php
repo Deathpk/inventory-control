@@ -13,10 +13,10 @@ class CheckBuyListProductsInNeedOfRepositionService
 {    
     public function checkBuyListOfEachCompany(): void
     {
-        //TODO adicionar o where para active true quando a coluna active for implementada.
         $companies = Company::query()
         ->withoutGlobalScope(FilterTenant::class)
         ->select(['id','name', 'email'])
+        ->where('active', true)
         ->get();
 
         $companies->each(function (Company $company) {

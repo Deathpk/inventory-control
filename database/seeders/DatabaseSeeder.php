@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         Company::factory()->count(5)->create();
         (new BrandsSeeder())->run();
         (new CategoriesSeeder())->run();
-        (new BuyListSeeder())->run();
         (new ProductsSeeder())->run();
+        (new BuyListSeeder())->run();
     }
 }

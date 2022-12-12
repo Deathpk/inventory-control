@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('name', 120);
             $table->string('cnpj', 18);
             $table->string('email')->unique();
+            $table->boolean('active')->default(true);
             $table->foreignIdFor(Plan::class)->constrained();
             $table->timestamps();
         });
