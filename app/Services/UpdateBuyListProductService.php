@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\AbstractException;
+use App\Exceptions\EntityDontExistsOnContext;
 use App\Exceptions\FailedToUpdateEntity;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\UpdateBuyListRequest;
@@ -26,7 +27,7 @@ class UpdateBuyListProductService
         $this->resolveEntityIdAndLabel();
         $this->checkIfRequiredProductExists();
         $productsFromCurrentList = self::getProductsFromCurrentBuyList();
-        $this->productExistsOnCurrentBuyList($productsFromCurrentList);
+        $this->checkIfproductExistsOnCurrentBuyList($productsFromCurrentList);
 
         try {
             $updatedBuyListProducts = $this->updateBuyListProductsObject($productsFromCurrentList);
@@ -68,16 +69,16 @@ class UpdateBuyListProductService
         return BuyList::first();
     }
 
-    private function productExistsOnCurrentBuyList(Collection $productsFromCurrentBuyList): void
+    private function checkIfproductExistsOnCurrentBuyList(Collection $productsFromCurrentBuyList): void
     {
-        $productExistsOnList = $productsFromCurrentBuyList->filter(function (object $buyListProduct) {
-            return property_exists($buyListProduct, $this->entityIdLabel) 
+        $productExistsOnList = $productsFromCurrentBuyList->contains(function($value, $key) {
+            return property_exists($value, $this->entityIdLabel) 
             &&
-            $buyListProduct->{$this->entityIdLabel} == $this->entityId;
-        })->isNotEmpty();
-
+            $value->{$this->entityIdLabel} == $this->entityId; 
+        });
+        
         if (!$productExistsOnList) {
-            throw new FailedToUpdateEntity(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
+            throw new EntityDontExistsOnContext(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
         }
     }
 

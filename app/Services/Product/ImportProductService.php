@@ -2,6 +2,7 @@
 
 namespace App\Services\Product;
 
+use App\Exceptions\Interfaces\CustomException;
 use App\Exceptions\Product\AttachmentInvalid;
 use App\Exceptions\Product\FailedToImportProducts;
 use App\Factories\Product\ImportedProduct;
@@ -33,7 +34,12 @@ class ImportProductService
             DB::beginTransaction();
             $this->createProductsBasedOnImport();
             DB::commit();
-        } catch(\Throwable $e) {
+        } 
+        catch(CustomException $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        catch(\Throwable $e) {
             DB::rollBack();
             throw new FailedToImportProducts($e);
         }

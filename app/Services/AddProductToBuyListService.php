@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Exceptions\AbstractException;
+use App\Exceptions\EntityAlreadyExistsOnContext;
 use App\Exceptions\FailedToCreateEntity;
+use App\Exceptions\Interfaces\CustomException;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Http\Requests\StoreBuyListRequest;
 use App\Models\BuyList;
@@ -36,10 +38,30 @@ class AddProductToBuyListService
                 $this->createNewBuyList();
                 return;
             }
+            $this->checkIfProductAlreadyExistsOnList($existingBuyList);
             $this->addNewProductToBuyList($existingBuyList);
 
-        } catch(Throwable $e) {
+        } 
+        catch(CustomException $e) {
+            throw $e;
+        }
+        catch(Throwable $e) {
             Throw new FailedToCreateEntity(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL, $e);
+        }
+    }
+
+    private function checkIfProductAlreadyExistsOnList(BuyList $existingBuyList): void
+    {
+        $productsOnList = (collect(json_decode($existingBuyList->products)));
+
+        $productAlreadyExists = $productsOnList->contains(function($value, $key) {
+            return property_exists($value, $this->entityIdLabel) 
+            &&
+            $value->{$this->entityIdLabel} == $this->entityId; 
+        });
+        
+        if ($productAlreadyExists) {
+            throw new EntityAlreadyExistsOnContext(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
         }
     }
 

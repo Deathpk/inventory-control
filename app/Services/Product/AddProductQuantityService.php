@@ -22,7 +22,7 @@ class AddProductQuantityService
     private int $quantity;
 
     /**
-     * @throws RecordNotFoundOnDatabaseException
+     * @throws RecordNotFoundOnDatabaseException|FailedToAddQuantityToStock
      */
     public function addQuantityToStock(AddQuantityToStockRequest $request): void
     {

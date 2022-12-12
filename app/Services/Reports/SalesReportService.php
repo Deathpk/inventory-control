@@ -6,7 +6,6 @@ use App\Exceptions\Reports\FailedToRetrieveSalesReport;
 use App\Http\Requests\Reports\GeneralSalesReportRequest;
 use App\Http\Resources\Reports\MostSoldProductResource;
 use App\Http\Resources\Reports\ProductSalesReportResource;
-use App\Models\Product;
 use App\Models\ProductSalesReport;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

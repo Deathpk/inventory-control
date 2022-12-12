@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\AbstractException;
+use App\Exceptions\EntityDontExistsOnContext;
+use App\Exceptions\FailedToDeleteEntity;
 use App\Exceptions\FailedToUpdateEntity;
+use App\Exceptions\Interfaces\CustomException;
 use App\Exceptions\RecordNotFoundOnDatabaseException;
 use App\Factories\BuyListProduct;
 use App\Http\Requests\RemoveProductFromBuyListRequest;
@@ -15,6 +18,7 @@ use App\Traits\UsesLoggedEntityId;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class RemoveProductFromBuyListService
 {
@@ -28,16 +32,24 @@ class RemoveProductFromBuyListService
      */
     public function removeProductFromBuyList(RemoveProductFromBuyListRequest $request): void
     {
-            $this->isExternal = $request->getIsExternal();
-            $this->entityId = $request->getProductId();
-            $this->entityIdLabel = $this->isExternal ? 'externalProductId' : 'productId';
+        $this->isExternal = $request->getIsExternal();
+        $this->entityId = $request->getProductId();
+        $this->entityIdLabel = $this->isExternal ? 'externalProductId' : 'productId';
 
+        try {
             $this->checkIfRequiredProductExists();
             $productsFromCurrentList = self::getProductsFromCurrentBuyList();
-            $this->productExistsOnCurrentBuyList($productsFromCurrentList);
+            $this->checkIfproductExistsOnCurrentBuyList($productsFromCurrentList);
             $updatedBuyListProducts = $this->removeItemFromBuyList($productsFromCurrentList);
             $buyList = self::getCurrentBuyList();
             $buyList->updateBuyListProduct($updatedBuyListProducts);
+        } catch(CustomException $e) {
+            throw $e;
+        }
+        catch(Throwable $e) {
+            throw new FailedToDeleteEntity(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL, $e);
+        }
+
     }
 
     private function checkIfRequiredProductExists(): void
@@ -45,7 +57,7 @@ class RemoveProductFromBuyListService
         $productExists = $this->isExternal 
         ? Product::findByExternalId($this->entityId)
         : Product::find($this->entityId);
-
+       
         if (!$productExists) {
             throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL, $this->entityId);
         }
@@ -62,16 +74,16 @@ class RemoveProductFromBuyListService
         return BuyList::first();
     }
 
-    private function productExistsOnCurrentBuyList(Collection $productsFromCurrentBuyList): void
+    private function checkIfproductExistsOnCurrentBuyList(Collection $productsFromCurrentBuyList): void
     {
-        $productExistsOnList = $productsFromCurrentBuyList->filter(function (object $buyListProduct) {
-            return property_exists($buyListProduct, $this->entityIdLabel) 
-            && 
-            $buyListProduct->{$this->entityIdLabel} == $this->entityId;
-        })->isNotEmpty();
+        $productExistsOnList = $productsFromCurrentBuyList->contains(function($value, $key) {
+            return property_exists($value, $this->entityIdLabel) 
+            &&
+            $value->{$this->entityIdLabel} == $this->entityId; 
+        });
         
         if (!$productExistsOnList) {
-            throw new FailedToUpdateEntity(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
+            throw new EntityDontExistsOnContext(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
         }
     }
 
