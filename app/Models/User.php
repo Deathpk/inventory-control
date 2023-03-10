@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * @property string $name
@@ -92,5 +93,13 @@ class User extends Authenticatable
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function revokeLogedToken()
+    {
+        PersonalAccessToken::query()
+        ->where('tokenable_id', '=', $this->getId())
+        ->where('tokenable_type', User::class)
+        ->delete();
     }
 }

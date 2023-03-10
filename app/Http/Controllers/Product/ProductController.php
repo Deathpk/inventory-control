@@ -34,7 +34,7 @@ class ProductController extends Controller
 {
     private ProductAutoCompleteService $autoCompleteService;
 
-    #[Pure] public function __construct(ProductAutoCompleteService $autoCompleteService)
+    public function __construct(ProductAutoCompleteService $autoCompleteService)
     {
         $this->autoCompleteService = $autoCompleteService;
     }
@@ -44,6 +44,7 @@ class ProductController extends Controller
      */
     public function index(SearchProductService $service): ProductCollection
     {
+        // dd(request()->userAgent());
        $products = $service->listProducts(true);
        return new ProductCollection($products);
     }

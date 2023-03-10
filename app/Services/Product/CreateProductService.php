@@ -27,7 +27,6 @@ class CreateProductService
     public function createProduct(StoreProductRequest $request): void
     {
         $this->attributes = $request->getAttributes();
-
         try {
             DB::beginTransaction();
             $this->entityId = Product::create()->fromRequest($this->attributes)->getId();

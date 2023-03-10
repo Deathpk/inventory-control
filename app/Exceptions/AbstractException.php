@@ -55,7 +55,7 @@ class AbstractException extends Exception implements CustomException
     private function resolveDebuggingMessages(): string
     {
         if ($this->thrownException) {
-            return "\n - Message: {$this->thrownException->getMessage()} \n - Trace: {$this->thrownException->getTraceAsString()}";
+            return "\n - Message: {$this->getThrownResponse()} \n - Trace: {$this->thrownException->getTraceAsString()}";
         }
 
         return " ";

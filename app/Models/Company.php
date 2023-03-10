@@ -32,6 +32,7 @@ class Company extends Model
     {
         $this->name = $data['companyName'];
         $this->cnpj = $data['companyCnpj'];
+        $this->email = $data['email'];
         $this->plan_id = $data['planId'];
         $this->save();
         return $this;

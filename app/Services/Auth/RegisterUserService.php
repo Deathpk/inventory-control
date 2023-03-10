@@ -39,7 +39,10 @@ class RegisterUserService
 
     private function shouldValidatePlanPayment(): bool
     {
-        return ! ($this->attributes->get('planId') === Plan::FREE_PLAN);
+        //TODO REFATORAR ISSO DAQUI, COMO NÃO IREMOS MAIS TER UM PLANO FREE, PODEMOS VERIFICAR OUTRA COISA.
+        // POR EXEMPLO, SE O PAGAMENTO ESTÁ EM DIA. PARA ISSO PRECISAREMOS CHECAR NA TABELA DE ALGUMA FORMA.
+        //return ! ($this->attributes->get('planId') === Plan::FREE_PLAN);
+        return true;
     }
 
     private function validatePayment(): void
@@ -58,6 +61,7 @@ class RegisterUserService
         return [
             'companyName' => $this->attributes->get('companyName'),
             'companyCnpj' => $this->attributes->get('companyCnpj'),
+            'email' => $this->attributes->get('email'),
             'planId' => $this->attributes->get('planId')
         ];
     }

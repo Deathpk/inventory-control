@@ -103,7 +103,7 @@ class Product extends Model
         $this->name = $attributes->get('name') ?? $this->name;
         $this->description = $attributes->get('description') ?? $this->description;
         $this->quantity = $attributes->get('quantity') ?? $this->quantity;
-        $this->minimum_quantity = $attributes->get('minimum_quantity') ?? $this->minimum_quantity;
+        $this->minimum_quantity = $attributes->get('minimumQuantity') ?? $this->minimum_quantity;
         $this->paid_price = $attributes->get('paidPrice') ?? $this->paid_price;
         $this->selling_price = $attributes->get('sellingPrice') ?? $this->selling_price;
         $this->external_product_id = $attributes->get('externalProductId') ?? $this->external_product_id;

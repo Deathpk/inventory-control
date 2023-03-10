@@ -9,9 +9,11 @@ use App\Http\Requests\Auth\RegisterApiTokenRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Services\Auth\RegisterApiTokenService;
 use App\Services\Auth\RegisterUserService;
+use App\Services\Auth\RemoveOldUserTokenService;
 use App\Services\Auth\RevokeApiTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -27,7 +29,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cadastro concluído com sucesso , por favor , insira as informações de login e entre novamente.'
-        ]);
+        ], 200);
     }
 
     /**
@@ -40,7 +42,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Token de API criado com sucesso! , por favor , guarde com cuidado o token a seguir , e não o perca.',
             'token' => $token
-        ]);
+        ], 200);
     }
 
     /**
@@ -68,17 +70,19 @@ class AuthController extends Controller
                 'message' => 'Usuário e / ou senha inválidos.'
             ],401);
         }
-
-        $request->session()->regenerate();
+        
+        $authToken = (Auth::user())->createToken('testing')->plainTextToken;//$request->userAgent()
 
         return response()->json([
             'success' => true,
-            'message' => 'Login efetuado com sucesso!'
-        ]);
+            'message' => 'Login efetuado com sucesso!',
+            'token' => $authToken
+        ], 200);
     }
 
-    public function logout()
+    public function logout(RemoveOldUserTokenService $service)
     {
-        //TODO
+        $service->removeOldTokens();
+        return response()->json(['success' => true]);
     }
 }

@@ -54,6 +54,7 @@ class RegisterUserRequest extends FormRequest
             'name.max' => 'O campo nome deve ser composto de no máximo 120 caractéres',
             'email.required' => 'O campo e-mail é obrigatório',
             'email.email' => 'O e-mail inserido não é válido.',
+            'email.confirmed' => 'o e-mail inserido e a confirmação não são os mesmos.',
             'email.unique' => 'O e-mail inserido já está sendo utilizado por outro usuário.',
             'password.required' => 'O campo senha é obrigatório.',
             'password.confirmed' => 'Por favor , confirme a senha no campo confirmação.',
