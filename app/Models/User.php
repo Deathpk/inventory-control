@@ -16,6 +16,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property string $name
  * @property Company $company
  * @property string $email
+ * @property bool $mustChangePassword
  */
 class User extends Authenticatable
 {
@@ -68,11 +69,17 @@ class User extends Authenticatable
         return $this->hasOne(Role::class);
     }
 
+    public function checkRolePermission(string $permission): bool
+    {
+        return in_array($permission, $this->role->getRolePermissions());
+    }
+
     public function fromArray(array $data): self
     {
         $this->name = $data['name'];
         $this->email = $data['email'];
         $this->password = bcrypt($data['password']);
+        $this->mustChangePassword = $data['mustChangePassword'] ?? false;
         $this->company_id = $data['companyId'];
         $this->role_id = $data['roleId'];
         $this->save();
@@ -85,6 +92,11 @@ class User extends Authenticatable
         return $this->hasVerifiedEmail();
     }
 
+    public function mustChangePassword(): bool
+    {
+        return $this->mustChangePassword;
+    }
+
     public function getCompany(): Company
     {
         return $this->company;
@@ -95,11 +107,23 @@ class User extends Authenticatable
         return $this->id;
     }
 
-    public function revokeLogedToken()
+    public function getRoleId(): int
+    {
+        return $this->role_id;
+    }
+
+    public function revokeLogedToken(): void
     {
         PersonalAccessToken::query()
         ->where('tokenable_id', '=', $this->getId())
         ->where('tokenable_type', User::class)
         ->delete();
+    }
+
+    public function changePassword(string $newPassword): void
+    {
+        $this->password = bcrypt($newPassword);
+        $this->mustChangePassword = false;
+        $this->save();
     }
 }

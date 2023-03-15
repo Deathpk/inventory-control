@@ -44,7 +44,6 @@ class ProductController extends Controller
      */
     public function index(SearchProductService $service): ProductCollection
     {
-        // dd(request()->userAgent());
        $products = $service->listProducts(true);
        return new ProductCollection($products);
     }

@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\Auth\FailedToIssueNewApiToken;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangeUserPasswordRequest;
+use App\Http\Requests\Auth\InviteEmployeeRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterApiTokenRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
+use App\Services\Auth\ChangeUserPasswordService;
+use App\Services\Auth\InviteCompanyEmployeeService;
 use App\Services\Auth\RegisterApiTokenService;
 use App\Services\Auth\RegisterUserService;
 use App\Services\Auth\RemoveOldUserTokenService;
@@ -18,10 +22,10 @@ use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 {
 
-//    public function registerNewCompany(Request $request)
-//    {
-//        // TODO
-//    }
+   public function inviteEmployee(InviteEmployeeRequest $request, InviteCompanyEmployeeService $service)
+   {
+       $service->invite($request);
+   }
 
     public function register(RegisterUserRequest $request, RegisterUserService $service): JsonResponse
     {
@@ -29,7 +33,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cadastro concluído com sucesso , por favor , insira as informações de login e entre novamente.'
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -57,11 +61,6 @@ class AuthController extends Controller
         ]);
     }
 
-    public function invite()
-    {
-        //TODO
-    }
-
     public function login(LoginRequest $request): JsonResponse
     {
         if (!Auth::attempt($request->getCredentials())) {
@@ -70,19 +69,29 @@ class AuthController extends Controller
                 'message' => 'Usuário e / ou senha inválidos.'
             ],401);
         }
-        
+
         $authToken = (Auth::user())->createToken('testing')->plainTextToken;//$request->userAgent()
 
         return response()->json([
             'success' => true,
             'message' => 'Login efetuado com sucesso!',
-            'token' => $authToken
+            'token' => $authToken,
+            'mustChangePassword' => Auth::user()->mustChangePassword()
         ], 200);
     }
 
-    public function logout(RemoveOldUserTokenService $service)
+    public function logout(RemoveOldUserTokenService $service): JsonResponse
     {
         $service->removeOldTokens();
         return response()->json(['success' => true]);
+    }
+
+    public function changePassword(ChangeUserPasswordRequest $request, ChangeUserPasswordService $service): JsonResponse
+    {
+        $service->changePassword($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Senha alterada com sucesso, por favor, faça o login novamente.'
+        ], 200);
     }
 }

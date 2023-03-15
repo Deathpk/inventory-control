@@ -10,6 +10,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
+use Illuminate\Support\Facades\Log;
 
 class CheckIfSoldProductsNeedsReposition implements ShouldQueue
 {
@@ -23,7 +25,13 @@ class CheckIfSoldProductsNeedsReposition implements ShouldQueue
         $productsInNeedOfReposition = self::resolveProductsInNeedOfReposition($extractedSoldProducts);
 
         if ($productsInNeedOfReposition->isNotEmpty()) {
-            Mail::send(new RepositionNeeded($productsInNeedOfReposition, $companyData));
+            try {
+                Mail::send(new RepositionNeeded($productsInNeedOfReposition, $companyData));
+            } catch(Throwable $e) {
+                //TODO VC JÁ SABE...
+                Log::error("Ocorreu um erro ao disparar o e-mail de notificação de quantidade minima de estoque atingida.\n Id da companhia onde ocorreu o erro: {$event->getCompanyId()}\n Produtos removidos: {$event->getSoldProducts()} \n Error Message: \n {$e->getMessage()} \n StackTrace: {$e->getTraceAsString()}"
+                );
+            }
         }
     }
 

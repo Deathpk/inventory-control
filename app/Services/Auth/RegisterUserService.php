@@ -19,7 +19,6 @@ class RegisterUserService
     {
         //TODO ADICIONAR O TRY CATCH DO AMOR E AMIZADE...
         $this->setAttributes($request);
-        $this->resolvePaymentIfRequired();
         $this->createCompany();
         $this->createUser();
     }
@@ -28,26 +27,6 @@ class RegisterUserService
     private function setAttributes(RegisterUserRequest|RegisterApiTokenRequest &$request): void
     {
         $this->attributes = $request->getAttributes();
-    }
-
-    private function resolvePaymentIfRequired(): void
-    {
-        if ($this->shouldValidatePlanPayment()) {
-             $this->validatePayment();
-        }
-    }
-
-    private function shouldValidatePlanPayment(): bool
-    {
-        //TODO REFATORAR ISSO DAQUI, COMO NÃO IREMOS MAIS TER UM PLANO FREE, PODEMOS VERIFICAR OUTRA COISA.
-        // POR EXEMPLO, SE O PAGAMENTO ESTÁ EM DIA. PARA ISSO PRECISAREMOS CHECAR NA TABELA DE ALGUMA FORMA.
-        //return ! ($this->attributes->get('planId') === Plan::FREE_PLAN);
-        return true;
-    }
-
-    private function validatePayment(): void
-    {
-        //TODO ADICIONAR VALIDAÇÃO , SE O USUÁRIO PAGOU COM SUCESSO O PLANO ESCOLHIDO. CASO NÃO , LANÇAR EXERCEÇÃO...
     }
 
     private function createCompany(): void

@@ -11,10 +11,10 @@ class Plan extends Model
     use HasFactory;
 
 /** AVAILABLE PLANS */
-    const ESSENTIAL_PLAN = 2;
+    const ESSENTIAL_PLAN = 1;
     const ESSENTIAL_PLAN_LABEL = 'essential';
 
-    const PREMIUM_PLAN = 3;
+    const PREMIUM_PLAN = 2;
     const PREMIUM_PLAN_LABEL = 'premium';
 
 /** AVAILABLE FEATURES */

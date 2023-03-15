@@ -19,11 +19,11 @@ return new class extends Migration
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('entity_id');
-            $table->enum('entity_type', [History::PRODUCT_ENTITY, History::CATEGORY_ENTITY, History::BRAND_ENTITY]);
+            $table->enum('entity_type', [History::PRODUCT_ENTITY, History::CATEGORY_ENTITY, History::BRAND_ENTITY, History::USER_ENTITY, History::COMPANY_ENTITY]);
             $table->text('metadata');
             $table->foreignIdFor(User::class, 'changed_by_id');
             $table->foreignIdFor(Company::class)->constrained();
-            $table->enum('action_id', [History::PRODUCT_CREATED, History::PRODUCT_UPDATED, History::PRODUCT_DELETED, History::PRODUCT_SOLD, History::ADDED_QUANTITY]);
+            $table->enum('action_id', [History::PRODUCT_CREATED, History::PRODUCT_UPDATED, History::PRODUCT_DELETED, History::PRODUCT_SOLD, History::ADDED_QUANTITY, History::USER_PASSWORD_CHANGED]);
             $table->timestamps();
         });
     }

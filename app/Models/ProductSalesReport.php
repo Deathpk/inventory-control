@@ -84,7 +84,7 @@ class ProductSalesReport extends Model
 
     private function updateSoldQuantity(ProductSalesReport $saleReport, int &$soldQuantity): void
     {
-        $saleReport->sold_quantity = $saleReport->sold_quantity + $soldQuantity;
+        $saleReport->sold_quantity +=  $soldQuantity;
         $saleReport->save();
     }
 

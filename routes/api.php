@@ -28,10 +28,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('auth')
     ->group(function () {
         Route::post('/register-token', 'registerApiToken');
+        Route::post('/invite-employee', 'inviteEmployee');
         Route::delete('/delete-token/{tokenId}', 'revokeApiToken');
         Route::post('/register', 'register')->withoutMiddleware('auth:sanctum');
         Route::post('/login', 'login')->withoutMiddleware('auth:sanctum');
         Route::post('/logout', 'logout');
+        Route::post('/change-password', 'changePassword');
 });
 
 Route::controller(ProductController::class)->middleware('auth:sanctum')

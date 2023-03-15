@@ -24,12 +24,16 @@ class History extends Model
     const PRODUCT_ENTITY = 'product';
     const BRAND_ENTITY = 'brand';
     const CATEGORY_ENTITY = 'category';
+    const USER_ENTITY = 'user';
+    const COMPANY_ENTITY = 'company';
 
     const PRODUCT_CREATED = 1;
     const PRODUCT_UPDATED = 2;
     const PRODUCT_DELETED = 3;
     const PRODUCT_SOLD = 4;
     const ADDED_QUANTITY = 5;
+
+    const USER_PASSWORD_CHANGED = 6;
 
     protected $fillable = [
         'entity_id',
@@ -59,7 +63,7 @@ class History extends Model
     {
         $this->entity_id = $data['entityId'];
         $this->entity_type = $data['entityType'];
-        $this->metadata = $data['metadata'];
+        $this->metadata = $data['metadata'] ?? '';
         $this->changed_by_id = $data['changedById'];
         $this->company_id = self::getLoggedCompanyId();
         $this->action_id = $actionId;
