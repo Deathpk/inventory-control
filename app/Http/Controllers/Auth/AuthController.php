@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\Auth\FailedToIssueNewApiToken;
+use App\Exceptions\Product\AttachmentInvalid;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangeUserPasswordRequest;
 use App\Http\Requests\Auth\InviteEmployeeRequest;
@@ -25,6 +26,10 @@ class AuthController extends Controller
    public function inviteEmployee(InviteEmployeeRequest $request, InviteCompanyEmployeeService $service)
    {
        $service->invite($request);
+       return response()->json([
+            'success' => true,
+            'message' => 'Funcionário convidado com sucesso!'
+       ], 200);
    }
 
     public function register(RegisterUserRequest $request, RegisterUserService $service): JsonResponse

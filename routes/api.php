@@ -85,5 +85,12 @@ Route::controller(BuyListController::class)->middleware('auth:sanctum')
         Route::post('/add-item', 'store');
         Route::put('/edit', 'update');
         Route::delete('/remove', 'destroy');
-    });
+});
+
+Route::fallback(function () {
+    return response()->json([
+        'success' => false,
+        'message' => 'Pagina não encontrada'
+    ], 404);
+});
 

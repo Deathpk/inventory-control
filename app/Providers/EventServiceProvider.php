@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\EmployeeInvited;
 use App\Events\Sales\SaleCreated;
 use App\Listeners\Sales\CheckIfSoldProductsNeedsReposition;
 use App\Listeners\Sales\CreateProductSaleReport;
 use App\Listeners\Sales\CreateSaleReport;
+use App\Listeners\SendEmployeeInvitation;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -25,6 +27,9 @@ class EventServiceProvider extends ServiceProvider
             CreateProductSaleReport::class,
             CreateSaleReport::class,
             CheckIfSoldProductsNeedsReposition::class
+        ],
+        EmployeeInvited::class => [
+            SendEmployeeInvitation::class
         ]
     ];
 
