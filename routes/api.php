@@ -34,6 +34,8 @@ Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('au
         Route::post('/login', 'login')->withoutMiddleware('auth:sanctum');
         Route::post('/logout', 'logout');
         Route::post('/change-password', 'changePassword');
+        Route::post('/recover-password', 'recoverPassword')->withoutMiddleware('auth:sanctum');
+        Route::post('/confirm-recovery', 'confirmPasswordRecovery')->withoutMiddleware('auth:sanctum');
 });
 
 Route::controller(ProductController::class)->middleware('auth:sanctum')

@@ -120,10 +120,10 @@ class User extends Authenticatable
         ->delete();
     }
 
-    public function changePassword(string $newPassword): void
+    public function changePassword(string $newPassword, bool $isRecoveryPasswordRequest = false): void
     {
         $this->password = bcrypt($newPassword);
-        $this->mustChangePassword = false;
+        $this->mustChangePassword = $isRecoveryPasswordRequest;
         $this->save();
     }
 }

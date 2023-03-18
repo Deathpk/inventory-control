@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\Auth\RecoverPasswordRequested;
 use App\Events\EmployeeInvited;
 use App\Events\Sales\SaleCreated;
+use App\Http\Requests\Auth\RecoverPasswordRequest;
+use App\Listeners\Auth\SendPasswordRecoveryRequestedEmail;
 use App\Listeners\Sales\CheckIfSoldProductsNeedsReposition;
 use App\Listeners\Sales\CreateProductSaleReport;
 use App\Listeners\Sales\CreateSaleReport;
@@ -30,6 +33,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         EmployeeInvited::class => [
             SendEmployeeInvitation::class
+        ],
+        RecoverPasswordRequested::class => [
+            SendPasswordRecoveryRequestedEmail::class
         ]
     ];
 
