@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Brand;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreBrandRequest extends FormRequest
 {
@@ -11,9 +12,9 @@ class StoreBrandRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -25,7 +26,6 @@ class StoreBrandRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:80|min:3',
-            'company_id' => 'required|int|exists:brands'
         ];
     }
 

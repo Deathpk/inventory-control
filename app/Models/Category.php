@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Traits\UsesLoggedEntityId;
 use Database\Factories\CategoryModelFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,6 +24,7 @@ class Category extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use UsesLoggedEntityId;
 
     protected $fillable = [
         'name',
@@ -69,6 +71,7 @@ class Category extends Model
     {
         $this->name = $name;
         $this->description = $description;
+        $this->company_id = self::getLoggedCompanyId();
         $this->save();
     }
 

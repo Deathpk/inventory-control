@@ -4,6 +4,7 @@ namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
@@ -20,9 +21,9 @@ class UpdateProductRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -38,6 +39,7 @@ class UpdateProductRequest extends FormRequest
             'name' => 'string',
             'description' => 'string|max:200',
             'quantity' => 'int',
+            'minimumQuantity' => 'int',
             'paidPrice' => 'int',
             'sellingPrice' => 'int',
             'categoryId' => 'int',
@@ -59,6 +61,7 @@ class UpdateProductRequest extends FormRequest
             'description.string' => 'A descrição do produto deve conter somente caracteres Alfa Numéricos.',
             'description.max' => 'A descrição do produto deve conter no máximo 200 caractéres.',
             'quantity.int' => 'O campo quantidade do prroduto deve conter somente numerais.',
+            'minimumQuantity.int' => 'O campo quantidade minima em estoque deve conter somente numerais.',
             'categoryId.int' => 'O campo ID da categoria do produto deve conter somente numerais',
             'categoryName.string' => 'O nome da categoria do produto deve conter somente caracteres Alfa Numéricos.',
             'brandId.int' => 'O campo ID da marca do produto deve conter somente numerais',
@@ -87,6 +90,11 @@ class UpdateProductRequest extends FormRequest
     public function getQuantity(): int
     {
         return $this->request->get('quantity');
+    }
+
+    public function getMinimumQuantity(): int
+    {
+        return $this->request->get('minimumQuantity');
     }
 
     public function getCategoryId(): ?int

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Requests\Brand\StoreBrandRequest;
+use App\Traits\UsesLoggedEntityId;
 use Database\Factories\BrandModelFactory;
 use Database\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +21,8 @@ class Brand extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use UsesLoggedEntityId;
+
 
     protected $fillable = [
         'name',
@@ -64,6 +67,7 @@ class Brand extends Model
     private function setBrandData(string $name): void
     {
         $this->name = $name;
+        $this->company_id = self::getLoggedCompanyId();
         $this->save();
     }
 

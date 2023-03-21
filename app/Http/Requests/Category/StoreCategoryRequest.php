@@ -30,7 +30,6 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name' => 'required|string',
             'description' => 'string',
-            'company_id' => ['required', 'int', new LoggedUserBelongsToCompany]
         ];
     }
 
@@ -40,8 +39,6 @@ class StoreCategoryRequest extends FormRequest
             'name.required' => 'O campo nome da categoria é obrigatório.',
             'name.string' => 'O campo nome deve conter somente caracteres alfanuméricos.',
             'description.string' => 'O campo descrição deve conter somente caracteres alfanuméricos.',
-            'company_id.required' => 'O campo Companhia é obrigatório..',
-            'company_id.int' => 'O campo Companhia deve ser composto somente por numerais.',
         ];
     }
 
@@ -53,11 +50,6 @@ class StoreCategoryRequest extends FormRequest
     public function getDescription(): ?string
     {
         return $this->request->get('description');
-    }
-
-    public function getCompanyId(): ?int
-    {
-        return $this->request->get('company_id');
     }
 
     public function getAttributes(): Collection
