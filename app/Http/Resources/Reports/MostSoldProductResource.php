@@ -16,7 +16,7 @@ class MostSoldProductResource extends JsonResource
     {
         return [
             'product_name' => $this->product->name,
-            'sold_quantity' => $this->sold_quantity,
+            'sold_quantity' => $this->write_down_quantity,
         ];
     }
 }

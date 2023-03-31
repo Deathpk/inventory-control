@@ -5,8 +5,6 @@ namespace App\Http\Requests\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\RequiredIf;
 
 class RemoveSoldProductRequest extends FormRequest
 {

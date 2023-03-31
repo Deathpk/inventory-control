@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('name', 120);
             $table->string('description')->nullable();
             $table->integer('quantity');
-            $table->integer('paid_price');
-            $table->integer('selling_price');
+            $table->integer('paid_price')->nullable();
+            $table->integer('selling_price')->nullable();
             $table->foreignIdFor(Company::class)->constrained();
             $table->foreignIdFor(Brand::class)->constrained();
             $table->foreignIdFor(Category::class)->constrained();

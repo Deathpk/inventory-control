@@ -6,8 +6,11 @@ use App\Traits\UsesLoggedEntityId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+
+use function Pest\Laravel\instance;
 
 /**
  * @property int $company_id
@@ -49,7 +52,7 @@ class SaleReport extends Model
     {
         try {
             $this->company_id = $companyId;
-            $this->products = json_encode($soldProducts);
+            $this->products = $this->resolveProducts($soldProducts);
             $this->resolveSalePriceAndProfit($soldProducts);
             $this->save();
         } catch (Throwable $e) {
@@ -57,6 +60,17 @@ class SaleReport extends Model
             Log::info($e->getMessage());
             throw $e;
         }
+    }
+
+    private function resolveProducts(array $soldProducts)
+    {
+        $soldProductsInstances = collect();
+        collect($soldProducts)->each(function(array $product) use($soldProductsInstances) {
+            $instance = isset($product['productId']) ? Product::find($product['productId']) : Product::findByExternalId($product['externalProductId']);
+            $soldProductsInstances->push($instance->getDetailsForSalesReport());
+        });
+        
+        return $soldProductsInstances->toJson();
     }
 
     private function resolveSalePriceAndProfit(array &$soldProducts): void

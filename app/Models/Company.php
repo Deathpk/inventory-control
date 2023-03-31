@@ -63,9 +63,9 @@ class Company extends Model
         return $this->hasMany(Brand::class);
     }
 
-    public function salesReport(): ?HasMany
+    public function inventoryWriteDownReport(): ?HasMany
     {
-        return $this->hasMany(ProductSalesReport::class);
+        return $this->hasMany(InventoryWriteDownReport::class);
     }
 
     public function buyList(): HasOne

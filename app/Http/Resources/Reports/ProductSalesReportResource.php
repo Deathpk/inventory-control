@@ -16,12 +16,17 @@ class ProductSalesReportResource extends JsonResource
      */
     public function toArray($request): array|\JsonSerializable|Arrayable
     {
+        dd($this);
         return [
             'sale_date' => $this->created_at->format('Y-m-d H:i:s'),
-            'product_name' => $this->product->name,
-            'sold_quantity' => $this->sold_quantity,
-            'cost_price' => $this->cost_price,
+            'products' => $this->getSoldProductsDetails(),
+            'total_price' => $this->total_price,
             'profit' => $this->profit
         ];
+    }
+
+    public function getSoldProductsDetails()
+    {
+        return json_decode($this->products);
     }
 }

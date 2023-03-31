@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -38,8 +39,8 @@ class StoreProductRequest extends FormRequest
             'name' => 'required|string',
             'description' => 'string|max:200',
             'quantity' => 'required|int',
-            'paidPrice' => 'required|int',
-            'sellingPrice' => 'required|int',
+            'paidPrice' => [Rule::prohibitedIf(fn() => Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN), 'int'],
+            'sellingPrice' => [Rule::prohibitedIf(fn() => (Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN)), 'int'],
             'externalProductId' => 'string',
             'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
             'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
@@ -59,9 +60,9 @@ class StoreProductRequest extends FormRequest
             'quantity.required' => 'A quantidade atual do produto é um campo obrigatório.',
             'quantity.int' => 'O campo quantidade do prroduto deve conter somente numerais.',
             'categoryId.required' => 'O campo categoria do produto é obrigatório.',
-            'paidPrice.required' => 'O campo valor de custo do produto é obrigatório.',
+            'paidPrice.prohibited' => 'O campo valor de custo só pode ser utilizado por empresas com plano Premium. Por favor, dê um upgrade no plano e tente novamente!',
             'paidPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
-            'sellingPrice.required' => 'O campo valor de venda do produto é obrigatório.',
+            'sellingPrice.prohibited' => 'O campo valor de venda só pode ser utilizado por empresas com plano Premium. Por favor, dê um upgrade no plano e tente novamente!',
             'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
             'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
             'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',

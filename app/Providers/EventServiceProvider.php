@@ -4,11 +4,12 @@ namespace App\Providers;
 
 use App\Events\Auth\RecoverPasswordRequested;
 use App\Events\EmployeeInvited;
+use App\Events\Products\UnitRemovedFromInventory;
 use App\Events\Sales\SaleCreated;
 use App\Http\Requests\Auth\RecoverPasswordRequest;
 use App\Listeners\Auth\SendPasswordRecoveryRequestedEmail;
 use App\Listeners\Sales\CheckIfSoldProductsNeedsReposition;
-use App\Listeners\Sales\CreateProductSaleReport;
+use App\Listeners\CreateInventoryReport;
 use App\Listeners\Sales\CreateSaleReport;
 use App\Listeners\SendEmployeeInvitation;
 use Illuminate\Auth\Events\Registered;
@@ -27,9 +28,12 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         SaleCreated::class => [
-            CreateProductSaleReport::class,
+            CreateInventoryReport::class,
             CreateSaleReport::class,
             CheckIfSoldProductsNeedsReposition::class
+        ],
+        UnitRemovedFromInventory::class => [
+            CreateInventoryReport::class
         ],
         EmployeeInvited::class => [
             SendEmployeeInvitation::class

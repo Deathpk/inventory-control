@@ -14,9 +14,9 @@ use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Http\Requests\Product\AddQuantityToStockRequest;
 use App\Http\Requests\Product\DeleteProductRequest;
 use App\Http\Requests\Product\ImportProductsRequest;
-use App\Http\Requests\Product\RemoveSoldProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Requests\Products\RemoveProductFromInventoryRequest;
 use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Services\AutoComplete\ProductAutoCompleteService;
@@ -24,11 +24,10 @@ use App\Services\Product\AddProductQuantityService;
 use App\Services\Product\CreateProductService;
 use App\Services\Product\DeleteProductService;
 use App\Services\Product\ImportProductService;
-use App\Services\Product\RemoveSoldProductService;
+use App\Services\Product\RemoveProductFromInventoryService;
 use App\Services\Product\SearchProductService;
 use App\Services\Product\UpdateProductService;
 use Illuminate\Http\JsonResponse;
-use JetBrains\PhpStorm\Pure;
 
 class ProductController extends Controller
 {
@@ -66,6 +65,14 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Produto criado com sucesso!'
+        ]);
+    }
+
+    public function removeFromInventory(RemoveProductFromInventoryRequest $request, RemoveProductFromInventoryService $service)
+    {
+        $service->removeUnitsFromStock($request);
+        return response()->json([
+            'success' => true
         ]);
     }
 

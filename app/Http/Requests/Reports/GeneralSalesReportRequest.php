@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 class GeneralSalesReportRequest extends FormRequest
 {
     const WEEKLY_TYPE_FILTER = 'weekly';
-    const MONTLY_TYPE_FILTER = 'montly';
+    const MONTLY_TYPE_FILTER = 'montly'; // monthly
     const YEARLY_TYPE_FILTER = 'yearly';
 
     /**

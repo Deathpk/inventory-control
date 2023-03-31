@@ -6,7 +6,8 @@ use App\Exceptions\Reports\FailedToRetrieveSalesReport;
 use App\Http\Requests\Reports\GeneralSalesReportRequest;
 use App\Http\Resources\Reports\MostSoldProductResource;
 use App\Http\Resources\Reports\ProductSalesReportResource;
-use App\Models\ProductSalesReport;
+use App\Models\InventoryWriteDownReport;
+use App\Models\SaleReport;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,57 +20,70 @@ class SalesReportService
     use UsesLoggedEntityId;
 
     private string|null $filterBy;
-    private Builder|null $salesReportQuery;
-    private AnonymousResourceCollection $allSales;
+    private Builder|null $inventoryWriteDownQuery;
+    private Builder|null $saleReportsQuery;
+    private Builder|Collection|LengthAwarePaginator $allSales;
 
     public function __construct(string $filterBy = null)
     {
         $this->filterBy = $filterBy;
-        $this->salesReportQuery = ProductSalesReport::query()->with('product');
+        $this->inventoryWriteDownQuery = InventoryWriteDownReport::query()->with('product');
+        $this->saleReportsQuery = SaleReport::query();
     }
 
     /**
+     * 
      * @throws FailedToRetrieveSalesReport
      */
     public function getSalesReport(): array
-    {
+    { // TODO REFATORAR.
         try {
-            $this->allSales = ProductSalesReportResource::collection($this->getAllSales());
-            return $this->prepareSalesReportForResponse();
+            $this->allSales = $this->getAllSales();
+            return $this->prepareSalesReportForResponse()->toArray();
         } catch(\Throwable $e) {
             throw new FailedToRetrieveSalesReport($e);
         }
     }
 
-    private function prepareSalesReportForResponse(): array
+    private function prepareSalesReportForResponse(): Collection
     {
-        $metadata = $this->getSalesReportMetaData();
+        return collect([
+            'sales' => $this->getSalesDetails(),
+            'metadata' => $this->getSalesReportMetaData()
+        ]);
+    }
 
-        return [
-            'sales' => $this->allSales,
-            'metadata' => $metadata
-        ];
+    private function getSalesDetails(): array
+    {
+        return $this->allSales->map(function(SaleReport $sale) {
+            return [
+                'sale_date' => $sale->created_at->format('Y-m-d H:i:s'),
+                'products' => json_decode($sale->products),
+                'total_price' => $sale->total_price,
+                'profit' => $sale->profit
+            ];
+        })->toArray();
     }
 
     private function getSalesReportMetaData(): array
     {
         $overallProfit = 0;
-        $overallCost = 0;
+        $overallTotalPrice = 0;
 
-        collect($this->allSales)->each(function(array $sale) use(&$overallProfit, &$overallCost) {
-            $overallProfit += $sale['profit'];
-            $overallCost += $sale['cost_price'];
+        collect($this->allSales)->each(function(SaleReport $sale) use(&$overallProfit, &$overallTotalPrice) {
+            $overallProfit += $sale->profit;
+            $overallTotalPrice += $sale->total_price;
         });
 
        return [
          'overallProfit' => $overallProfit,
-         'overallCost' => $overallCost
+         'overallTotalPrice' => $overallTotalPrice
        ];
     }
 
-    private function getAllSales(): LengthAwarePaginator
+    private function getAllSales(): Collection
     {
-      return $this->applyFilterToSalesQuery()->paginate(10);
+      return $this->applyFilterToSalesQuery()->get();
     }
 
     private function applyFilterToSalesQuery(): Builder
@@ -77,20 +91,21 @@ class SalesReportService
         switch ($this->filterBy) {
             case GeneralSalesReportRequest::WEEKLY_TYPE_FILTER:
                 //TODO
-                return $this->salesReportQuery;
+                return $this->saleReportsQuery;
             case GeneralSalesReportRequest::MONTLY_TYPE_FILTER:
-                return $this->salesReportQuery->whereMonth('created_at', Carbon::now()->month);
+                return $this->saleReportsQuery->whereMonth('created_at', Carbon::now()->month);
             case GeneralSalesReportRequest::YEARLY_TYPE_FILTER:
-                return $this->salesReportQuery->whereYear('created_at', Carbon::now()->year);
+                return $this->saleReportsQuery->whereYear('created_at', Carbon::now()->year);
         }
     }
 
     public function getMostSoldProducts(): Collection
     {
         $mostSoldProducts = $this->getLoggedCompanyInstance()
-            ->salesReport()
+            ->inventoryWriteDownReport()
             ->with('product')
-            ->orderBy('sold_quantity','desc')
+            ->where('report_type', InventoryWriteDownReport::SALES_REPORT_TYPE)
+            ->orderBy('write_down_quantity','desc')
             ->take(3)
             ->get();
 
@@ -99,7 +114,7 @@ class SalesReportService
 
     private function resolveMostSoldProducts(Collection $allSaleReports): Collection
     {
-        return $allSaleReports->map(function (ProductSalesReport $report) {
+        return $allSaleReports->map(function (InventoryWriteDownReport $report) {
             return MostSoldProductResource::make($report);
         });
     }

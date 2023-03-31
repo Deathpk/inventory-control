@@ -18,8 +18,8 @@ use Illuminate\Support\Collection;
  * @property string $name
  * @property string $description
  * @property int $quantity
- * @property int $paid_price
- * @property int $selling_price
+ * @property int|null $paid_price
+ * @property int|null $selling_price
  * @property string $external_product_id
  * @property int $minimum_quantity
  * @property int $category_id
@@ -180,9 +180,9 @@ class Product extends Model
         return ProductModelFactory::new();
     }
 
-    public function removeSoldUnit(int $quantitySold): void
+    public function removeProductFromInventory(int $quantityToRemove): void
     {
-        $this->quantity = $this->quantity - $quantitySold;
+        $this->quantity = $this->quantity - $quantityToRemove;
         $this->save();
     }
 
@@ -192,7 +192,7 @@ class Product extends Model
         $this->save();
     }
 
-    public function getCostPrice(): int
+    public function getCostPrice(): ?int
     {
         return $this->paid_price;
     }
@@ -270,4 +270,10 @@ class Product extends Model
         ->where('external_product_id', $externalProductId)
         ->first();
     }
+
+    public function getDetailsForSalesReport(): object
+    {
+        return (object) $this->only('id', 'name', 'paid_price');
+    }
+
 }

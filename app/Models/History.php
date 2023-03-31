@@ -30,7 +30,7 @@ class History extends Model
     const PRODUCT_CREATED = 1;
     const PRODUCT_UPDATED = 2;
     const PRODUCT_DELETED = 3;
-    const PRODUCT_SOLD = 4;
+    const INVENTORY_WRITE_DOWN = 4;
     const ADDED_QUANTITY = 5;
 
     const USER_PASSWORD_CHANGED = 6;

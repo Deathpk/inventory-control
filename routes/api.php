@@ -47,6 +47,7 @@ Route::controller(ProductController::class)->middleware('auth:sanctum')
     Route::get('/autocomplete', 'autoComplete');
     Route::post('/import', 'import');
     Route::post('/add-quantity', 'addToStock');
+    Route::post('/remove-quantity', 'removeFromInventory');
     Route::get('/{productId}', 'show');
 });
 

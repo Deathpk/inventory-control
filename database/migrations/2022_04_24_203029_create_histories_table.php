@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('metadata');
             $table->foreignIdFor(User::class, 'changed_by_id');
             $table->foreignIdFor(Company::class)->constrained();
-            $table->enum('action_id', [History::PRODUCT_CREATED, History::PRODUCT_UPDATED, History::PRODUCT_DELETED, History::PRODUCT_SOLD, History::ADDED_QUANTITY, History::USER_PASSWORD_CHANGED]);
+            $table->enum('action_id', [History::PRODUCT_CREATED, History::PRODUCT_UPDATED, History::PRODUCT_DELETED, History::INVENTORY_WRITE_DOWN, History::ADDED_QUANTITY, History::USER_PASSWORD_CHANGED]);
             $table->timestamps();
         });
     }

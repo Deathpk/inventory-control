@@ -19,20 +19,13 @@ class SalesReportController extends Controller
     {
         $filterBy = $request->getFilterByType();
         $service = new SalesReportService($filterBy);
-
-        if (!Auth::check()) {
-            throw new UnauthorizedException();
-        }
-
         return $service->getSalesReport();
     }
 
-    public function mostSoldProduct(SalesReportService $service): JsonResponse
+    public function mostSoldProduct(GeneralSalesReportRequest $request): JsonResponse
     {
-        if (!Auth::check()) {
-            throw new UnauthorizedException();
-        }
-
+        $filterBy = $request->getFilterByType();
+        $service = new SalesReportService($filterBy);
         $mostSoldProducts = $service->getMostSoldProducts();
         return response()->json([
             'success' => true,

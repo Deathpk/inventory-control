@@ -14,6 +14,7 @@ use App\Traits\UsesLoggedEntityId;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\Interfaces\CustomException;
+use App\Exceptions\ProductNotSellable;
 
 class RemoveSoldProductService
 {
@@ -54,17 +55,22 @@ class RemoveSoldProductService
 
            $entityId = $soldProduct['productId'] ?? $soldProduct['externalProductId'];
            $product = self::getSoldProduct($entityId);
-           $availableQuantity = $product->getQuantity();
-
-           if (!$product) {
+           
+           if(!$product) {
              throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
            }
+
+           if(!$product->getCostPrice()) {
+             throw new ProductNotSellable();
+           }
+
+           $availableQuantity = $product->getQuantity();
 
            if($availableQuantity < $soldProduct['soldQuantity']) {
              throw new SoldQuantityBiggerThanAvailableQuantity();
            }
 
-           $product->removeSoldUnit($soldProduct['soldQuantity']);
+           $product->removeProductFromInventory($soldProduct['soldQuantity']);
         });
         
         event(new SaleCreated($this->soldProducts, self::getLoggedCompanyId()));
