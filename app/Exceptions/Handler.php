@@ -9,6 +9,24 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+
+    /**
+ * Register the exception handling callbacks for the application.
+ *
+ * @return void
+ */
+    public function register()
+    {
+        $this->renderable(function (Throwable $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+        });
+    }
+
     /**
      * A list of the exception types that are not reported.
      *

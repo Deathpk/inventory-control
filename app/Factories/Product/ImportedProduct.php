@@ -71,7 +71,6 @@ class ImportedProduct
     {
         if (is_string($value)) {
             $value = str_replace(',', '.',$value);
-            // return (int) round(($value * 100), 0);
         }
 
         return (int) round(($value * 100), 0);

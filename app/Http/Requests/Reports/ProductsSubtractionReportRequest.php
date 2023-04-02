@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests\Reports;
 
-use App\Policies\FinancialModulePolicy;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class GeneralSalesReportRequest extends FormRequest
+class ProductsSubtractionReportRequest extends FormRequest
 {
     const WEEKLY_TYPE_FILTER = 'weekly';
     const MONTLY_TYPE_FILTER = 'montly'; // monthly
@@ -27,7 +26,7 @@ class GeneralSalesReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && FinancialModulePolicy::acessFinancialModule();
+        return Auth::check();
     }
 
     /**
