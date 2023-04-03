@@ -5,13 +5,11 @@ namespace App\Services\Reports;
 use App\Exceptions\Reports\FailedToRetrieveSalesReport;
 use App\Http\Requests\Reports\GeneralSalesReportRequest;
 use App\Http\Resources\Reports\MostSoldProductResource;
-use App\Http\Resources\Reports\ProductSalesReportResource;
 use App\Models\InventoryWriteDownReport;
 use App\Models\SaleReport;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -48,12 +46,12 @@ class SalesReportService
     private function prepareSalesReportForResponse(): Collection
     {
         return collect([
-            'sales' => $this->getSalesDetails(),
+            'sales' => $this->getSalesDetails()->paginate(10),
             'metadata' => $this->getSalesReportMetaData()
         ]);
     }
 
-    private function getSalesDetails(): array
+    private function getSalesDetails(): Collection
     {
         return $this->allSales->map(function(SaleReport $sale) {
             return [
@@ -62,7 +60,7 @@ class SalesReportService
                 'total_price' => $sale->total_price,
                 'profit' => $sale->profit
             ];
-        })->toArray();
+        });
     }
 
     private function getSalesReportMetaData(): array

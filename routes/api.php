@@ -5,8 +5,8 @@ use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\BuyListController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Reports\InventorySubtractionController;
 use App\Http\Controllers\Reports\SalesReportController;
-use App\Http\Controllers\Reports\SubtractionReportController;
 use App\Http\Controllers\Sales\SalesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +39,11 @@ Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('au
         Route::post('/confirm-recovery', 'confirmPasswordRecovery')->withoutMiddleware('auth:sanctum');
 });
 
+Route::controller(InventorySubtractionController::class)->middleware('auth:sanctum')
+    ->prefix('reports/inventory-sub')->group(function() {
+        Route::get('/', 'index');
+});
+
 Route::controller(ProductController::class)->middleware('auth:sanctum')
     ->prefix('products')->group(function() {
     Route::get('/', 'index');
@@ -61,12 +66,6 @@ Route::controller(SalesReportController::class)->middleware('auth:sanctum')
     ->prefix('reports/sales')->group(function () {
         Route::get('/', 'index');
         Route::get('/most-sold', 'mostSoldProduct');
-});
-
-Route::controller(SubtractionReportController::class)->middleware('auth:sanctum')
-    ->prefix('reports/subtraction')->group(function () {
-        Route::get('/', 'index');
-        // Route::get('/most-subtracted', 'mostSubtracted');
 });
 
 Route::controller(CategoryController::class)->middleware('auth:sanctum')
