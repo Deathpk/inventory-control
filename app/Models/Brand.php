@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Requests\Brand\StoreBrandRequest;
+use App\Models\Scopes\FilterTenant;
 use App\Traits\UsesLoggedEntityId;
 use Database\Factories\BrandModelFactory;
 use Database\Factories\ProductModelFactory;
@@ -37,6 +38,16 @@ class Brand extends Model
         'created_at' => 'datetime:Y-m-d',
         'updated_at' => 'datetime:Y-m-d'
     ];
+
+        /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new FilterTenant());
+    }
 
     public function product(): HasMany
     {
@@ -86,13 +97,13 @@ class Brand extends Model
         return Brand::where('name', $name)->first();
     }
 
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return Factory
-     */
-    protected static function newFactory(): Factory
-    {
-        return BrandModelFactory::new();
-    }
+    // /**
+    //  * Create a new factory instance for the model.
+    //  *
+    //  * @return Factory
+    //  */
+    // protected static function newFactory(): Factory
+    // {
+    //     return BrandModelFactory::new();
+    // }
 }

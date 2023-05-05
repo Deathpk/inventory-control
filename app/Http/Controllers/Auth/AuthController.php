@@ -21,9 +21,18 @@ use App\Services\Auth\RemoveOldUserTokenService;
 use App\Services\Auth\RevokeApiTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
+
+    public function getUserInfo(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json(
+            $user->getGeneralInfo()
+        , 200);
+    }
 
    public function inviteEmployee(InviteEmployeeRequest $request, InviteCompanyEmployeeService $service)
    {
@@ -77,13 +86,16 @@ class AuthController extends Controller
             ],401);
         }
 
-        $authToken = (Auth::user())->createToken('testing')->plainTextToken;//$request->userAgent()
+        $user = Auth::user();
+
+        $authToken = $user->createToken('testing')->plainTextToken;//$request->userAgent()
 
         return response()->json([
             'success' => true,
             'message' => 'Login efetuado com sucesso!',
             'token' => $authToken,
-            'mustChangePassword' => Auth::user()->mustChangePassword()
+            'mustChangePassword' => Auth::user()->mustChangePassword(),
+            'user' => $user->getGeneralInfo()
         ], 200);
     }
 

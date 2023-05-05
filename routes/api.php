@@ -22,12 +22,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('auth')
     ->group(function () {
+        Route::get('/me', 'getUserInfo');
         Route::post('/register-token', 'registerApiToken');
         Route::post('/invite-employee', 'inviteEmployee');
         Route::delete('/delete-token/{tokenId}', 'revokeApiToken');

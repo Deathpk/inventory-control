@@ -126,4 +126,12 @@ class User extends Authenticatable
         $this->mustChangePassword = $isRecoveryPasswordRequest;
         $this->save();
     }
+
+    public function getGeneralInfo(): array
+    {
+        return [
+            'user' => $this->only(['id', 'name', 'email', 'mustChangePassword', 'role_id']),
+            'company' => $this->company->only(['id', 'name', 'cnpj', 'email', 'active', 'plan_id'])
+        ];
+    }
 }

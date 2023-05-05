@@ -35,13 +35,19 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        // $loggedCompanyId =  ;
+
         return [
             'name' => 'required|string',
             'description' => 'string|max:200',
             'quantity' => 'required|int',
             'paidPrice' => [Rule::prohibitedIf(fn() => Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN), 'int'],
             'sellingPrice' => [Rule::prohibitedIf(fn() => (Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN)), 'int'],
-            'externalProductId' => 'string',
+            'externalProductId' => [
+                "string", 
+                Rule::unique('products', 'external_product_id')
+                ->where(fn($query) => $query->where('company_id', Auth::user()->company_id))
+            ],
             'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
             'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
             'brandId' => Rule::requiredIf(!$this->getBrandName()),
@@ -65,6 +71,7 @@ class StoreProductRequest extends FormRequest
             'sellingPrice.prohibited' => 'O campo valor de venda só pode ser utilizado por empresas com plano Premium. Por favor, dê um upgrade no plano e tente novamente!',
             'sellingPrice.int' => 'O campo custo do produto deve ser do tipo inteiro.',
             'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
+            'externalProductId.unique' => 'O código de identificação externo inserido já está sendo usado por outro produto',
             'categoryName.required' => 'O campo nome da categoria é obrigatório quando uma categoria existente não for selecionada.',
             'brandId.required' => 'O ID da marca do produto é obrigatório.',
             'brandName.required' => 'O campo nome da marca deve ser preenchido caso uma marca nao seja selecioanda.',

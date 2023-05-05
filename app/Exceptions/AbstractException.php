@@ -9,7 +9,6 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use JetBrains\PhpStorm\Pure;
 
 class AbstractException extends Exception implements CustomException
 {
@@ -24,7 +23,7 @@ class AbstractException extends Exception implements CustomException
     const COMPANY_ENTITY_LABEL = 'Companhia';
     const BUY_LIST_ITEM_ENTITY_LABEL = 'Item na Lista de compras';
 
-    #[Pure] public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null, int $statusCode = null)
+    public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null, int $statusCode = null)
     {
         $this->responseMessage = $responseMessage;
         $this->logMessage = $logMessage;

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Models\Scopes\FilterTenant;
 use App\Traits\UsesLoggedEntityId;
 use Database\Factories\CategoryModelFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +41,16 @@ class Category extends Model
         'created_at' => 'datetime:Y-m-d',
         'updated_at' => 'datetime:Y-m-d'
     ];
+
+        /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new FilterTenant());
+    }
 
     public function product(): HasMany
     {
