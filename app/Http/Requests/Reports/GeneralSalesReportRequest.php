@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 class GeneralSalesReportRequest extends FormRequest
 {
     const WEEKLY_TYPE_FILTER = 'weekly';
-    const MONTLY_TYPE_FILTER = 'montly'; // monthly
+    const MONTLY_TYPE_FILTER = 'monthly';
     const YEARLY_TYPE_FILTER = 'yearly';
 
     /**
@@ -27,7 +27,7 @@ class GeneralSalesReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && FinancialModulePolicy::acessFinancialModule();
+        return Auth::check() && FinancialModulePolicy::accessFinancialModule();
     }
 
     /**
@@ -41,20 +41,27 @@ class GeneralSalesReportRequest extends FormRequest
             'filterType' => [
                 'required',
                 Rule::in(self::getAllAvailableFilterTypes())
-            ]
+            ],
+            'value' => ['required']
         ];
     }
 
     public function messages(): array
     {
         return [
-            'filterType.required' => 'O tipo de filtro para o relatório é obrigatório'
+            'filterType.required' => 'O tipo de filtro para o relatório é obrigatório',
+            'value.required' => 'O valor do filtro é obrigatório'
         ];
     }
 
     public function getFilterByType(): string
     {
         return $this->query('filterType');
+    }
+
+    public function getFilterValue(): string
+    {
+        return $this->query('value');
     }
 
     public function getAllAvailableFilterTypes(): array

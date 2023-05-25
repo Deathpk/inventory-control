@@ -18,14 +18,18 @@ class SalesReportService
     use UsesLoggedEntityId;
 
     private string|null $filterBy;
+    private string|null $filterValue;
     private Builder|null $inventoryWriteDownQuery;
     private Builder|null $saleReportsQuery;
     private Builder|Collection|LengthAwarePaginator $allSales;
 
-    public function __construct(string $filterBy = null)
+    public function __construct(string $filterBy = null, string $filterValue = null)
     {
         $this->filterBy = $filterBy;
-        $this->inventoryWriteDownQuery = InventoryWriteDownReport::query()->with('product');
+        $this->filterValue = $filterValue;
+        $this->inventoryWriteDownQuery = InventoryWriteDownReport::query()
+        ->where('report_type', InventoryWriteDownReport::SALES_REPORT_TYPE)
+        ->with('product');
         $this->saleReportsQuery = SaleReport::query();
     }
 
@@ -91,18 +95,29 @@ class SalesReportService
                 //TODO
                 return $this->saleReportsQuery;
             case GeneralSalesReportRequest::MONTLY_TYPE_FILTER:
-                return $this->saleReportsQuery->whereMonth('created_at', Carbon::now()->month);
+                return $this->saleReportsQuery->whereMonth('created_at', $this->filterValue);
             case GeneralSalesReportRequest::YEARLY_TYPE_FILTER:
-                return $this->saleReportsQuery->whereYear('created_at', Carbon::now()->year);
+                return $this->saleReportsQuery->whereYear('created_at', $this->filterValue);
+        }
+    }
+
+    private function applyFilterToInventoryWritedownQuery(): Builder
+    {
+        switch ($this->filterBy) {
+            case GeneralSalesReportRequest::WEEKLY_TYPE_FILTER:
+                //TODO
+                return $this->inventoryWriteDownQuery;
+            case GeneralSalesReportRequest::MONTLY_TYPE_FILTER:
+                return $this->inventoryWriteDownQuery->whereMonth('created_at', $this->filterValue);
+            case GeneralSalesReportRequest::YEARLY_TYPE_FILTER:
+                return $this->inventoryWriteDownQuery->whereYear('created_at', $this->filterValue);
         }
     }
 
     public function getMostSoldProducts(): Collection
     {
-        $mostSoldProducts = $this->getLoggedCompanyInstance()
-            ->inventoryWriteDownReport()
-            ->with('product')
-            ->where('report_type', InventoryWriteDownReport::SALES_REPORT_TYPE)
+        $this->applyFilterToInventoryWritedownQuery();
+        $mostSoldProducts = $this->inventoryWriteDownQuery
             ->orderBy('write_down_quantity','desc')
             ->take(3)
             ->get();

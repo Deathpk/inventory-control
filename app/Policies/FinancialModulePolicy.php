@@ -11,7 +11,7 @@ class FinancialModulePolicy
 {
     use HandlesAuthorization;
 
-    public static function acessFinancialModule(): bool
+    public static function accessFinancialModule(): bool
     {
         $loggedUser = Auth::user();
         return $loggedUser->getCompany()->plan_id === Plan::PREMIUM_PLAN 

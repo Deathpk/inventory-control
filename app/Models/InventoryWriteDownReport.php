@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @property integer $product_id
@@ -75,7 +76,7 @@ class InventoryWriteDownReport extends Model
         if ($inventoryWriteDownReport) {
             $this->updateWriteDownQuantity($inventoryWriteDownReport, $attributes['soldQuantity'] ?? $attributes['quantityToRemove']);
         } else {
-            $this->createNewInventoryWriteDownReport($productId, $attributes['soldQuantity'] ?? $attributes['quantityToRemove']);
+            $this->createNewInventoryWriteDownReport($productId, $attributes['soldQuantity'] ?? $attributes['quantityToRemove'], $report_type);
         }
 
         $this->createInventoryWriteDownHistory($productId, $attributes['soldQuantity'] ?? $attributes['quantityToRemove']);
@@ -88,10 +89,11 @@ class InventoryWriteDownReport extends Model
         ->where('product_id', $productId)->first();
     }
 
-    private function createNewInventoryWriteDownReport(int &$productId, int $writeDownQuantity): void
+    private function createNewInventoryWriteDownReport(int &$productId, int $writeDownQuantity, int $report_type): void
     {
         $this->product_id = $productId;
         $this->company_id = self::getLoggedCompanyId();
+        $this->report_type = $report_type;
         $this->write_down_quantity = $writeDownQuantity;
         $this->save();
     }

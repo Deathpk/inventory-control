@@ -35,7 +35,7 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
-            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string'],
+            'externalProductId' => [Rule::requiredIf(!$this->getProductId())],
             'name' => 'string',
             'description' => 'string|max:200',
             'quantity' => 'int',
@@ -56,7 +56,6 @@ class UpdateProductRequest extends FormRequest
             'productId.required' => 'O campo ID do produto é obrigatório.',
             'productId.int' => 'O campo ID do produto deve conter somente numerais',
             'externalProductId.required' => 'O ID externo do produto é obrigatório quando o ID do produto não estiver presente.',
-            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
             'name.string' => 'O nome do produto deve conter somente caracteres Alfa Numéricos.',
             'description.string' => 'A descrição do produto deve conter somente caracteres Alfa Numéricos.',
             'description.max' => 'A descrição do produto deve conter no máximo 200 caractéres.',

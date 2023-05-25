@@ -43,7 +43,7 @@ class ProductController extends Controller
      */
     public function index(SearchProductService $service): ProductCollection
     {
-       $products = $service->listProducts(true);
+       $products = $service->listProducts();
        return new ProductCollection($products);
     }
 

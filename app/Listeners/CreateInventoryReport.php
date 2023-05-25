@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\Products\UnitRemovedFromInventory;
 use App\Events\Sales\SaleCreated;
 use App\Models\InventoryWriteDownReport;
-
+use Illuminate\Support\Facades\Log;
 
 class CreateInventoryReport
 {
@@ -31,7 +31,6 @@ class CreateInventoryReport
     private function createSalesReport(): void 
     {
         $soldProducts = $this->event->getSoldProducts();
-
         $soldProducts->each(function (array $soldProduct) {
             InventoryWriteDownReport::create()->fromArray($soldProduct, InventoryWriteDownReport::SALES_REPORT_TYPE);
         });

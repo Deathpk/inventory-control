@@ -16,14 +16,16 @@ class SalesReportController extends Controller
     public function index(GeneralSalesReportRequest $request)//: JsonResponse
     {
         $filterBy = $request->getFilterByType();
-        $service = new SalesReportService($filterBy);
+        $filterValue = $request->getFilterValue();
+        $service = new SalesReportService($filterBy, $filterValue);
         return $service->getSalesReport();
     }
 
     public function mostSoldProduct(GeneralSalesReportRequest $request): JsonResponse
     {
         $filterBy = $request->getFilterByType();
-        $service = new SalesReportService($filterBy);
+        $filterValue = $request->getFilterValue();
+        $service = new SalesReportService($filterBy, $filterValue);
         $mostSoldProducts = $service->getMostSoldProducts();
         return response()->json([
             'success' => true,

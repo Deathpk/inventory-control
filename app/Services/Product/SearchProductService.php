@@ -17,14 +17,10 @@ class SearchProductService
     /**
      * @throws FailedToListProducts
      */
-    public function listProducts($paginated = false): LengthAwarePaginator|Builder|Collection
+    public function listProducts(): LengthAwarePaginator|Builder|Collection
     {
         try {
-            if ($paginated) {
-                return Product::with(['category', 'brand'])->paginate(15);
-            }
-
-            return Product::with(['category', 'brand'])->get();
+                return Product::with(['category', 'brand'])->paginate(2);
         } 
         catch(CustomException $e) {
             throw $e;
