@@ -224,6 +224,12 @@ class Product extends Model
         ])->find($id);
     }
 
+    /**
+     * Essa função existe por conta do command de checkBuyList
+     * Como em um command não temos o contexto Auth , não podemos utilizar o 
+     * Scope de FilterTenant já que o mesmo depende do Auth. Então foi criada
+     * essa função para podermos fazer a query sem esse scope, filtrando pelo companyId.
+     */
     public static function findByIdWithRelationsWithoutTenantFilter(int $id, int $companyId)
     {
         return Product::with([

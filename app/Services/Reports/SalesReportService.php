@@ -10,7 +10,6 @@ use App\Models\SaleReport;
 use App\Traits\UsesLoggedEntityId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class SalesReportService

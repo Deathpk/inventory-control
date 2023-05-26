@@ -12,6 +12,7 @@ trait RegisterHistory
         if (Auth::user() instanceof User) {
             return Auth::user()->getCompany()->getId();
         }
+        
         return Auth::user()->getId();
     }
 }

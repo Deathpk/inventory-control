@@ -52,8 +52,7 @@ class ProductController extends Controller
      */
     public function show(int $productId, SearchProductService $service): ProductResource
     {
-        $specificProduct = $service->getSpecificProduct($productId);
-        return ProductResource::make($specificProduct);
+        return $service->getSpecificProduct($productId);
     }
 
     /**

@@ -9,7 +9,6 @@ use App\Http\Requests\AutoComplete\AutoCompleteRequest;
 use App\Models\Product;
 use App\Services\AutoComplete\Interfaces\AutoCompleteService;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ProductAutoCompleteService implements AutoCompleteService
@@ -34,18 +33,8 @@ class ProductAutoCompleteService implements AutoCompleteService
 
         $this->results = Product::query()
         ->where('name', 'like', "{$this->input}%")
+        ->orWhere('id', 'like', "{$this->input}%")
+        ->orWhere('external_product_id', 'like', "{$this->input}%")
         ->get($requiredResultKeys);
-
-        if($this->results->isEmpty()) {
-            $this->results = Product::query()
-            ->where('id', 'like', "{$this->input}%")
-            ->get($requiredResultKeys);
-        }
-
-        if($this->results->isEmpty()) {
-            $this->results = Product::query()
-            ->where('external_product_id', 'like', "{$this->input}%")
-            ->get($requiredResultKeys);
-        }
     }
 }

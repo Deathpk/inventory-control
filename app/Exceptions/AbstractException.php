@@ -7,6 +7,7 @@ namespace App\Exceptions;
 use App\Exceptions\Interfaces\CustomException;
 use App\Models\User;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -15,6 +16,7 @@ class AbstractException extends Exception implements CustomException
     protected string $responseMessage;
     protected string $logMessage;
     protected \Throwable|null $thrownException;
+    protected Authenticatable $loggedEntity;
 
     const PRODUCT_ENTITY_LABEL = 'Produto';
     const CATEGORY_ENTITY_LABEL = 'Categoria';
@@ -28,6 +30,8 @@ class AbstractException extends Exception implements CustomException
         $this->responseMessage = $responseMessage;
         $this->logMessage = $logMessage;
         $this->thrownException = $thrownException;
+        $this->loggedEntity = Auth::user();
+
         parent::__construct($this->responseMessage, $statusCode ?? $this->getCode());
     }
 
@@ -41,13 +45,21 @@ class AbstractException extends Exception implements CustomException
 
     private function resolveReportedEntityMessage(): string
     {
-        $loggedEntity = Auth::user();
-
-        if ($loggedEntity instanceof User) {
-            $companyId = $loggedEntity->getCompany()->getId();
-            return "{$this->logMessage}, o erro ocorreu com o usuário de ID : {$loggedEntity->getId()} \n da Companhia de ID: {$companyId}.";
+        if ($this->loggedEntity instanceof User) {
+            return $this->getReportMessageForUserEntity();
         }
-        $companyId = $loggedEntity->getId();
+        return $this->getReportMessageForCompanyEntity();
+    }
+
+    private function getReportMessageForUserEntity(): string 
+    {
+        $companyId = $this->loggedEntity->getCompany()->getId();
+        return "{$this->logMessage}, o erro ocorreu com o usuário de ID : {$this->loggedEntity->getId()} \n da Companhia de ID: {$companyId}.";
+    }
+
+    private function getReportMessageForCompanyEntity(): string 
+    {
+        $companyId = $this->loggedEntity->getId();
         return "{$this->logMessage}, o erro ocorreu com a companhia de ID: {$companyId}.";
     }
 

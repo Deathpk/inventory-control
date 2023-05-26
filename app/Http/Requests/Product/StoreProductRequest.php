@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use JetBrains\PhpStorm\Pure;
 
 class StoreProductRequest extends FormRequest
 {
@@ -35,24 +34,45 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        // $loggedCompanyId =  ;
-
         return [
             'name' => 'required|string',
             'description' => 'string|max:200',
             'quantity' => 'required|int',
-            'paidPrice' => [Rule::prohibitedIf(fn() => Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN), 'int'],
-            'sellingPrice' => [Rule::prohibitedIf(fn() => (Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN)), 'int'],
-            'externalProductId' => [
-                "string", 
-                Rule::unique('products', 'external_product_id')
-                ->where(fn($query) => $query->where('company_id', Auth::user()->company_id))
-            ],
+            'paidPrice' => self::getPaidPriceRules(),
+            'sellingPrice' => self::getSellingPriceRules(),
+            'externalProductId' => self::getExternalProductIdRules(),
             'categoryId' => Rule::requiredIf(!$this->getCategoryName()),
             'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
             'brandId' => Rule::requiredIf(!$this->getBrandName()),
             'brandName' => Rule::requiredIf(!$this->getBrandId()),
             'minimumQuantity' => 'required|int'
+        ];
+    }
+
+    private static function getPaidPriceRules(): array
+    {
+        return [
+            Rule::prohibitedIf(
+                fn() => Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN
+            ), 'int'
+        ];
+    }
+
+    private static function getSellingPriceRules(): array
+    {
+        return [
+            Rule::prohibitedIf(
+                fn() => (Auth::user()->getCompany()->plan_id === Plan::ESSENTIAL_PLAN)
+            ), 'int'
+        ];
+    }
+
+    private static function getExternalProductIdRules(): array
+    {
+        return [
+            "string", 
+            Rule::unique('products', 'external_product_id')
+            ->where(fn($query) => $query->where('company_id', Auth::user()->company_id))
         ];
     }
 
