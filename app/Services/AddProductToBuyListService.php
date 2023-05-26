@@ -22,7 +22,7 @@ class AddProductToBuyListService
     private int|string $entityId;
     private string $entityIdLabel;
 
-        /**
+    /**
      * @throws RecordNotFoundOnDatabaseException
      */
     public function addToBuyList(StoreBuyListRequest $request): void
@@ -50,28 +50,13 @@ class AddProductToBuyListService
         }
     }
 
-    private function checkIfProductAlreadyExistsOnList(BuyList $existingBuyList): void
-    {
-        $productsOnList = (collect(json_decode($existingBuyList->products)));
-
-        $productAlreadyExists = $productsOnList->contains(function($value, $key) {
-            return property_exists($value, $this->entityIdLabel) 
-            &&
-            $value->{$this->entityIdLabel} == $this->entityId; 
-        });
-        
-        if ($productAlreadyExists) {
-            throw new EntityAlreadyExistsOnContext(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
-        }
-    }
-
     private function resolveEntityIdAndLabel (): void
     {
         $this->entityId = $this->attributes->get('productId') ?? $this->attributes->get('externalProductId');
         $this->entityIdLabel = is_int($this->entityId) ? 'productId' : 'externalProductId';
     }
 
-        /**
+            /**
      * @throws RecordNotFoundOnDatabaseException
      */
     private function checkIfRequiredProductExists(): void
@@ -88,6 +73,21 @@ class AddProductToBuyListService
     private function createNewBuyList(): void
     {
         BuyList::create()->fromCollection($this->attributes);
+    }
+
+    private function checkIfProductAlreadyExistsOnList(BuyList $existingBuyList): void
+    {
+        $productsOnList = (collect(json_decode($existingBuyList->products)));
+
+        $productAlreadyExists = $productsOnList->contains(function($value, $key) {
+            return property_exists($value, $this->entityIdLabel) 
+            &&
+            $value->{$this->entityIdLabel} == $this->entityId; 
+        });
+        
+        if ($productAlreadyExists) {
+            throw new EntityAlreadyExistsOnContext(AbstractException::BUY_LIST_ITEM_ENTITY_LABEL);
+        }
     }
 
     private function addNewProductToBuyList(BuyList $existingBuyList): void

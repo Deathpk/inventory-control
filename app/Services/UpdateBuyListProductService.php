@@ -85,10 +85,11 @@ class UpdateBuyListProductService
     private function updateBuyListProductsObject(Collection $productsFromCurrentList): string
     {
         return $productsFromCurrentList->map(function (object $buyListItem) {
-            if (property_exists($buyListItem, $this->entityIdLabel) && $buyListItem->{$this->entityIdLabel} == $this->entityId) {
+            $itemExistsOnList = property_exists($buyListItem, $this->entityIdLabel) && $buyListItem->{$this->entityIdLabel} == $this->entityId;
+            
+            if ($itemExistsOnList) {
                 $buyListItem->repositionQuantity = $this->attributes->get('repositionQuantity');
             }
-            
             return $buyListItem;
         })->toJson();
     }

@@ -34,12 +34,7 @@ class RemoveSoldProductRequest extends FormRequest
     {
         return [
             'soldProducts.*' => ['required', 'array'],
-//            'soldProducts.*.productId' => [Rule::requiredIf(!$this->externalProductIdExists()), 'int'],
             'soldProducts.*.soldQuantity' => ['required', 'int'],
-//            'soldProducts.externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string']
-//            'soldQuantity' => 'required|int',
-//            'productId' => [Rule::requiredIf(!$this->getExternalProductId()), 'int'],
-//            'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string']
         ];
     }
 
@@ -48,15 +43,8 @@ class RemoveSoldProductRequest extends FormRequest
         return [
             'soldProducts.required' => 'Os produtos vendidos são obrigatórios.',
             'soldProducts.array' => 'Os produtos vendidos devem estar contidos em um array de objetos.',
-            'soldProducts.productId.required' => 'O ID de cada produto vendido é obrigatório.',
             'soldProducts.soldQuantity.required' => 'A quantidade de unidades vendidas é obrigatória em cada produto vendido.',
             'soldProducts.soldQuantity.int' => 'A quantidade de unidades vendidas deve conter somente numerais inteiros.',
-//            'soldQuantity.required' => 'A quantidade de unidades vendidas é obrigatória.',
-//            'soldQuantity.int' => 'A quantidade de unidades vendidas deve conter somente numerais inteiros.',
-//            'productId.required' => 'O ID do produto é obrigatório.',
-//            'productId.int' => 'O ID do produto deve conter somente numerais inteiros.',
-//            'externalProductId.required' => 'O código de identificação externo do produto é obrigatório.',
-//            'externalProductId.string' => 'O código de identificação externo do produto deve conter somente caracteres Alfa Numéricos.',
         ];
     }
 

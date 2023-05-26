@@ -27,7 +27,7 @@ class GeneralSalesReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && FinancialModulePolicy::accessFinancialModule();
+        return Auth::check() && FinancialModulePolicy::canAccessFinancialModule();
     }
 
     /**

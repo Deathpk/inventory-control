@@ -20,7 +20,7 @@ class SalesReportService
     private string|null $filterValue;
     private Builder|null $inventoryWriteDownQuery;
     private Builder|null $saleReportsQuery;
-    private Builder|Collection|LengthAwarePaginator $allSales;
+    private Builder|Collection $allSales;
 
     public function __construct(string $filterBy = null, string $filterValue = null)
     {
@@ -37,7 +37,7 @@ class SalesReportService
      * @throws FailedToRetrieveSalesReport
      */
     public function getSalesReport(): array
-    { // TODO REFATORAR.
+    {
         try {
             $this->allSales = $this->getAllSales();
             return $this->prepareSalesReportForResponse()->toArray();
@@ -71,7 +71,8 @@ class SalesReportService
         $overallProfit = 0;
         $overallTotalPrice = 0;
 
-        collect($this->allSales)->each(function(SaleReport $sale) use(&$overallProfit, &$overallTotalPrice) {
+        collect($this->allSales)
+        ->each(function(SaleReport $sale) use(&$overallProfit, &$overallTotalPrice) {
             $overallProfit += $sale->profit;
             $overallTotalPrice += $sale->total_price;
         });
