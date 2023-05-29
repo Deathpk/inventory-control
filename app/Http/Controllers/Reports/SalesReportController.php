@@ -13,12 +13,12 @@ class SalesReportController extends Controller
     /**
      * @throws FailedToRetrieveSalesReport
      */
-    public function index(GeneralSalesReportRequest $request)//: JsonResponse
+    public function index(GeneralSalesReportRequest $request): JsonResponse
     {
         $filterBy = $request->getFilterByType();
         $filterValue = $request->getFilterValue();
         $service = new SalesReportService($filterBy, $filterValue);
-        return $service->getSalesReport();
+        return response()->json($service->getSalesReport());
     }
 
     public function mostSoldProduct(GeneralSalesReportRequest $request): JsonResponse

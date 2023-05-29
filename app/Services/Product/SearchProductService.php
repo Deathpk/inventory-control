@@ -20,7 +20,7 @@ class SearchProductService
     public function listProducts(): LengthAwarePaginator|Builder|Collection
     {
         try {
-            return Product::with(['category', 'brand'])->paginate(15);
+            return Product::with(['category', 'brand'])->paginate(10);
         } 
         catch(CustomException $e) {
             throw $e;
