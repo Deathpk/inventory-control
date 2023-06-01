@@ -26,9 +26,9 @@ class RemoveSoldProductService
     /**
      * @throws RecordNotFoundOnDatabaseException|\Throwable
      */
-    public function removeSoldUnitsFromStock(RemoveSoldProductRequest $request): void
+    public function removeSoldUnitsFromStock(Collection $attributes): void
     {
-        $this->setSoldProducts($request->getAttributes());
+        $this->setSoldProducts($attributes);
 
         try {
             DB::beginTransaction();

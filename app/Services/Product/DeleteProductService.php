@@ -22,28 +22,25 @@ class DeleteProductService
     /**
      * @throws FailedToDeleteEntity
      */
-    public function deleteProduct(DeleteProductRequest $request): void
+    public function deleteProduct(Collection $attributes): void
     {
-        $this->setAttributes($request);
+        $this->setAttributes($attributes);
 
         try {
             $product = $this->resolveProduct();
-
             if (!$product) {
                 throw new RecordNotFoundOnDatabaseException(AbstractException::PRODUCT_ENTITY_LABEL);
             }
-
             $product->delete();
             $this->createProductDeletedHistory($product->getId());
+            
         } catch (\Throwable $e) {
             throw new FailedToDeleteEntity(AbstractException::PRODUCT_ENTITY_LABEL, $e);
         }
     }
 
-    private function setAttributes(DeleteProductRequest $request): void
+    private function setAttributes(Collection $attributes): void
     {
-        $attributes = $request->getAttributes();
-
         $this->isExternalId = (bool) $attributes->get('isExternal');
         $this->productId = $attributes->get('productId');
     }

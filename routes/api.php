@@ -4,11 +4,11 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brand\BrandController;
 use App\Http\Controllers\BuyListController;
 use App\Http\Controllers\Category\CategoryController;
+use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Reports\InventorySubtractionController;
 use App\Http\Controllers\Reports\SalesReportController;
 use App\Http\Controllers\Sales\SalesController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +34,13 @@ Route::controller(AuthController::class)->middleware('auth:sanctum')->prefix('au
         Route::post('/change-password', 'changePassword');
         Route::post('/recover-password', 'recoverPassword')->withoutMiddleware('auth:sanctum');
         Route::post('/confirm-recovery', 'confirmPasswordRecovery')->withoutMiddleware('auth:sanctum');
+});
+
+Route::controller(EmployeeController::class)->middleware('auth:sanctum')
+->prefix('employee')->group(function() {
+    Route::get('/', 'index');
+    Route::put('/edit', 'edit');
+    Route::delete('/delete/{id}', 'destroy');
 });
 
 Route::controller(InventorySubtractionController::class)->middleware('auth:sanctum')

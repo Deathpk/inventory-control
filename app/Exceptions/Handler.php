@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\Interfaces\CustomException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,12 +20,16 @@ class Handler extends ExceptionHandler
     {
         $this->renderable(function (Throwable $e, $request) {
             if ($request->is('api/*')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ], 500);
+                return $this->resolveApiException($e);
             }
         });
+    }
+
+    private function resolveApiException(Throwable &$e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ], $e instanceof CustomException ? $e->getStatusCode() : 500);
     }
 
     /**

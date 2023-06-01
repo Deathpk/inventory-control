@@ -35,9 +35,9 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'description' => 'string|max:200',
-            'quantity' => 'required|int',
+            'name' => ['required', 'string'],
+            'description' => ['string', 'max:200'],
+            'quantity' => ['required', 'int'],
             'paidPrice' => self::getPaidPriceRules(),
             'sellingPrice' => self::getSellingPriceRules(),
             'externalProductId' => self::getExternalProductIdRules(),
@@ -45,7 +45,7 @@ class StoreProductRequest extends FormRequest
             'categoryName' => Rule::requiredIf(!$this->getCategoryId()),
             'brandId' => Rule::requiredIf(!$this->getBrandName()),
             'brandName' => Rule::requiredIf(!$this->getBrandId()),
-            'minimumQuantity' => 'required|int'
+            'minimumQuantity' => ['required', 'int']
         ];
     }
 

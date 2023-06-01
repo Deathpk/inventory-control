@@ -11,12 +11,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class AbstractException extends Exception implements CustomException
+class AbstractException extends \Exception implements CustomException
 {
     protected string $responseMessage;
     protected string $logMessage;
     protected \Throwable|null $thrownException;
     protected Authenticatable $loggedEntity;
+    protected int $statusCode;
 
     const PRODUCT_ENTITY_LABEL = 'Produto';
     const CATEGORY_ENTITY_LABEL = 'Categoria';
@@ -25,14 +26,16 @@ class AbstractException extends Exception implements CustomException
     const COMPANY_ENTITY_LABEL = 'Companhia';
     const BUY_LIST_ITEM_ENTITY_LABEL = 'Item na Lista de compras';
 
-    public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null, int $statusCode = null)
+    public function __construct(string $responseMessage = '', string $logMessage = '', ?\Throwable $thrownException = null, int $statusCode = 500)
     {
+
         $this->responseMessage = $responseMessage;
         $this->logMessage = $logMessage;
         $this->thrownException = $thrownException;
         $this->loggedEntity = Auth::user();
+        $this->statusCode = $statusCode;
 
-        parent::__construct($this->responseMessage, $statusCode ?? $this->getCode());
+        parent::__construct($this->responseMessage, $this->statusCode);
     }
 
     public function report(): void
@@ -75,5 +78,10 @@ class AbstractException extends Exception implements CustomException
     public function getThrownResponse(): string
     {
         return $this->thrownException->getMessage();
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
     }
 }

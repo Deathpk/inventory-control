@@ -60,7 +60,7 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request, CreateProductService $service): JsonResponse
     {
-        $service->createProduct($request);
+        $service->createProduct($request->getAttributes());
         return response()->json([
             'success' => true,
             'message' => 'Produto criado com sucesso!'
@@ -93,7 +93,7 @@ class ProductController extends Controller
      */
     public function destroy(DeleteProductRequest $request , DeleteProductService $service): JsonResponse
     {
-        $service->deleteProduct($request);
+        $service->deleteProduct($request->getAttributes());
         return response()->json([
             'success' => true,
             'message' => 'Produto excluido com sucesso!'
@@ -127,7 +127,7 @@ class ProductController extends Controller
      */
     public function addToStock(AddQuantityToStockRequest $request, AddProductQuantityService $service): JsonResponse
     {
-        $service->addQuantityToStock($request);
+        $service->addQuantityToStock($request->getAttributes());
         return response()->json([
             'success' => true,
             'message' => 'Quantidade adicionada ao estoque com sucesso!'

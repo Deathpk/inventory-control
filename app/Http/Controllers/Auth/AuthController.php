@@ -31,7 +31,7 @@ class AuthController extends Controller
         $user = Auth::user();
         return response()->json(
             $user->getGeneralInfo()
-        , 200);
+        );
     }
 
    public function inviteEmployee(InviteEmployeeRequest $request, InviteCompanyEmployeeService $service)
@@ -39,8 +39,8 @@ class AuthController extends Controller
        $service->invite($request);
        return response()->json([
             'success' => true,
-            'message' => 'Funcionário convidado com sucesso!'
-       ], 200);
+            'message' => 'O Colaborador foi convidado com sucesso. Para continuar, ele deve acessar o e-mail que acaba de ser enviado para o endereço cadastrado.'
+       ]);
    }
 
     public function register(RegisterUserRequest $request, RegisterUserService $service): JsonResponse
@@ -62,7 +62,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Token de API criado com sucesso! , por favor , guarde com cuidado o token a seguir , e não o perca.',
             'token' => $token
-        ], 200);
+        ]);
     }
 
     /**
@@ -96,13 +96,15 @@ class AuthController extends Controller
             'token' => $authToken,
             'mustChangePassword' => Auth::user()->mustChangePassword(),
             'user' => $user->getGeneralInfo()
-        ], 200);
+        ]);
     }
 
     public function logout(RemoveOldUserTokenService $service): JsonResponse
     {
         $service->removeOldTokens();
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     public function changePassword(ChangeUserPasswordRequest $request, ChangeUserPasswordService $service): JsonResponse
@@ -111,7 +113,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Senha alterada com sucesso, por favor, faça o login novamente.'
-        ], 200);
+        ]);
     }
 
     public function recoverPassword(RecoverPasswordRequest $request): JsonResponse
@@ -119,7 +121,7 @@ class AuthController extends Controller
         event(new RecoverPasswordRequested($request->getEmail()));
         return response()->json([
             'success' => true
-        ], 200);
+        ]);
     }
 
     public function confirmPasswordRecovery(RecoverPasswordConfirmedRequest $request, ConfirmPasswordRecoveryService $service): JsonResponse
@@ -127,6 +129,6 @@ class AuthController extends Controller
         $service->confirmPasswordRecovery($request->getRandomPassword());
         return response()->json([
             'success' => true
-        ], 200);
+        ]);
     }
 }

@@ -24,9 +24,9 @@ class AddProductQuantityService
     /**
      * @throws RecordNotFoundOnDatabaseException|FailedToAddQuantityToStock
      */
-    public function addQuantityToStock(AddQuantityToStockRequest $request): void
+    public function addQuantityToStock(Collection $attributes): void
     {
-        $this->setProps($request);
+        $this->setAttributes($attributes);
 
         $product = $this->resolveProduct();
         if (!$product) {
@@ -44,10 +44,10 @@ class AddProductQuantityService
         $this->registerAddedQuantityToHistory();
     }
 
-    private function setProps(AddQuantityToStockRequest $request): void
+    private function setAttributes(Collection $attributes): void
     {
-        $this->productId = $request->getProductId() ?? $request->getExternalProductId();
-        $this->quantity = $request->getQuantityToAdd();
+        $this->productId = $attributes->get('productId') ?? $attributes->get('externalProductId');
+        $this->quantity = $attributes->get('quantity');
     }
 
     private function resolveProduct(): ?Product

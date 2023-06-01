@@ -24,12 +24,14 @@ class CreateProductService
     /**
      * @throws FailedToCreateEntity
      */
-    public function createProduct(StoreProductRequest $request): void
+    public function createProduct(Collection $attributes): void
     {
-        $this->attributes = $request->getAttributes();
+        $this->attributes = $attributes;
         try {
             DB::beginTransaction();
-            $this->entityId = Product::create()->fromRequest($this->attributes)->getId();
+            $this->entityId = Product::create()
+                ->fromRequest($this->attributes)
+                ->getId();
             $this->createProductCreatedHistory();
             DB::commit();
         } catch (\Throwable $e) {

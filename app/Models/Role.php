@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
@@ -23,9 +23,9 @@ class Role extends Model
         'permissions'
     ];
 
-    public function users(): BelongsToMany
+    public function users(): HasMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->hasMany(User::class);
     }
 
     public function getId(): int
@@ -41,8 +41,26 @@ class Role extends Model
         ];
     }
 
+    public static function getAvailableRolesId(): array
+    {
+        return [
+            self::ADMIN_ROLE,
+            self::STOCK_MANAGER_ROLE
+        ];
+    }
+
     public function getRolePermissions(): array
     {
         return $this->permissions;
+    }
+
+    public function getLabel(): string
+    {
+        $rolesMap = [
+            self::ADMIN_ROLE => 'Administrador',
+            self::STOCK_MANAGER_ROLE => 'Gerente de estoque'
+        ];
+
+        return $rolesMap[$this->id];
     }
 }

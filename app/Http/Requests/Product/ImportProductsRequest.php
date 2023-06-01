@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ImportProductsRequest extends FormRequest
 {
@@ -18,9 +20,9 @@ class ImportProductsRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return Auth::check() && Auth::user()->getCompany()->plan_id === Plan::PREMIUM_PLAN;
     }
 
     /**
@@ -31,7 +33,7 @@ class ImportProductsRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required|file|mimes:xlsx,xls,csv',
+            'file' => ['required','file', 'mimes:xlsx,xls,csv'],
         ];
     }
 

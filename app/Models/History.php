@@ -34,6 +34,7 @@ class History extends Model
     const ADDED_QUANTITY = 5;
 
     const USER_PASSWORD_CHANGED = 6;
+    const USER_DATA_CHANGED = 7;
 
     protected $fillable = [
         'entity_id',

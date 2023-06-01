@@ -36,7 +36,7 @@ class AddQuantityToStockRequest extends FormRequest
         return [
             'productId' => [Rule::requiredIf(!$this->getExternalProductId()),'int','min:1'],
             'externalProductId' => [Rule::requiredIf(!$this->getProductId()), 'string'],
-            'quantity' => 'required|int|min:1'
+            'quantity' => ['required', 'int', 'min:1']
         ];
     }
 
@@ -71,6 +71,6 @@ class AddQuantityToStockRequest extends FormRequest
 
     public function getAttributes(): Collection
     {
-        return $this->collect($this->validated());
+        return collect($this->validated());
     }
 }
